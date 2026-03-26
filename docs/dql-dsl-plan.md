@@ -492,6 +492,7 @@ K-shortest path queries for finding multiple paths between nodes.
 ```
 
 Features:
+
 - `numpaths: k` - Return k shortest paths
 - `depth: n` - Limit path depth
 - `minweight` / `maxweight` - Filter by weight

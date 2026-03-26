@@ -222,3 +222,45 @@ public Optional<User> findById(Long id) {
 - Spring Boot: 4.0.4
 - Build Tool: Gradle (via gradlew wrapper)
 - Test Framework: JUnit 5 (Jupiter) via Spring Boot Starter Test
+
+## DSL Library State (Completed)
+
+The DSL library in `org.frunix.dgraphql.dsl` is fully implemented with:
+
+### Implemented Features
+
+- **Query**: Basic queries, nested blocks, multiple query blocks
+- **QueryBlock**: Named/anonymous blocks with pagination & ordering
+- **Block**: Predicate, FuncBlock, Nested, Reverse, Var, GroupByBlock cases
+- **Func**: All DQL functions (eq, has, uid, count, expand, etc.)
+- **Filter**: Boolean filters (AND, OR, NOT) with comparison functions
+- **Directive**: filter, facets, cascade, normalize, ignorereflex
+- **Variable**: Query variables with defaults
+- **VarBlock/VarAssignment**: Query and value variables
+- **Fragment**: Query fragment syntax
+- **RecurseBlock**: Recursive queries with depth
+- **MathExpr**: Mathematical expressions
+- **GeoValue**: Geo queries
+- **Mutation**: Set, Delete, Update, Conditional mutations
+- **SetTriple**: RDF triples for mutations
+- **GroupBy**: GroupBy aggregation
+- **Alter**: Schema mutations (types, predicates, indexes)
+- **JsonMutation**: JSON-based mutations
+
+### Design Patterns
+
+- **Sealed interfaces** for type-safe variants (Block, QueryBlock, Filter, Mutation, GroupBy, Alter, JsonMutation)
+- **Immutable records** with `with*` methods
+- **Factory methods** matching DQL keywords
+- **DqlElement** base interface with `dql()` method
+
+### Implementation Status (from docs/dql-dsl-plan.md)
+
+- Phase 1-9: ✅ Complete
+- Phase 10: ✅ Complete (GroupBy, ignorereflex, ALTER, Multiple Queries, JSON, Facet Filtering)
+- Phase 11: Future (K-Shortest Path, Upsert Block, Language Tags, etc.)
+
+### Key Files
+
+- Tests: `src/test/java/org/frunix/dgraphql/dsl/DslTest.java` (61 tests)
+- Documentation: `README.md`, `docs/dql-dsl-plan.md`
