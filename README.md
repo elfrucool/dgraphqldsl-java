@@ -440,4 +440,4 @@ src/main/java/org/frunix/dgraphql/dsl/
 
 ## License
 
-MIT
+See [LICENSE.md](LICENSE.md) for details.
