@@ -247,9 +247,20 @@ DqlResult result = query.dql();
 - Phase 8: Advanced Features ✅
 - Phase 9: Mutations ✅
 
-### Phase 10: Missing Features (Future)
+### Phase 10: Additional Features (Completed ✅)
 
-See below for details.
+All features from Phase 10 have been implemented.
+
+- ✓ 10.1 GroupBy Aggregation
+- ✓ 10.2 @ignorereflex Directive
+- ✓ 10.3 Schema Mutations (ALTER)
+- ✓ 10.4 Multiple Query Blocks
+- ✓ 10.5 JSON Mutations
+- ✓ 10.6 Facet Filtering
+
+### Phase 11: Extended Features (Future)
+
+See [Phase 11: Extended Features](#111-k-shortest-path-queries) for details.
 
 ### ✓ Phase 9: Mutations
 
@@ -358,7 +369,7 @@ src/main/java/org/frunix/dgraphql/dsl/
 └── (existing files...)
 ```
 
-### Phase 10: Missing Features (Future)
+### ✓ Phase 10: Additional Features
 
 The following features are not yet implemented but are identified as gaps for complete DQL coverage.
 
@@ -458,5 +469,90 @@ src/main/java/org/frunix/dgraphql/dsl/
 ├── QueryGroup.java          # NEW - grouping multiple queries
 ├── JsonMutation.java        # NEW - JSON-based mutations
 ├── FacetFilter.java        # NEW - facet filtering conditions
+└── (existing files...)
+```
+
+### Phase 11: Extended Features (Future)
+
+Additional DQL features identified from official documentation.
+
+#### 11.1 K-Shortest Path Queries
+
+K-shortest path queries for finding multiple paths between nodes.
+
+```dql
+{
+  path as shortest(from: 0x2, to: 0x5, numpaths: 2) {
+    friend
+  }
+  path(func: uid(path)) {
+    name
+  }
+}
+```
+
+Features:
+- `numpaths: k` - Return k shortest paths
+- `depth: n` - Limit path depth
+- `minweight` / `maxweight` - Filter by weight
+- Edge constraints with `@filter`
+
+#### 11.2 Full Upsert Block Support
+
+Complete upsert block structure combining query and mutation.
+
+```dql
+upsert {
+  query {
+    v as var(func: regexp(email, /.*@company1.io$/))
+  }
+  mutation @if(lt(len(v), 100)) {
+    delete {
+      uid(v) <name> * .
+    }
+  }
+}
+```
+
+#### 11.3 Language-Tagged Values
+
+Support for language-specific predicates in mutations.
+
+```dql
+{
+  set {
+    <0x123> <name@fr> "Alice" .
+    <0x123> <name@en> "Alice" .
+  }
+}
+```
+
+#### 11.4 Enhanced Delete Operations
+
+Additional delete patterns.
+
+```dql
+{
+  delete {
+    <0x123> <name> * .           # Delete all values for predicate
+    <0x123> * * .                # Delete all typed predicates from node
+    <0x123> <name@es> * .       # Delete language-specific value
+  }
+}
+```
+
+#### 11.5 Additional Schema Features
+
+- `@upsert` directive for ensuring uniqueness
+- `@count` index for faster counting
+- Type relationships
+
+#### Proposed Package Updates
+
+```
+src/main/java/org/frunix/dgraphql/dsl/
+├── ShortestPath.java        # NEW - k-shortest path queries
+├── Upsert.java             # NEW - upsert block support
+├── LanguageTag.java         # NEW - language-tagged values
 └── (existing files...)
 ```
