@@ -2,16 +2,13 @@
 
 ## Project Overview
 
-This is a Spring Boot 4.x Java application using Gradle with Java 25 toolchain. The project is in its initial stages.
+This is a pure Java library using Gradle with Java 25 toolchain.
 
 ## Build Commands
 
 ```bash
 # Build the project
 ./gradlew build
-
-# Run the application
-./gradlew bootRun
 
 # Clean and build
 ./gradlew clean build
@@ -20,21 +17,38 @@ This is a Spring Boot 4.x Java application using Gradle with Java 25 toolchain. 
 ./gradlew test
 
 # Run a single test class
-./gradlew test --tests DgraphqlApplicationTests
 ./gradlew test --tests DslTest                    # DSL tests
 
 # Run a single test method
-./gradlew test --tests DgraphqlApplicationTests.contextLoads
 ./gradlew test --tests DslTest.testBasicQuery
 
 # Run tests with verbose output
 ./gradlew test --info
 
-# Check code style (if spotless plugin added)
-./gradlew checkstyleMain checkstyleTest
-
 # Full verification (build + tests)
 ./gradlew check
+```
+
+## Git Commit Messages
+
+Follow Linus Torvalds' commit message style (from subsurface project):
+
+- **Header line**: Explain the commit in one line (use imperative mood)
+  - Good: `Fix bug that causes NPE on empty input`
+  - Bad: `Fixed bug`, `Adding new feature`
+- **Body**: Explain *why*, not just *what* - describe the solution and reasoning
+- **Width**: Keep lines under 74 characters
+- **Signed-off-by**: Add at end of each commit: `Signed-off-by: Name <email>`
+
+Example:
+```
+Fix bug that causes NPE on empty input
+
+The issue occurred because we called .getName() without checking
+for null. Added a null check and return early.
+
+Reported-by: jane@example.com
+Signed-off-by: John Doe <john@example.com>
 ```
 
 ## Code Style Guidelines
@@ -58,19 +72,18 @@ This is a Spring Boot 4.x Java application using Gradle with Java 25 toolchain. 
 
 ```
 src/main/java/org/frunix/dgraphql/
-├── DgraphqlApplication.java
-├── config/           # Configuration classes
-├── service/          # Business logic
-├── controller/       # REST controllers (if needed)
-├── model/            # DTOs and domain objects
-├── repository/       # Data access
-└── resolver/         # GraphQL resolvers
+├── dsl/                # DSL classes
+├── config/             # Configuration classes (if needed)
+├── service/            # Business logic (if needed)
+├── controller/         # REST controllers (if needed)
+├── model/              # DTOs and domain objects (if needed)
+└── repository/         # Data access (if needed)
 ```
 
 ### Imports
 
 - Use wildcard imports sparingly (`java.util.*` is acceptable)
-- Group imports in order: static, java, javax, spring, third-party, project
+- Group imports in order: static, java, javax, third-party, project
 - Sort alphabetically within groups
 
 ### Formatting
@@ -93,8 +106,6 @@ src/main/java/org/frunix/dgraphql/
 
 - Use specific exception types (not generic `Exception`)
 - Include meaningful error messages
-- Return appropriate HTTP status codes in controllers
-- Use `@ControllerAdvice` for global exception handling
 - Log exceptions with appropriate level (error for fatal, warn for recoverable)
 
 ### Testing
@@ -103,8 +114,6 @@ src/main/java/org/frunix/dgraphql/
 - Use descriptive test method names: `shouldReturnUser_WhenIdExists()`
 - Use AAA pattern (Arrange, Act, Assert)
 - Test both success and failure cases
-- Use `@SpringBootTest` for integration tests
-- Use `@MockBean` for mocking dependencies in integration tests
 
 ### Configuration
 
@@ -143,13 +152,12 @@ src/main/java/org/frunix/dgraphql/
 ### Annotations
 
 - Place annotations directly above class/method (no empty line between)
-- Common order: @Override, @Autowired, @Transactional, then others
-- Use @Component, @Service, @Repository appropriately
-- Avoid @ComponentScan unless necessary (use @Bean in config classes)
+- Common order: @Override, then others
+- Keep annotations minimal and meaningful
 
 ### Logging
 
-- Use SLF4J for logging
+- Use SLF4J for logging (if needed)
 - Log at appropriate levels: error (exceptions), warn (recoverable), info (important events), debug (development)
 - Never log sensitive data (passwords, tokens, PII)
 - Use parameterized logging: `log.info("User {} logged in", userId)` not `log.info("User " + userId + " logged in")`
@@ -159,7 +167,6 @@ src/main/java/org/frunix/dgraphql/
 - Prefer immutable objects for shared state
 - Use thread-safe collections (ConcurrentHashMap, CopyOnWriteArrayList) when needed
 - Avoid synchronized blocks; use java.util.concurrent utilities instead
-- Be mindful of @Async and thread pools
 
 ### Performance
 
@@ -169,22 +176,6 @@ src/main/java/org/frunix/dgraphql/
 - Profile before optimizing
 
 ## Common Patterns
-
-### Dependency Injection
-
-```java
-@Service
-public class UserService {
-    private final UserRepository userRepository;
-    private final NotificationService notificationService;
-
-    @Autowired
-    public UserService(UserRepository userRepository, NotificationService notificationService) {
-        this.userRepository = userRepository;
-        this.notificationService = notificationService;
-    }
-}
-```
 
 ### Builder Pattern (for complex objects)
 
@@ -219,9 +210,8 @@ public Optional<User> findById(Long id) {
 ## Tools and Versions
 
 - Java: 25
-- Spring Boot: 4.0.4
 - Build Tool: Gradle (via gradlew wrapper)
-- Test Framework: JUnit 5 (Jupiter) via Spring Boot Starter Test
+- Test Framework: JUnit 5 (Jupiter)
 
 ## DSL Library State (Completed)
 
