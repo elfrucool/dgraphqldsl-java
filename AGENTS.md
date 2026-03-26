@@ -1,0 +1,224 @@
+# AGENTS.md - Developer Guidelines for dgraphql
+
+## Project Overview
+
+This is a Spring Boot 4.x Java application using Gradle with Java 25 toolchain. The project is in its initial stages.
+
+## Build Commands
+
+```bash
+# Build the project
+./gradlew build
+
+# Run the application
+./gradlew bootRun
+
+# Clean and build
+./gradlew clean build
+
+# Run tests
+./gradlew test
+
+# Run a single test class
+./gradlew test --tests DgraphqlApplicationTests
+./gradlew test --tests DslTest                    # DSL tests
+
+# Run a single test method
+./gradlew test --tests DgraphqlApplicationTests.contextLoads
+./gradlew test --tests DslTest.testBasicQuery
+
+# Run tests with verbose output
+./gradlew test --info
+
+# Check code style (if spotless plugin added)
+./gradlew checkstyleMain checkstyleTest
+
+# Full verification (build + tests)
+./gradlew check
+```
+
+## Code Style Guidelines
+
+### General Principles
+
+- Follow Spring Boot conventions and Java idioms
+- Keep classes focused and single-responsibility
+- Use dependency injection for loose coupling
+- Write meaningful Javadoc for public APIs
+
+### Naming Conventions
+
+- **Classes**: PascalCase (e.g., `GraphQLService`, `UserResolver`)
+- **Methods**: camelCase (e.g., `fetchUserById`, `executeQuery`)
+- **Constants**: UPPER_SNAKE_CASE (e.g., `MAX_RETRY_COUNT`)
+- **Packages**: lowercase, single words or dot-separated (e.g., `org.frunix.dgraphql.resolvers`)
+- **Test Classes**: `*Test.java` or `*Tests.java` (e.g., `UserServiceTest.java`)
+
+### File Organization
+
+```
+src/main/java/org/frunix/dgraphql/
+├── DgraphqlApplication.java
+├── config/           # Configuration classes
+├── service/          # Business logic
+├── controller/       # REST controllers (if needed)
+├── model/            # DTOs and domain objects
+├── repository/       # Data access
+└── resolver/         # GraphQL resolvers
+```
+
+### Imports
+
+- Use wildcard imports sparingly (`java.util.*` is acceptable)
+- Group imports in order: static, java, javax, spring, third-party, project
+- Sort alphabetically within groups
+
+### Formatting
+
+- Indent with 4 spaces (no tabs)
+- Max line length: 120 characters
+- Opening brace on same line for classes/methods
+- One blank line between top-level elements
+- Use meaningful variable names (avoid single letters except loop indices)
+
+### Types
+
+- Use interfaces for dependencies when possible
+- Prefer immutable objects where practical
+- Use `List` over `ArrayList`, `Map` over `HashMap` in declarations
+- Avoid primitive wrappers unless nullability is needed
+- Use `Optional` for optional return values
+
+### Error Handling
+
+- Use specific exception types (not generic `Exception`)
+- Include meaningful error messages
+- Return appropriate HTTP status codes in controllers
+- Use `@ControllerAdvice` for global exception handling
+- Log exceptions with appropriate level (error for fatal, warn for recoverable)
+
+### Testing
+
+- Test class per production class (`UserService` -> `UserServiceTest`)
+- Use descriptive test method names: `shouldReturnUser_WhenIdExists()`
+- Use AAA pattern (Arrange, Act, Assert)
+- Test both success and failure cases
+- Use `@SpringBootTest` for integration tests
+- Use `@MockBean` for mocking dependencies in integration tests
+
+### Configuration
+
+- Use `application.yaml` for configuration (not properties)
+- Environment-specific config: `application-{profile}.yaml`
+- Use `@ConfigurationProperties` for type-safe config
+- Avoid hardcoding values; use configuration where possible
+
+### Dependencies
+
+- Keep dependencies minimal
+- Use stable, well-maintained libraries
+- Avoid duplicate transitive dependencies
+
+## Database (Future)
+
+- Use Spring Data JPA or similar for persistence
+- Follow JPA naming conventions for entities
+- Use transactions appropriately
+
+## GraphQL (Future)
+
+- Define schema in `schema.graphqls`
+- Use `@Query`, `@Mutation` annotations for resolvers
+- Follow GraphQL best practices for schema design
+
+## Java Specific Guidelines
+
+### Class Structure
+
+- One public class per file
+- Fields should be private with getters/setters or records for immutable data
+- Use constructors for required dependencies, builder pattern for optional
+- Keep methods small and focused (max 30-40 lines)
+
+### Annotations
+
+- Place annotations directly above class/method (no empty line between)
+- Common order: @Override, @Autowired, @Transactional, then others
+- Use @Component, @Service, @Repository appropriately
+- Avoid @ComponentScan unless necessary (use @Bean in config classes)
+
+### Logging
+
+- Use SLF4J for logging
+- Log at appropriate levels: error (exceptions), warn (recoverable), info (important events), debug (development)
+- Never log sensitive data (passwords, tokens, PII)
+- Use parameterized logging: `log.info("User {} logged in", userId)` not `log.info("User " + userId + " logged in")`
+
+### Concurrency
+
+- Prefer immutable objects for shared state
+- Use thread-safe collections (ConcurrentHashMap, CopyOnWriteArrayList) when needed
+- Avoid synchronized blocks; use java.util.concurrent utilities instead
+- Be mindful of @Async and thread pools
+
+### Performance
+
+- Avoid unnecessary object creation in loops
+- Use StringBuilder for string concatenation in loops
+- Consider lazy initialization for expensive resources
+- Profile before optimizing
+
+## Common Patterns
+
+### Dependency Injection
+
+```java
+@Service
+public class UserService {
+    private final UserRepository userRepository;
+    private final NotificationService notificationService;
+
+    @Autowired
+    public UserService(UserRepository userRepository, NotificationService notificationService) {
+        this.userRepository = userRepository;
+        this.notificationService = notificationService;
+    }
+}
+```
+
+### Builder Pattern (for complex objects)
+
+```java
+User user = User.builder()
+    .id(1)
+    .name("John")
+    .email("john@example.com")
+    .build();
+```
+
+### Optional Return Pattern
+
+```java
+public Optional<User> findById(Long id) {
+    return userRepository.findById(id);
+}
+```
+
+## Code Review Checklist
+
+- [ ] No hardcoded values (use configuration)
+- [ ] Proper error handling with specific exceptions
+- [ ] Logging at appropriate levels
+- [ ] Tests cover both success and failure paths
+- [ ] No sensitive data in logs
+- [ ] Interfaces used for dependencies
+- [ ] Meaningful variable and method names
+- [ ] No commented-out code
+- [ ] Javadoc for public APIs
+
+## Tools and Versions
+
+- Java: 25
+- Spring Boot: 4.0.4
+- Build Tool: Gradle (via gradlew wrapper)
+- Test Framework: JUnit 5 (Jupiter) via Spring Boot Starter Test

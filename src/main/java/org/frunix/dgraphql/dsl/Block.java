@@ -1,0 +1,382 @@
+package org.frunix.dgraphql.dsl;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public sealed interface Block extends DqlElement 
+    permits Block.Predicate, Block.FuncBlock, Block.Nested, Block.Reverse, Block.Var {
+
+    List<Block> blocks();
+    List<Directive> directives();
+
+    default Block withBlocks(List<Block> blocks) {
+        return switch (this) {
+            case Predicate p -> p.withBlocks(blocks);
+            case FuncBlock f -> f.withBlocks(blocks);
+            case Nested n -> n.withBlocks(blocks);
+            case Reverse r -> r.withBlocks(blocks);
+            case Var v -> v.withBlocks(blocks);
+        };
+    }
+
+    default Block withBlock(Block block) {
+        return switch (this) {
+            case Predicate p -> p.withBlock(block);
+            case FuncBlock f -> f.withBlock(block);
+            case Nested n -> n.withBlock(block);
+            case Reverse r -> r.withBlock(block);
+            case Var v -> v.withBlock(block);
+        };
+    }
+
+    default Block withDirective(Directive directive) {
+        return switch (this) {
+            case Predicate p -> p.withDirective(directive);
+            case FuncBlock f -> f.withDirective(directive);
+            case Nested n -> n.withDirective(directive);
+            case Reverse r -> r.withDirective(directive);
+            case Var v -> v;
+        };
+    }
+
+    default Block withDirectives(List<Directive> directives) {
+        return switch (this) {
+            case Predicate p -> p.withDirectives(directives);
+            case FuncBlock f -> f.withDirectives(directives);
+            case Nested n -> n.withDirectives(directives);
+            case Reverse r -> r.withDirectives(directives);
+            case Var v -> v;
+        };
+    }
+
+    record Predicate(
+        String name,
+        String alias,
+        List<Block> blocks,
+        List<Directive> directives
+    ) implements Block {
+
+        public static Predicate of(String name) {
+            return new Predicate(name, null, List.of(), List.of());
+        }
+
+        public static Predicate of(String name, String alias) {
+            return new Predicate(name, alias, List.of(), List.of());
+        }
+
+        public Predicate withBlocks(List<Block> blocks) {
+            return new Predicate(this.name, this.alias, blocks, this.directives);
+        }
+
+        public Predicate withBlock(Block block) {
+            List<Block> newBlocks = new ArrayList<>(blocks);
+            newBlocks.add(block);
+            return withBlocks(newBlocks);
+        }
+
+        public Predicate withDirectives(List<Directive> directives) {
+            return new Predicate(this.name, this.alias, this.blocks, directives);
+        }
+
+        public Predicate withDirective(Directive directive) {
+            List<Directive> newDirectives = new ArrayList<>(directives);
+            newDirectives.add(directive);
+            return withDirectives(newDirectives);
+        }
+
+        public Predicate withAlias(String alias) {
+            return new Predicate(this.name, alias, this.blocks, this.directives);
+        }
+
+        @Override
+        public String dql() {
+            StringBuilder sb = new StringBuilder();
+
+            if (alias != null && !alias.isEmpty()) {
+                sb.append(alias).append(": ");
+            }
+
+            sb.append(name);
+
+            if (!directives.isEmpty()) {
+                for (Directive d : directives) {
+                    sb.append(" ").append(d.dql());
+                }
+            }
+
+            if (!blocks.isEmpty()) {
+                sb.append(" { ");
+                for (int i = 0; i < blocks.size(); i++) {
+                    if (i > 0) sb.append(" ");
+                    sb.append(blocks.get(i).dql());
+                }
+                sb.append(" }");
+            }
+
+            return sb.toString();
+        }
+    }
+
+    record FuncBlock(
+        Func func,
+        String alias,
+        List<Block> blocks,
+        List<Directive> directives
+    ) implements Block {
+
+        public static FuncBlock of(Func func) {
+            return new FuncBlock(func, null, List.of(), List.of());
+        }
+
+        public static FuncBlock of(Func func, String alias) {
+            return new FuncBlock(func, alias, List.of(), List.of());
+        }
+
+        public FuncBlock withBlocks(List<Block> blocks) {
+            return new FuncBlock(this.func, this.alias, blocks, this.directives);
+        }
+
+        public FuncBlock withBlock(Block block) {
+            List<Block> newBlocks = new ArrayList<>(blocks);
+            newBlocks.add(block);
+            return withBlocks(newBlocks);
+        }
+
+        public FuncBlock withDirectives(List<Directive> directives) {
+            return new FuncBlock(this.func, this.alias, this.blocks, directives);
+        }
+
+        public FuncBlock withDirective(Directive directive) {
+            List<Directive> newDirectives = new ArrayList<>(directives);
+            newDirectives.add(directive);
+            return withDirectives(newDirectives);
+        }
+
+        public FuncBlock withAlias(String alias) {
+            return new FuncBlock(this.func, alias, this.blocks, this.directives);
+        }
+
+        @Override
+        public String dql() {
+            StringBuilder sb = new StringBuilder();
+
+            if (alias != null && !alias.isEmpty()) {
+                sb.append(alias).append(": ");
+            }
+
+            sb.append(func.dql());
+
+            if (!directives.isEmpty()) {
+                for (Directive d : directives) {
+                    sb.append(" ").append(d.dql());
+                }
+            }
+
+            if (!blocks.isEmpty()) {
+                sb.append(" { ");
+                for (int i = 0; i < blocks.size(); i++) {
+                    if (i > 0) sb.append(" ");
+                    sb.append(blocks.get(i).dql());
+                }
+                sb.append(" }");
+            }
+
+            return sb.toString();
+        }
+    }
+
+    record Nested(
+        String name,
+        List<Block> blocks,
+        List<Directive> directives
+    ) implements Block {
+
+        public static Nested of(String name) {
+            return new Nested(name, List.of(), List.of());
+        }
+
+        public static Nested of(String name, List<Directive> directives) {
+            return new Nested(name, List.of(), directives);
+        }
+
+        public Nested withBlocks(List<Block> blocks) {
+            return new Nested(this.name, blocks, this.directives);
+        }
+
+        public Nested withBlock(Block block) {
+            List<Block> newBlocks = new ArrayList<>(blocks);
+            newBlocks.add(block);
+            return withBlocks(newBlocks);
+        }
+
+        public Nested withDirectives(List<Directive> directives) {
+            return new Nested(this.name, this.blocks, directives);
+        }
+
+        public Nested withDirective(Directive directive) {
+            List<Directive> newDirectives = new ArrayList<>(directives);
+            newDirectives.add(directive);
+            return withDirectives(newDirectives);
+        }
+
+        @Override
+        public String dql() {
+            StringBuilder sb = new StringBuilder();
+            sb.append(name);
+
+            if (!directives.isEmpty()) {
+                for (Directive d : directives) {
+                    sb.append(" ").append(d.dql());
+                }
+            }
+
+            if (!blocks.isEmpty()) {
+                sb.append(" { ");
+                for (int i = 0; i < blocks.size(); i++) {
+                    if (i > 0) sb.append(" ");
+                    sb.append(blocks.get(i).dql());
+                }
+                sb.append(" }");
+            }
+
+            return sb.toString();
+        }
+    }
+
+    record Reverse(
+        String name,
+        List<Block> blocks,
+        List<Directive> directives
+    ) implements Block {
+
+        public static Reverse of(String name) {
+            return new Reverse(name, List.of(), List.of());
+        }
+
+        public static Reverse of(String name, List<Directive> directives) {
+            return new Reverse(name, List.of(), directives);
+        }
+
+        public Reverse withBlocks(List<Block> blocks) {
+            return new Reverse(this.name, blocks, this.directives);
+        }
+
+        public Reverse withBlock(Block block) {
+            List<Block> newBlocks = new ArrayList<>(blocks);
+            newBlocks.add(block);
+            return withBlocks(newBlocks);
+        }
+
+        public Reverse withDirectives(List<Directive> directives) {
+            return new Reverse(this.name, this.blocks, directives);
+        }
+
+        public Reverse withDirective(Directive directive) {
+            List<Directive> newDirectives = new ArrayList<>(directives);
+            newDirectives.add(directive);
+            return withDirectives(newDirectives);
+        }
+
+        @Override
+        public String dql() {
+            StringBuilder sb = new StringBuilder();
+            sb.append("~").append(name);
+
+            if (!directives.isEmpty()) {
+                for (Directive d : directives) {
+                    sb.append(" ").append(d.dql());
+                }
+            }
+
+            if (!blocks.isEmpty()) {
+                sb.append(" { ");
+                for (int i = 0; i < blocks.size(); i++) {
+                    if (i > 0) sb.append(" ");
+                    sb.append(blocks.get(i).dql());
+                }
+                sb.append(" }");
+            }
+
+            return sb.toString();
+        }
+    }
+
+    record Var(
+        String varName,
+        String predicate,
+        List<Block> blocks
+    ) implements Block {
+
+        public static Var of(String varName, String predicate) {
+            return new Var(varName, predicate, List.of());
+        }
+
+        public Var withBlocks(List<Block> blocks) {
+            return new Var(this.varName, this.predicate, blocks);
+        }
+
+        public Var withBlock(Block block) {
+            List<Block> newBlocks = new ArrayList<>(blocks);
+            newBlocks.add(block);
+            return withBlocks(newBlocks);
+        }
+
+        @Override
+        public List<Directive> directives() {
+            return List.of();
+        }
+
+        @Override
+        public String dql() {
+            StringBuilder sb = new StringBuilder();
+            sb.append(varName).append(" as ").append(predicate);
+
+            if (!blocks.isEmpty()) {
+                sb.append(" { ");
+                for (int i = 0; i < blocks.size(); i++) {
+                    if (i > 0) sb.append(" ");
+                    sb.append(blocks.get(i).dql());
+                }
+                sb.append(" }");
+            }
+
+            return sb.toString();
+        }
+    }
+
+    static Block predicate(String name) {
+        return Predicate.of(name);
+    }
+
+    static Block predicate(String name, String alias) {
+        return Predicate.of(name, alias);
+    }
+
+    static Block predicate(Func func) {
+        return FuncBlock.of(func);
+    }
+
+    static Block predicate(Func func, String alias) {
+        return FuncBlock.of(func, alias);
+    }
+
+    static Block var(String varName, String predicate) {
+        return Var.of(varName, predicate);
+    }
+
+    static Block nested(String name) {
+        return Nested.of(name);
+    }
+
+    static Block nested(String name, List<Directive> directives) {
+        return Nested.of(name, directives);
+    }
+
+    static Block reverse(String name) {
+        return Reverse.of(name);
+    }
+
+    static Block reverse(String name, List<Directive> directives) {
+        return Reverse.of(name, directives);
+    }
+}
