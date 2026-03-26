@@ -14,6 +14,10 @@ public record Directive(String name, String content) implements DqlElement {
         return new Directive("facets", String.join(", ", facetNames));
     }
 
+    public static Directive facets(Filter filter) {
+        return new Directive("facets", filter.dql());
+    }
+
     public static Directive cascade() {
         return new Directive("cascade", null);
     }

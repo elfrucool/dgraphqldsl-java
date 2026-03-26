@@ -683,4 +683,158 @@ class DslTest {
         
         assertEquals("{ recurse(me, 5) @ignorereflex { friend } }", result.query());
     }
+
+    @Test
+    void testAlterTypeDefinition() {
+        Alter alter = Alter.type("Person", "name", "age");
+        
+        assertEquals("type Person {\n  name\n  age\n}", alter.dql());
+    }
+
+    @Test
+    void testAlterPredicateSchema() {
+        Alter alter = Alter.predicate("name", "string")
+            .withIndex("exact");
+        
+        assertEquals("name: string @index(exact) .", alter.dql());
+    }
+
+    @Test
+    void testAlterPredicateWithMultipleIndexes() {
+        Alter alter = Alter.predicate("email", "string")
+            .withIndexes(List.of("exact", "hash"));
+        
+        assertEquals("email: string @index(exact, hash) .", alter.dql());
+    }
+
+    @Test
+    void testAlterDropAll() {
+        Alter alter = Alter.dropAll();
+        
+        assertEquals("drop all", alter.dql());
+    }
+
+    @Test
+    void testAlterDropType() {
+        Alter alter = Alter.dropType("Person");
+        
+        assertEquals("drop type Person", alter.dql());
+    }
+
+    @Test
+    void testAlterDropPredicate() {
+        Alter alter = Alter.dropPredicate("name");
+        
+        assertEquals("drop name", alter.dql());
+    }
+
+    @Test
+    void testAlterMultipleOperations() {
+        Alter alter = Alter.all(List.of(
+            Alter.type("Person", "name", "age"),
+            Alter.predicate("name", "string").withIndex("exact")
+        ));
+        
+        String dql = alter.dql();
+        assertTrue(dql.contains("type Person"));
+        assertTrue(dql.contains("name: string @index(exact)"));
+    }
+
+    @Test
+    void testMultipleQueryBlocks() {
+        Query query = Query.query()
+            .withBlock(QueryBlock.block("getUser1", Func.eq("email", "a@b.com"))
+                .withBlocks(List.of(Block.predicate("name"))))
+            .withBlock(QueryBlock.block("getUser2", Func.eq("email", "c@d.com"))
+                .withBlocks(List.of(Block.predicate("name"))));
+
+        DqlResult result = query.dql();
+        
+        assertTrue(result.query().contains("getUser1(func: eq(email, \"a@b.com\")) { name }"));
+        assertTrue(result.query().contains("getUser2(func: eq(email, \"c@d.com\")) { name }"));
+    }
+
+    @Test
+    void testJsonMutationSet() {
+        JsonMutation mutation = JsonMutation.set(
+            Map.of("uid", "_:user", "name", "Alice", "age", 30)
+        );
+        
+        String dql = mutation.dql();
+        assertTrue(dql.contains("\"set\""));
+        assertTrue(dql.contains("\"uid\": \"_:user\""));
+        assertTrue(dql.contains("\"name\": \"Alice\""));
+        assertTrue(dql.contains("\"age\": 30"));
+    }
+
+    @Test
+    void testJsonMutationDelete() {
+        JsonMutation mutation = JsonMutation.delete(
+            Map.of("uid", "0x123")
+        );
+        
+        String dql = mutation.dql();
+        assertTrue(dql.contains("\"delete\""));
+        assertTrue(dql.contains("\"uid\": \"0x123\""));
+    }
+
+    @Test
+    void testJsonMutationWithNested() {
+        JsonMutation mutation = JsonMutation.set(
+            Map.of("uid", "_:user", "name", "Alice", "friend", Map.of("uid", "0x456"))
+        );
+        
+        String dql = mutation.dql();
+        assertTrue(dql.contains("\"friend\": {"));
+        assertTrue(dql.contains("\"uid\": \"0x456\""));
+    }
+
+    @Test
+    void testJsonMutationMultipleObjects() {
+        JsonMutation mutation = JsonMutation.set(List.of(
+            Map.of("name", "Alice", "age", 30),
+            Map.of("name", "Bob", "age", 25)
+        ));
+        
+        String dql = mutation.dql();
+        assertTrue(dql.contains("\"name\": \"Alice\""));
+        assertTrue(dql.contains("\"name\": \"Bob\""));
+    }
+
+    @Test
+    void testFacetFilterWithCondition() {
+        Query query = Query.query()
+            .withBlocks(List.of(
+                QueryBlock.block("me", Func.eq("name", "Alice"))
+                    .withBlocks(List.of(
+                        Block.nested("friend")
+                            .withDirective(Directive.facets(Filter.eq("since", "2024")))
+                            .withBlocks(List.of(Block.predicate("name")))
+                    ))
+            ));
+
+        DqlResult result = query.dql();
+        
+        assertEquals("{ me(func: eq(name, \"Alice\")) { friend @facets(eq(since, \"2024\")) { name } } }", result.query());
+    }
+
+    @Test
+    void testFacetFilterWithMultipleConditions() {
+        Query query = Query.query()
+            .withBlocks(List.of(
+                QueryBlock.block("me", Func.eq("name", "Alice"))
+                    .withBlocks(List.of(
+                        Block.nested("friend")
+                            .withDirective(Directive.facets(Filter.and(
+                                Filter.eq("since", "2024"),
+                                Filter.gt("rating", 3)
+                            )))
+                            .withBlocks(List.of(Block.predicate("name")))
+                    ))
+            ));
+
+        DqlResult result = query.dql();
+        
+        assertTrue(result.query().contains("@facets((eq(since, \"2024\") AND gt(rating, 3)))"));
+    }
 }

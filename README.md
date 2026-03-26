@@ -11,6 +11,10 @@ A type-safe Java DSL for building Dgraph DQL queries. Build queries programmatic
 - **Variables & bindings** - Support for query variables with runtime bindings
 - **Complete DQL coverage** - Functions, filters, directives, fragments, recurse, and more
 - **Mutations** - Set, Delete, Update, and conditional mutations
+- **GroupBy aggregation** - Group and aggregate query results
+- **Schema mutations (ALTER)** - Define types, predicates, indexes
+- **JSON mutations** - Set/delete with JSON objects
+- **Facet filtering** - Filter edges by facet values
 
 ## Quick Start
 
@@ -237,6 +241,31 @@ SetTriple.subject("0x123").predicate("name").value(null)        // Delete predic
 SetTriple.subject("0x123").predicate("name").value("*")         // Delete all values
 ```
 
+### Alter
+
+Schema mutations for modifying types and predicates.
+
+```java
+// Type definition
+Alter.type("Person", "name", "age")
+// => type Person { name age }
+
+// Predicate with index
+Alter.predicate("name", "string").withIndex("exact")
+// => name: string @index(exact) .
+
+// Multiple indexes
+Alter.predicate("email", "string").withIndexes(List.of("exact", "hash"))
+
+// Drop operations
+Alter.dropAll()           // => drop all
+Alter.dropType("Person")   // => drop type Person
+Alter.dropPredicate("name") // => drop name
+
+// Multiple operations
+Alter.all(List.of(alter1, alter2))
+```
+
 ## Examples
 
 ### Basic Query
@@ -404,7 +433,9 @@ src/main/java/org/frunix/dgraphql/dsl/
 ├── GeoValue.java         # Geo values
 ├── Mutation.java         # Set, Delete, Update mutations
 ├── SetTriple.java       # RDF triples for mutations
-└── GroupBy.java         # GroupBy aggregation
+├── GroupBy.java         # GroupBy aggregation
+├── Alter.java           # Schema mutations (ALTER)
+└── JsonMutation.java   # JSON mutations
 ```
 
 ## License

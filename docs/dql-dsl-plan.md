@@ -362,7 +362,7 @@ src/main/java/org/frunix/dgraphql/dsl/
 
 The following features are not yet implemented but are identified as gaps for complete DQL coverage.
 
-#### 10.1 GroupBy Aggregation
+#### ✓ 10.1 GroupBy Aggregation
 
 DQL's `groupby` for aggregating results by predicate values.
 
@@ -377,7 +377,7 @@ query {
 }
 ```
 
-#### 10.2 @ignorereflex Directive
+#### ✓ 10.2 @ignorereflex Directive
 
 Used with recurse to avoid circular traversals.
 
@@ -390,7 +390,7 @@ Used with recurse to avoid circular traversals.
 }
 ```
 
-#### 10.3 Schema Mutations (ALTER)
+#### ✓ 10.3 Schema Mutations (ALTER)
 
 Operations for modifying schema: adding types, predicates, indexes.
 
@@ -408,7 +408,7 @@ alter {
 }
 ```
 
-#### 10.4 Multiple Query Blocks
+#### ✓ 10.4 Multiple Query Blocks
 
 Running multiple named queries in one request.
 
@@ -420,7 +420,7 @@ Running multiple named queries in one request.
 }
 ```
 
-#### 10.5 JSON Mutations
+#### ✓ 10.5 JSON Mutations
 
 JSON-based mutations for complex objects.
 
@@ -434,7 +434,7 @@ JSON-based mutations for complex objects.
 }
 ```
 
-#### 10.6 Facet Filtering
+#### ✓ 10.6 Facet Filtering
 
 Advanced facet filtering with conditions.
 
