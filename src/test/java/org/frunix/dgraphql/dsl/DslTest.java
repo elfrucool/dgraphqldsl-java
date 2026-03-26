@@ -630,4 +630,57 @@ class DslTest {
         assertTrue(dql.contains("@if(eq(name, \"Bob\"))"));
         assertTrue(dql.contains("set {"));
     }
+
+    @Test
+    void testGroupByBasic() {
+        Query query = Query.query()
+            .withBlocks(List.of(
+                QueryBlock.block("me", Func.has("age"))
+                    .withBlocks(List.of(
+                        Block.groupBy("age")
+                            .withBlock(Block.predicate("count(uid)"))
+                    ))
+            ));
+
+        DqlResult result = query.dql();
+        
+        assertEquals("{ me(func: has(age)) { age groupby(age) { count(uid) } } }", result.query());
+    }
+
+    @Test
+    void testGroupByMultipleAggregations() {
+        Query query = Query.query()
+            .withBlocks(List.of(
+                QueryBlock.block("me", Func.has("age"))
+                    .withBlocks(List.of(
+                        Block.groupBy("age")
+                            .withBlocks(List.of(
+                                Block.predicate("count(uid)"),
+                                Block.predicate("min(age)"),
+                                Block.predicate("max(age)")
+                            ))
+                    ))
+            ));
+
+        DqlResult result = query.dql();
+        
+        assertEquals("{ me(func: has(age)) { age groupby(age) { count(uid) min(age) max(age) } } }", result.query());
+    }
+
+    @Test
+    void testIgnorereflexDirective() {
+        Query query = Query.query()
+            .withRecurseBlock(
+                RecurseBlock.recurse("me")
+                    .withDepth(5)
+                    .withDirectives(List.of(Directive.ignorereflex()))
+                    .withBlocks(List.of(
+                        Block.predicate("friend")
+                    ))
+            );
+
+        DqlResult result = query.dql();
+        
+        assertEquals("{ recurse(me, 5) @ignorereflex { friend } }", result.query());
+    }
 }

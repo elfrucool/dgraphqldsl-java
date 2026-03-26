@@ -30,6 +30,10 @@ public record Directive(String name, String content) implements DqlElement {
         return new Directive("withSubscription", null);
     }
 
+    public static Directive ignorereflex() {
+        return new Directive("ignorereflex", null);
+    }
+
     @Override
     public String dql() {
         if (content == null || content.isEmpty()) {

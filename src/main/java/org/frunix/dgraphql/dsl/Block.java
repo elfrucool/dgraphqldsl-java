@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public sealed interface Block extends DqlElement 
-    permits Block.Predicate, Block.FuncBlock, Block.Nested, Block.Reverse, Block.Var {
+    permits Block.Predicate, Block.FuncBlock, Block.Nested, Block.Reverse, Block.Var, Block.GroupByBlock {
 
     List<Block> blocks();
     List<Directive> directives();
@@ -16,6 +16,7 @@ public sealed interface Block extends DqlElement
             case Nested n -> n.withBlocks(blocks);
             case Reverse r -> r.withBlocks(blocks);
             case Var v -> v.withBlocks(blocks);
+            case GroupByBlock g -> g.withBlocks(blocks);
         };
     }
 
@@ -26,6 +27,7 @@ public sealed interface Block extends DqlElement
             case Nested n -> n.withBlock(block);
             case Reverse r -> r.withBlock(block);
             case Var v -> v.withBlock(block);
+            case GroupByBlock g -> g.withBlock(block);
         };
     }
 
@@ -36,6 +38,7 @@ public sealed interface Block extends DqlElement
             case Nested n -> n.withDirective(directive);
             case Reverse r -> r.withDirective(directive);
             case Var v -> v;
+            case GroupByBlock g -> g.withDirective(directive);
         };
     }
 
@@ -46,6 +49,7 @@ public sealed interface Block extends DqlElement
             case Nested n -> n.withDirectives(directives);
             case Reverse r -> r.withDirectives(directives);
             case Var v -> v;
+            case GroupByBlock g -> g.withDirectives(directives);
         };
     }
 
@@ -344,6 +348,42 @@ public sealed interface Block extends DqlElement
         }
     }
 
+    record GroupByBlock(
+        GroupBy groupBy
+    ) implements Block {
+
+        public GroupByBlock withBlocks(List<Block> blocks) {
+            return new GroupByBlock(groupBy.withBlocks(blocks));
+        }
+
+        public GroupByBlock withBlock(Block block) {
+            return new GroupByBlock(groupBy.withBlock(block));
+        }
+
+        public GroupByBlock withDirectives(List<Directive> directives) {
+            return new GroupByBlock(groupBy.withDirectives(directives));
+        }
+
+        public GroupByBlock withDirective(Directive directive) {
+            return new GroupByBlock(groupBy.withDirective(directive));
+        }
+
+        @Override
+        public List<Block> blocks() {
+            return groupBy.blocks();
+        }
+
+        @Override
+        public List<Directive> directives() {
+            return groupBy.directives();
+        }
+
+        @Override
+        public String dql() {
+            return groupBy.dql();
+        }
+    }
+
     static Block predicate(String name) {
         return Predicate.of(name);
     }
@@ -378,5 +418,13 @@ public sealed interface Block extends DqlElement
 
     static Block reverse(String name, List<Directive> directives) {
         return Reverse.of(name, directives);
+    }
+
+    static Block groupBy(String predicate) {
+        return new GroupByBlock(GroupBy.groupBy(predicate));
+    }
+
+    static Block groupBy(String predicate, String groupByPredicate) {
+        return new GroupByBlock(GroupBy.groupBy(predicate, groupByPredicate));
     }
 }

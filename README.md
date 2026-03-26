@@ -165,6 +165,32 @@ Recursive query traversal.
 RecurseBlock.recurse("me")
     .withDepth(5)
     .withBlocks(List.of(Block.predicate("name")));
+// => recurse(me, 5) { name }
+
+// With ignorereflex to avoid circular traversals
+RecurseBlock.recurse("me")
+    .withDepth(5)
+    .withDirectives(List.of(Directive.ignorereflex()))
+    .withBlocks(List.of(Block.predicate("friend")));
+// => recurse(me, 5) @ignorereflex { friend }
+```
+
+### GroupBy
+
+GroupBy aggregation for aggregating results by predicate values.
+
+```java
+// Basic groupby
+Block.groupBy("age").withBlock(Block.predicate("count(uid)"))
+// => age groupby(age) { count(uid) }
+
+// Multiple aggregations
+Block.groupBy("age").withBlocks(List.of(
+    Block.predicate("count(uid)"),
+    Block.predicate("min(age)"),
+    Block.predicate("max(age)")
+))
+// => age groupby(age) { count(uid) min(age) max(age) }
 ```
 
 ### MathExpr
@@ -361,23 +387,24 @@ g.V()
 ```
 src/main/java/org/frunix/dgraphql/dsl/
 ├── DqlElement.java       # Base interface
-├── DqlResult.java       # Query + variables result
-├── Query.java           # Root query container
-├── QueryBlock.java      # Named query block
-├── Block.java           # Predicates, nested, reverse
-├── Func.java            # Functions (eq, has, uid, etc.)
-├── Filter.java          # Boolean filters (AND, OR, NOT)
-├── Directive.java       # @filter, @facets, @cascade
-├── Variable.java        # Query variables ($var)
-├── VarBlock.java        # Variable blocks
-├── VarAssignment.java   # Variable assignments
-├── Fragment.java        # Query fragments
-├── FragmentRef.java     # Fragment references
-├── RecurseBlock.java    # Recursive queries
-├── MathExpr.java        # Math expressions
-├── GeoValue.java        # Geo values
-├── Mutation.java        # Set, Delete, Update mutations
-└── SetTriple.java       # RDF triples for mutations
+├── DqlResult.java        # Query + variables result
+├── Query.java            # Root query container
+├── QueryBlock.java       # Named query block
+├── Block.java            # Predicates, nested, reverse
+├── Func.java             # Functions (eq, has, uid, etc.)
+├── Filter.java           # Boolean filters (AND, OR, NOT)
+├── Directive.java       # @filter, @facets, @cascade, @ignorereflex
+├── Variable.java         # Query variables ($var)
+├── VarBlock.java         # Variable blocks
+├── VarAssignment.java    # Variable assignments
+├── Fragment.java         # Query fragments
+├── FragmentRef.java      # Fragment references
+├── RecurseBlock.java     # Recursive queries
+├── MathExpr.java         # Math expressions
+├── GeoValue.java         # Geo values
+├── Mutation.java         # Set, Delete, Update mutations
+├── SetTriple.java       # RDF triples for mutations
+└── GroupBy.java         # GroupBy aggregation
 ```
 
 ## License
