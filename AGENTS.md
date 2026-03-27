@@ -36,11 +36,12 @@ Follow Linus Torvalds' commit message style (from subsurface project):
 - **Header line**: Explain the commit in one line (use imperative mood)
   - Good: `Fix bug that causes NPE on empty input`
   - Bad: `Fixed bug`, `Adding new feature`
-- **Body**: Explain *why*, not just *what* - describe the solution and reasoning
+- **Body**: Explain _why_, not just _what_ - describe the solution and reasoning
 - **Width**: Keep lines under 74 characters
 - **Signed-off-by**: Add at end of each commit: `Signed-off-by: Name <email>`
 
 Example:
+
 ```
 Fix bug that causes NPE on empty input
 
@@ -114,6 +115,7 @@ src/main/java/org/frunix/dgraphql/
 - Use descriptive test method names: `shouldReturnUser_WhenIdExists()`
 - Use AAA pattern (Arrange, Act, Assert)
 - Test both success and failure cases
+- **DSL Bug Fixes**: When fixing a DSL bug, always add or update a unit test in `DslTest.java` to prove the fix works. Either reuse existing test or create new one.
 
 ### Configuration
 
@@ -224,7 +226,7 @@ The DSL library in `org.frunix.dgraphql.dsl` is fully implemented with:
 - **Block**: Predicate, FuncBlock, Nested, Reverse, Var, GroupByBlock cases
 - **Func**: All DQL functions (eq, has, uid, count, expand, etc.)
 - **Filter**: Boolean filters (AND, OR, NOT) with comparison functions
-- **Directive**: filter, facets, cascade, normalize, ignorereflex
+- **Directive**: filter, facets, cascade, normalize, ignorereflex, groupby, recurse
 - **Variable**: Query variables with defaults
 - **VarBlock/VarAssignment**: Query and value variables
 - **Fragment**: Query fragment syntax
@@ -252,5 +254,63 @@ The DSL library in `org.frunix.dgraphql.dsl` is fully implemented with:
 
 ### Key Files
 
-- Tests: `src/test/java/org/frunix/dgraphql/dsl/DslTest.java` (61 tests)
-- Documentation: `README.md`, `docs/dql-dsl-plan.md`
+- Tests: `src/test/java/org/frunix/dgraphql/dsl/DslTest.java` (65 tests)
+- Documentation: `README.md`, `docs/dql-dsl-plan.md`, `docs/examples-issues.md`, `examples/README.md`
+
+## Examples Subproject
+
+The project includes an `examples/` subproject for testing the DSL against a live Dgraph instance.
+
+### Prerequisites
+
+- **Task CLI**: Install from [taskfile.dev](https://taskfile.dev)
+- **Docker**: Running Dgraph container
+
+### Taskfile.yaml Commands
+
+```bash
+task up     # Start Dgraph container with --wait
+task down   # Stop and remove Dgraph container
+task run    # Run examples application via ./gradlew :examples:bootRun
+task ps     # Show Docker container status
+```
+
+### Running Examples
+
+```bash
+# Start Dgraph, run examples, stop Dgraph
+task up run down
+```
+
+### Alternative: Direct Commands
+
+```bash
+# Start Dgraph
+docker compose -f examples/docker-compose.yaml up --wait
+
+# Run examples
+./gradlew :examples:bootRun
+
+# Stop Dgraph
+docker compose -f examples/docker-compose.yaml down -v
+```
+
+### Documentation
+
+- Main: [examples/README.md](examples/README.md)
+- Known issues: [docs/examples-issues.md](docs/examples-issues.md)
+
+### Known Issues (3 Failing Examples)
+
+| Example                  | Issue                                              | Type              |
+| ------------------------ | -------------------------------------------------- | ----------------- |
+| **Normalize Directive**  | Returns no data                                    | Dgraph v24/v25 bug |
+| **Math Expression**      | DSL generates unsupported syntax (math on predicate) | DSL issue |
+| **Conditional Mutation** | `@if` not supported in Dgraph standalone           | Dgraph limitation |
+
+### DSL Bug Fixes Applied
+
+- **VarBlock**: Changed `(func: ...)` to `var(func: ...)` in `VarBlock.java`
+- **Query**: Removed duplicate "var" prefix in `Query.java` (was generating `varvar`)
+- **Query Variable**: Support both `$name` and `name` in bindings (auto-adds `$`)
+- **Fragment**: Render fragments AFTER query block (not inside) in `Query.java`

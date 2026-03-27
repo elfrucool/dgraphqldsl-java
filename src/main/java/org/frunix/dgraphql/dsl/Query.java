@@ -95,11 +95,15 @@ public record Query(
                     if (i > 0) sb.append(", ");
                     Variable param = parameters.get(i);
                     sb.append(param.declaration());
-                    Object value = bindings.get(param.name());
+                    String key = param.name();
+                    Object value = bindings.get(key);
+                    if (value == null) {
+                        value = bindings.get("$" + key);
+                    }
                     if (value != null) {
-                        variables.put(param.name(), value);
+                        variables.put("$" + key, value);
                     } else if (param.defaultValue() != null) {
-                        variables.put(param.name(), param.defaultValue());
+                        variables.put("$" + key, param.defaultValue());
                     }
                 }
                 sb.append(")");
@@ -110,15 +114,10 @@ public record Query(
         sb.append("{ ");
 
         boolean first = true;
-        for (Fragment fragment : fragments) {
-            if (!first) sb.append(" ");
-            sb.append(fragment.dql());
-            first = false;
-        }
 
         for (VarBlock varBlock : varBlocks) {
             if (!first) sb.append(" ");
-            sb.append("var").append(varBlock.dql());
+            sb.append(varBlock.dql());
             first = false;
         }
 
@@ -135,6 +134,11 @@ public record Query(
         }
 
         sb.append(" }");
+
+        for (Fragment fragment : fragments) {
+            sb.append(" ");
+            sb.append(fragment.dql());
+        }
 
         return new DqlResult(sb.toString(), variables);
     }

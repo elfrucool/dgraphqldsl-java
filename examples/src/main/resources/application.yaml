@@ -1,0 +1,7 @@
+dgraph:
+  host: ${DGRAPH_HOST:localhost}
+  port: ${DGRAPH_PORT:9080}
+
+spring:
+  main:
+    web-application-type: none

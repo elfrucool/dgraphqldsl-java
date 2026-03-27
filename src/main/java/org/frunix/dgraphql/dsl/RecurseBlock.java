@@ -51,13 +51,13 @@ public record RecurseBlock(
             sb.append(name);
         }
 
-        sb.append("recurse(").append(queryVariable);
+        sb.append(queryVariable);
 
         if (depth != null) {
-            sb.append(", ").append(depth);
+            sb.append(" @recurse(depth: ").append(depth).append(")");
+        } else {
+            sb.append(" @recurse");
         }
-
-        sb.append(")");
 
         if (!directives.isEmpty()) {
             for (Directive d : directives) {

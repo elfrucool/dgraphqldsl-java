@@ -71,7 +71,7 @@ public sealed interface GroupBy extends DqlElement
         @Override
         public String dql() {
             StringBuilder sb = new StringBuilder();
-            sb.append(predicate).append(" groupby(").append(predicate).append(")");
+            sb.append(predicate);
 
             if (!directives.isEmpty()) {
                 for (Directive d : directives) {
@@ -126,7 +126,7 @@ public sealed interface GroupBy extends DqlElement
         @Override
         public String dql() {
             StringBuilder sb = new StringBuilder();
-            sb.append(predicate).append(" groupby(").append(groupByPredicate).append(")");
+            sb.append(predicate).append(" @groupby(").append(groupByPredicate).append(")");
 
             if (!directives.isEmpty()) {
                 for (Directive d : directives) {

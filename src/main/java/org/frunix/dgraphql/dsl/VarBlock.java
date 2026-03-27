@@ -47,7 +47,7 @@ public record VarBlock(
     @Override
     public String dql() {
         StringBuilder sb = new StringBuilder();
-        sb.append("(func: ").append(func.dql()).append(")");
+        sb.append("var(func: ").append(func.dql()).append(")");
 
         if (!directives.isEmpty()) {
             for (Directive d : directives) {

@@ -1,0 +1,23 @@
+version: "3"
+
+tasks:
+  up:
+    desc: Launch Dgraph container with --wait
+    cmds:
+      - docker compose -f examples/docker-compose.yaml up --wait
+
+  down:
+    desc: Stop and remove Dgraph container
+    cmds:
+      - docker compose -f examples/docker-compose.yaml down -v
+
+  run:
+    desc: Run the examples application (starts Dgraph first)
+    deps: [up]
+    cmds:
+      - ./gradlew :examples:bootRun
+
+  ps:
+    desc: Show Docker container status
+    cmds:
+      - docker compose -f examples/docker-compose.yaml ps

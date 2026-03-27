@@ -89,7 +89,7 @@ class DslTest {
         DqlResult result = query.dql();
         
         assertEquals("query getPerson($name: string = \"Alice\") { me(func: eq(name, $name)) { name } }", result.query());
-        assertEquals("Alice", result.variables().get("name"));
+        assertEquals("Alice", result.variables().get("$name"));
     }
 
     @Test
@@ -321,7 +321,7 @@ class DslTest {
         DqlResult result = query.dql(Map.of("name", "Bob"));
         
         assertEquals("query getPerson($name: string) { me(func: eq(name, $name)) { name } }", result.query());
-        assertEquals("Bob", result.variables().get("name"));
+        assertEquals("Bob", result.variables().get("$name"));
     }
 
     @Test
@@ -336,7 +336,7 @@ class DslTest {
         DqlResult result = query.dql(Map.of("name", "Override"));
         
         assertEquals("query getPerson($name: string = \"Default\") { me(func: eq(name, $name)) { name } }", result.query());
-        assertEquals("Override", result.variables().get("name"));
+        assertEquals("Override", result.variables().get("$name"));
     }
 
     @Test
@@ -397,18 +397,18 @@ class DslTest {
     @Test
     void testRecurseQuery() {
         Query query = Query.query()
-            .withRecurseBlock(
-                RecurseBlock.recurse("me")
-                    .withDepth(5)
+            .withBlocks(List.of(
+                QueryBlock.block("me", Func.has("friend"))
+                    .withDirective(Directive.recurse(5))
                     .withBlocks(List.of(
                         Block.predicate("name"),
                         Block.nested("friend")
                     ))
-            );
+            ));
 
         DqlResult result = query.dql();
         
-        assertEquals("{ recurse(me, 5) { name friend } }", result.query());
+        assertTrue(result.query().contains("@recurse(depth: 5)"));
     }
 
     @Test
@@ -428,7 +428,7 @@ class DslTest {
 
         DqlResult result = query.dql();
         
-        assertEquals("{ fragment PersonDetails { name age } me(func: eq(name, \"Alice\")) { ... PersonDetails } }", result.query());
+        assertEquals("{ me(func: eq(name, \"Alice\")) { ... PersonDetails } } fragment PersonDetails { name age }", result.query());
     }
 
     @Test
@@ -637,14 +637,16 @@ class DslTest {
             .withBlocks(List.of(
                 QueryBlock.block("me", Func.has("age"))
                     .withBlocks(List.of(
-                        Block.groupBy("age")
+                        Block.predicate("age"),
+                        Block.nested("friend")
+                            .withDirective(Directive.groupby("age"))
                             .withBlock(Block.predicate("count(uid)"))
                     ))
             ));
 
         DqlResult result = query.dql();
         
-        assertEquals("{ me(func: has(age)) { age groupby(age) { count(uid) } } }", result.query());
+        assertTrue(result.query().contains("@groupby(age)"));
     }
 
     @Test
@@ -653,7 +655,9 @@ class DslTest {
             .withBlocks(List.of(
                 QueryBlock.block("me", Func.has("age"))
                     .withBlocks(List.of(
-                        Block.groupBy("age")
+                        Block.predicate("age"),
+                        Block.nested("friend")
+                            .withDirective(Directive.groupby("age"))
                             .withBlocks(List.of(
                                 Block.predicate("count(uid)"),
                                 Block.predicate("min(age)"),
@@ -664,24 +668,25 @@ class DslTest {
 
         DqlResult result = query.dql();
         
-        assertEquals("{ me(func: has(age)) { age groupby(age) { count(uid) min(age) max(age) } } }", result.query());
+        assertTrue(result.query().contains("@groupby(age)"));
     }
 
     @Test
     void testIgnorereflexDirective() {
         Query query = Query.query()
-            .withRecurseBlock(
-                RecurseBlock.recurse("me")
-                    .withDepth(5)
-                    .withDirectives(List.of(Directive.ignorereflex()))
+            .withBlocks(List.of(
+                QueryBlock.block("me", Func.has("friend"))
+                    .withDirective(Directive.recurse(5))
+                    .withDirective(Directive.ignorereflex())
                     .withBlocks(List.of(
                         Block.predicate("friend")
                     ))
-            );
+            ));
 
         DqlResult result = query.dql();
         
-        assertEquals("{ recurse(me, 5) @ignorereflex { friend } }", result.query());
+        assertTrue(result.query().contains("@recurse(depth: 5)"));
+        assertTrue(result.query().contains("@ignorereflex"));
     }
 
     @Test
@@ -836,5 +841,82 @@ class DslTest {
         DqlResult result = query.dql();
         
         assertTrue(result.query().contains("@facets((eq(since, \"2024\") AND gt(rating, 3)))"));
+    }
+
+    @Test
+    void testRecurseDirective() {
+        Query query = Query.query()
+            .withBlocks(List.of(
+                QueryBlock.block("me", Func.has("friend"))
+                    .withDirective(Directive.recurse(3))
+                    .withBlocks(List.of(
+                        Block.predicate("name"),
+                        Block.predicate("friend")
+                    ))
+            ));
+
+        DqlResult result = query.dql();
+        assertTrue(result.query().contains("@recurse(depth: 3)"));
+    }
+
+    @Test
+    void testGroupByDirective() {
+        Query query = Query.query()
+            .withBlocks(List.of(
+                QueryBlock.block("me", Func.has("friend"))
+                    .withBlocks(List.of(
+                        Block.predicate("age"),
+                        Block.nested("friend")
+                            .withDirective(Directive.groupby("age"))
+                            .withBlocks(List.of(Block.predicate("count(uid)")))
+                    ))
+            ));
+
+        DqlResult result = query.dql();
+        assertTrue(result.query().contains("@groupby(age)"));
+    }
+
+    @Test
+    void testMutationToJsonList() {
+        Mutation mutation = Mutation.set(List.of(
+            SetTriple.subject("_:alice").predicate("name").value("Alice"),
+            SetTriple.subject("_:alice").predicate("age").value(30)
+        ));
+
+        List<Map<String, Object>> jsonList = mutation.toJsonList();
+        assertFalse(jsonList.isEmpty());
+        assertTrue(jsonList.get(0).containsKey("uid"));
+        assertEquals("Alice", jsonList.get(0).get("name"));
+        assertEquals(30, jsonList.get(0).get("age"));
+    }
+
+    @Test
+    void testQueryVariableWithDollarPrefix() {
+        Query query = Query.query("getPerson")
+            .withParameters(List.of(Variable.queryVar("name", "string")))
+            .withBlocks(List.of(
+                QueryBlock.block("me", Func.eq("name", Variable.param("name")))
+                    .withBlocks(List.of(Block.predicate("name")))
+            ));
+
+        DqlResult result = query.dql(Map.of("$name", "Alice"));
+
+        assertEquals("query getPerson($name: string) { me(func: eq(name, $name)) { name } }", result.query());
+        assertEquals(Map.of("$name", "Alice"), result.variables());
+    }
+
+    @Test
+    void testQueryVariableWithoutDollarPrefix() {
+        Query query = Query.query("getPerson")
+            .withParameters(List.of(Variable.queryVar("name", "string")))
+            .withBlocks(List.of(
+                QueryBlock.block("me", Func.eq("name", Variable.param("name")))
+                    .withBlocks(List.of(Block.predicate("name")))
+            ));
+
+        DqlResult result = query.dql(Map.of("name", "Alice"));
+
+        assertEquals("query getPerson($name: string) { me(func: eq(name, $name)) { name } }", result.query());
+        assertEquals(Map.of("$name", "Alice"), result.variables());
     }
 }

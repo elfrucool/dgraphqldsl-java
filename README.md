@@ -126,6 +126,9 @@ Directive.filter(Filter.eq("name", "Alice"))
 Directive.facets("since")
 Directive.cascade()
 Directive.normalize()
+Directive.ignorereflex()
+Directive.groupby("age")
+Directive.recurse(3)
 ```
 
 ### Variable
@@ -163,38 +166,32 @@ Fragment.fragment("PersonDetails")
 
 ### RecurseBlock
 
-Recursive query traversal.
+Recursive query traversal (as directive).
 
 ```java
-RecurseBlock.recurse("me")
-    .withDepth(5)
-    .withBlocks(List.of(Block.predicate("name")));
-// => recurse(me, 5) { name }
-
-// With ignorereflex to avoid circular traversals
-RecurseBlock.recurse("me")
-    .withDepth(5)
-    .withDirectives(List.of(Directive.ignorereflex()))
-    .withBlocks(List.of(Block.predicate("friend")));
-// => recurse(me, 5) @ignorereflex { friend }
+// Using directive syntax
+Query.query()
+    .withBlocks(List.of(
+        QueryBlock.block("me", Func.has("friend"))
+            .withDirective(Directive.recurse(3))
+            .withBlocks(List.of(Block.predicate("name"), Block.predicate("friend")))
+    ));
+// => { me(func: has(friend)) @recurse(depth: 3) { name friend } }
 ```
 
 ### GroupBy
 
-GroupBy aggregation for aggregating results by predicate values.
+GroupBy aggregation using directive syntax.
 
 ```java
-// Basic groupby
-Block.groupBy("age").withBlock(Block.predicate("count(uid)"))
-// => age groupby(age) { count(uid) }
-
-// Multiple aggregations
-Block.groupBy("age").withBlocks(List.of(
-    Block.predicate("count(uid)"),
-    Block.predicate("min(age)"),
-    Block.predicate("max(age)")
-))
-// => age groupby(age) { count(uid) min(age) max(age) }
+// Using directive syntax
+Query.query()
+    .withBlocks(List.of(
+        QueryBlock.block("me", Func.has("friend"))
+            .withDirective(Directive.groupby("age"))
+            .withBlocks(List.of(Block.predicate("count(uid)")))
+    ));
+// => { me(func: has(friend)) @groupby(age) { count(uid) } }
 ```
 
 ### MathExpr
@@ -225,8 +222,10 @@ Mutation.delete(SetTriple.subject("0x123").predicate("name").value(null))
 // Update mutation - set + delete combined
 Mutation.update(setMutation, deleteMutation)
 
-// Conditional mutation - upsert-like behavior
-Mutation.ifCondition("eq(name, \"Bob\")", setMutation, null)
+// Upsert mutation - query + conditional mutation
+String query = "{ alice as var(func: eq(name, \"Alice\")) }";
+Mutation.upsertRaw(query, setMutation)
+// Generates: upsert { { alice as var(func: eq(name, "Alice")) } mutation @if(uid(alice)) { set { ... } } }
 ```
 
 ### SetTriple
@@ -410,6 +409,39 @@ g.V()
 ./gradlew test --tests DslTest              # Run DSL tests
 ./gradlew test --tests DslTest.testBasicQuery  # Run single test
 ```
+
+## Examples
+
+The project includes an `examples/` subproject with a Spring Boot application that tests the DSL against a live Dgraph instance.
+
+> **Note**: The `task` CLI tool is required for Option 1. Install via [taskfile.dev](https://taskfile.dev).
+
+### Option 1: Taskfile (Recommended)
+
+```bash
+task up     # Start Dgraph container
+task down   # Stop and remove Dgraph container
+task run    # Run examples application
+task ps     # Show Docker container status
+
+# Or all at once
+task up run down
+```
+
+### Option 2: Direct Commands
+
+```bash
+# Start Dgraph
+docker compose -f examples/docker-compose.yaml up --wait
+
+# Run examples
+./gradlew :examples:bootRun
+
+# Stop Dgraph
+docker compose -f examples/docker-compose.yaml down -v
+```
+
+See [examples/README.md](examples/README.md) for more details and troubleshooting.
 
 ## Project Structure
 

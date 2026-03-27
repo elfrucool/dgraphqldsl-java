@@ -38,6 +38,14 @@ public record Directive(String name, String content) implements DqlElement {
         return new Directive("ignorereflex", null);
     }
 
+    public static Directive groupby(String predicate) {
+        return new Directive("groupby", predicate);
+    }
+
+    public static Directive recurse(int depth) {
+        return new Directive("recurse", "depth: " + depth);
+    }
+
     @Override
     public String dql() {
         if (content == null || content.isEmpty()) {
