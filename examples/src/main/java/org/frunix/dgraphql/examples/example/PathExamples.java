@@ -99,10 +99,10 @@ public class PathExamples {
         try (Transaction txn = dgraphClient.newReadOnlyTransaction()) {
             DgraphProto.Response response = txn.query(result.query());
             String json = response.getJson().toStringUtf8();
-            results.record("16 Path Examples (Phase 11.5)", testName, result.query(), json, true);
+            results.record("15 Path Examples (Phase 11.5)", testName, result.query(), json, true);
             log.info("Response: {}", json);
         } catch (Exception e) {
-            results.record("16 Path Examples (Phase 11.5)", testName, result.query(), "Error: " + e.getMessage(), false);
+            results.record("15 Path Examples (Phase 11.5)", testName, result.query(), "Error: " + e.getMessage(), false);
             log.warn("Error: {}", e.getMessage());
         }
     }
@@ -127,10 +127,10 @@ public class PathExamples {
         try (Transaction txn = dgraphClient.newReadOnlyTransaction()) {
             DgraphProto.Response response = txn.query(result.query());
             String json = response.getJson().toStringUtf8();
-            results.record("16 Path Examples (Phase 11.5)", testName, result.query(), json, true);
+            results.record("15 Path Examples (Phase 11.5)", testName, result.query(), json, true);
             log.info("Response: {}", json);
         } catch (Exception e) {
-            results.record("16 Path Examples (Phase 11.5)", testName, result.query(), "Error: " + e.getMessage(), false);
+            results.record("15 Path Examples (Phase 11.5)", testName, result.query(), "Error: " + e.getMessage(), false);
             log.warn("Error: {}", e.getMessage());
         }
     }
