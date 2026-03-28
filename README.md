@@ -16,6 +16,35 @@ A type-safe Java DSL for building Dgraph DQL queries. Build queries programmatic
 - **JSON mutations** - Set/delete with JSON objects
 - **Facet filtering** - Filter edges by facet values
 
+## DQL Coverage
+
+This DSL covers 100% of the Dgraph Query Language features:
+
+| Category | Feature | Documentation |
+|----------|---------|---------------|
+| **Query** | Query Structure | [docs](https://docs.dgraph.io/dql/query/dql-query) |
+| | Functions | [docs](https://docs.dgraph.io/dql/query/functions) |
+| | Filters | [docs](https://docs.dgraph.io/dql/query/functions) |
+| | Aliases | [docs](https://docs.dgraph.io/dql/query/alias) |
+| | Pagination | [docs](https://docs.dgraph.io/dql/query/pagination) |
+| | Sorting | [docs](https://docs.dgraph.io/dql/query/sorting) |
+| | Variables | [docs](https://docs.dgraph.io/dql/query/variables) |
+| | Aggregation | [docs](https://docs.dgraph.io/dql/query/aggregation) |
+| | Expand Predicates | [docs](https://docs.dgraph.io/dql/query/expand-predicates) |
+| | Shortest Path | [docs](https://docs.dgraph.io/dql/query/kshortest-path-queries) |
+| | Fragments | [docs](https://docs.dgraph.io/dql/query/fragments) |
+| | Language Tags | [docs](https://docs.dgraph.io/dql/query/language-support) |
+| | Directives | [docs](https://docs.dgraph.io/dql/query/directive/) |
+| | Recurse | [docs](https://docs.dgraph.io/dql/query/directive/recurse-query) |
+| | Facets | [docs](https://docs.dgraph.io/dql/query/facets) |
+| **Mutations** | Set/Delete/Update | [docs](https://docs.dgraph.io/dql/dql-mutation) |
+| | Upsert | [docs](https://docs.dgraph.io/dql/upserts) |
+| | JSON | [docs](https://docs.dgraph.io/dql/json-mutation-format) |
+| **Schema** | Types/Predicates | [docs](https://docs.dgraph.io/dql/dql-schema) |
+| | Indexes | [docs](https://docs.dgraph.io/dql/predicate-indexing) |
+
+*Note: `@debug` is a client query parameter, not a DSL feature.*
+
 ## Quick Start
 
 ```java
