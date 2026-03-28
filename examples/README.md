@@ -47,24 +47,24 @@ examples/
 
 ## Example Coverage
 
-| Class               | Phase | Features                               |
-| ------------------- | ----- | -------------------------------------- |
-| BasicExamples       | 1-2   | Basic queries, nested blocks, aliases  |
-| FilterExamples      | 3     | AND/OR/NOT filters, comparisons        |
-| VariableExamples    | 4     | Query variables, value variables       |
-| FacetExamples       | 5     | Facets                                 |
-| PaginationExamples  | 6     | Sorting, pagination                    |
-| AggregationExamples | 7     | count, math expressions                |
-| AdvancedExamples    | 8     | cascade, normalize, recurse, fragments |
-| MutationExamples    | 9     | Set, Delete, Conditional mutations     |
-| AdditionalExamples  | 10    | GroupBy, ALTER, JSON mutations        |
-| LanguageExamples    | 11.1  | Language-tagged values (@en, @fr...)  |
-| SchemaExamples      | 11.2  | Schema features (@count, @upsert)     |
-| DeleteExamples      | 11.3  | Enhanced delete patterns              |
-| UpsertExamples      | 11.4  | Upsert blocks                         |
-| AliasExamples       | 11.6  | Aliases (alias: predicate)           |
-| PathExamples        | 11.5  | K-shortest path queries               |
-| ExpandExamples      | 11.7  | Expand predicates from types          |
+| # | Example Class | Phase | DQL Feature | Source |
+|---|--------------|-------|-------------|--------|
+| 1 | BasicExamples | 1-2 | Query structure, nested blocks, aliases | [src](./src/main/java/org/frunix/dgraphql/examples/example/BasicExamples.java) |
+| 2 | FilterExamples | 3 | AND/OR/NOT filters, comparisons | [src](./src/main/java/org/frunix/dgraphql/examples/example/FilterExamples.java) |
+| 3 | VariableExamples | 4 | Query variables, value variables | [src](./src/main/java/org/frunix/dgraphql/examples/example/VariableExamples.java) |
+| 4 | FacetExamples | 5 | Edge facets | [src](./src/main/java/org/frunix/dgraphql/examples/example/FacetExamples.java) |
+| 5 | PaginationExamples | 6 | Sorting, pagination | [src](./src/main/java/org/frunix/dgraphql/examples/example/PaginationExamples.java) |
+| 6 | AggregationExamples | 7 | count, math expressions | [src](./src/main/java/org/frunix/dgraphql/examples/example/AggregationExamples.java) |
+| 7 | AdvancedExamples | 8 | cascade, normalize, recurse, fragments | [src](./src/main/java/org/frunix/dgraphql/examples/example/AdvancedExamples.java) |
+| 8 | MutationExamples | 9 | Set, Delete, Conditional mutations | [src](./src/main/java/org/frunix/dgraphql/examples/example/MutationExamples.java) |
+| 9 | AdditionalExamples | 10 | GroupBy, ALTER, JSON mutations | [src](./src/main/java/org/frunix/dgraphql/examples/example/AdditionalExamples.java) |
+| 10 | LanguageExamples | 11.1 | Language-tagged values (@en, @fr...) | [src](./src/main/java/org/frunix/dgraphql/examples/example/LanguageExamples.java) |
+| 11 | SchemaExamples | 11.2 | Schema features (@count, @upsert) | [src](./src/main/java/org/frunix/dgraphql/examples/example/SchemaExamples.java) |
+| 12 | DeleteExamples | 11.3 | Enhanced delete patterns | [src](./src/main/java/org/frunix/dgraphql/examples/example/DeleteExamples.java) |
+| 13 | UpsertExamples | 11.4 | Upsert blocks | [src](./src/main/java/org/frunix/dgraphql/examples/example/UpsertExamples.java) |
+| 14 | PathExamples | 11.5 | K-shortest path queries | [src](./src/main/java/org/frunix/dgraphql/examples/example/PathExamples.java) |
+| 15 | AliasExamples | 11.6 | Aliases (alias: predicate) | [src](./src/main/java/org/frunix/dgraphql/examples/example/AliasExamples.java) |
+| 16 | ExpandExamples | 11.7 | Expand predicates from types | [src](./src/main/java/org/frunix/dgraphql/examples/example/ExpandExamples.java) |
 
 ## Running Examples
 
