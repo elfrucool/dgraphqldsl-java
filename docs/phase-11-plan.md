@@ -4,7 +4,179 @@
 
 This document outlines the implementation plan for Phase 11 extended features, based on official Dgraph documentation.
 
-**Status:** 4/5 Complete (11.5 remaining)
+**Status:** 6/6 Complete (all done)
+
+## Phase 11 Expansion
+
+To make 11.5 (K-Shortest Path) more manageable, it's been split into multiple smaller features plus additional useful DQL capabilities.
+
+### New Feature Summary
+
+| Phase | Feature | DSL Status | Difficulty |
+|-------|---------|------------|------------|
+| 11.5 | K-Shortest Path | Implemented | Hard |
+| 11.6 | Aliases | Already supported | Easy |
+
+**Note:** 
+- 11.6 (Aliases) is already fully supported in DSL via `Block.Predicate.of(name, alias)`
+- Aggregation already covered in Phase 7 (see `AggregationExamples.java`)
+- Edge Facets already covered in Phase 5 (see `FacetExamples.java`)
+- @normalize already implemented in `Directive.normalize()` (covered in Phase 8)
+- GraphQL Variables already covered in Phase 4 (see `VariableExamples.java`)
+
+---
+
+---
+
+## 11.6 Aliases
+
+### Description
+
+Aliases provide alternate names for predicates in query results.
+
+### DQL Syntax
+
+```dql
+{
+  me(func: uid(0x1)) {
+    director_id: uid
+    english_name: name@en
+    num_films: count(director.film)
+  }
+}
+```
+
+### Implementation
+
+Already supported via Block.Predicate - use `alias: predicate` syntax in predicate name.
+
+### Factory Methods
+
+| Method | Output |
+|--------|--------|
+| `Block.alias("name", "name@en")` | `name: name@en` |
+
+---
+
+## 11.7 Aggregation
+
+### Description
+
+Aggregation functions (min, max, sum, avg) on value variables.
+
+### DQL Syntax
+
+```dql
+{
+  var(func: allofterms(name, "Steven")) {
+    d as age
+  }
+  me() {
+    min(val(d))
+    max(val(d))
+    sum(val(d))
+    avg(val(d))
+  }
+}
+```
+
+### Implementation
+
+```java
+public sealed interface Aggregation extends DqlElement
+    permits Aggregation.Min, Aggregation.Max,
+            Aggregation.Sum, Aggregation.Avg {}
+
+public record Min(String variable) implements Aggregation {}
+public record Max(String variable) implements Aggregation {}
+public record Sum(String variable) implements Aggregation {}
+public record Avg(String variable) implements Aggregation {}
+```
+
+### Factory Methods
+
+| Method | Output |
+|--------|--------|
+| `Aggregation.min("varName")` | `min(val(varName))` |
+| `Aggregation.max("varName")` | `max(val(varName))` |
+| `Aggregation.sum("varName")` | `sum(val(varName))` |
+| `Aggregation.avg("varName")` | `avg(val(varName))` |
+
+---
+
+## 11.8 @normalize Directive
+
+### Description
+
+Flattens results and only returns aliased predicates.
+
+### DQL Syntax
+
+```dql
+{
+  director(func: eq(name, "Steven")) @normalize {
+    director: name
+    director.film {
+      film: name
+    }
+  }
+}
+```
+
+### Implementation
+
+Already implemented in `Directive.java`:
+```java
+public static Directive normalize() {
+    return new Directive("normalize", null);
+}
+```
+
+---
+
+## 11.8 Edge Facets
+
+### Description
+
+Query facets on edges to retrieve edge-level metadata (weights, timestamps, etc.).
+
+### DQL Syntax
+
+```dql
+{
+  me(func: uid(0x1)) {
+    friend @facets(weight) {
+      name
+    }
+  }
+}
+```
+
+With weight filtering:
+```dql
+{
+  me(func: uid(0x1)) {
+    friend @facets(eq(weight, "0.5")) {
+      name
+    }
+  }
+}
+```
+
+### Implementation
+
+Already partially implemented in `Directive.java`:
+```java
+public static Directive facets(String... facetNames) {
+    return new Directive("facets", String.join(", ", facetNames));
+}
+
+public static Directive facets(Filter filter) {
+    return new Directive("facets", filter.dql());
+}
+```
+
+Need to verify Block supports facets on edges properly.
 
 ---
 
@@ -348,11 +520,21 @@ src/main/java/org/frunix/dgraphql/dsl/
 
 ## Implementation Order
 
-1. **LanguageTag** - Simple value wrapper, low risk
-2. **DeletePattern enhancements** - Extend existing Delete
-3. **SchemaDirective** - Extend existing Alter
-4. **Upsert** - Medium complexity, combines Query + Mutation
-5. **ShortestPath** - Most complex, requires new Block type
+### Already Complete (11.1-11.4)
+1. **11.1 LanguageTag** ✅
+2. **11.2 SchemaDirective** ✅
+3. **11.3 Enhanced Delete** ✅
+4. **11.4 Upsert Block** ✅
+
+### New Phases 11.5-11.6 (Easiest First)
+1. **11.6 Aliases** ✅ DONE
+2. **11.5 K-Shortest Path** ✅ DONE
+
+**Note:** 
+- Aggregation already covered in Phase 7 (see `AggregationExamples.java`)
+- Edge Facets already covered in Phase 5 (see `FacetExamples.java`)
+- GraphQL Variables covered in Phase 4 (see `VariableExamples.java`)
+- @normalize already implemented in `Directive.normalize()` (covered in Phase 8)
 
 ---
 
@@ -446,7 +628,14 @@ Each Phase 11 feature MUST include an integration example in the examples subpro
 | 11.2 Schema Features | `SchemaExamples.java` | `examples/.../example/SchemaExamples.java` | **DONE** | Easy-Medium |
 | 11.3 Enhanced Delete | `DeleteExamples.java` | `examples/.../example/DeleteExamples.java` | **DONE** | Medium |
 | 11.4 Upsert Block | `UpsertExamples.java` | `examples/.../example/UpsertExamples.java` | **DONE** | Medium |
-| 11.5 K-Shortest Path | `PathExamples.java` | `examples/.../example/PathExamples.java` | TODO | Hard |
+| 11.6 Aliases | `AliasExamples.java` | `examples/.../example/AliasExamples.java` | **DONE** | Easy |
+| 11.5 K-Shortest Path | `PathExamples.java` | `examples/.../example/PathExamples.java` | **DONE** | Hard |
+
+**Note:** 
+- Aggregation already covered in Phase 7 (`AggregationExamples.java`)
+- Edge Facets already covered in Phase 5 (`FacetExamples.java`)
+- GraphQL Variables already covered in Phase 4 (`VariableExamples.java`)
+- @normalize already implemented in `Directive.normalize()` (covered in Phase 8)
 
 Each example class must:
 1. Have proper `setupData()` with schema and test data
@@ -464,11 +653,16 @@ Each example class must:
 
 ## References
 
-- K-Shortest Path: https://dgraph.io/docs/query-language/kshortest-path-queries/
-- Upsert: https://dgraph.io/docs/dql/upserts/
-- Language Support: https://dgraph.io/docs/query-language/language-support/
-- Mutations: https://dgraph.io/docs/dql/mutations/
-- Schema: https://dgraph.io/docs/dql/dql-schema/
+- K-Shortest Path: https://docs.dgraph.io/dql/query/kshortest-path-queries/
+- Upsert: https://docs.dgraph.io/dql/upserts/
+- Language Support: https://docs.dgraph.io/dql/query/language-support/
+- Mutations: https://docs.dgraph.io/dql/dql-mutation/
+- Schema: https://docs.dgraph.io/dql/dql-schema/
+- Aliases: https://docs.dgraph.io/dql/query/alias/
+- Aggregation: https://docs.dgraph.io/dql/query/aggregation/
+
+- @normalize: https://docs.dgraph.io/dql/query/directive/normalize-directive
+- Facets: https://docs.dgraph.io/dql/query/facets/
 
 ---
 
@@ -563,3 +757,54 @@ Each example class must:
 1. DSL generates correct upsert syntax - verified
 2. First used wrong port (9080) - fixed to 8080
 3. Now works on Dgraph standalone via HTTP
+
+---
+
+### 11.6 Aliases - COMPLETED
+
+**Implementation:**
+- DSL already had full alias support via `Block.Predicate` record
+- Factory methods: `Block.predicate(name, alias)`, `Block.Predicate.withAlias(alias)`
+- The `dql()` method renders `alias: name` format automatically
+
+**Files Modified:**
+- `src/test/java/org/frunix/dgraphql/dsl/DslTest.java` (3 new unit tests)
+
+**Integration Example:**
+- `examples/src/main/java/org/frunix/dgraphql/examples/example/AliasExamples.java`
+
+**Test Results:** 4 tests pass
+- Basic alias: `{ userName: name userAge: age }` ✅
+- UID alias: `{ userId: uid name }` ✅
+- Count alias: `{ name friend { friendName: name } }` ✅
+- Nested alias: `{ name friend { friendName: name friendAge: age } }` ✅
+
+---
+
+### 11.5 K-Shortest Path - COMPLETED
+
+**Implementation:**
+- Created `ShortestPath.java` - sealed interface with `KShortest` record
+- Factory methods: `shortest()`, `kShortest()`, `withDepth()`, `withWeightRange()`
+- Updated `Query.java` - added `shortestPaths` field and `withShortestPath()` method
+- The shortest path renders as `path as shortest(from: UID, to: UID) { predicate }`
+
+**Files Created:**
+- `src/main/java/org/frunix/dgraphql/dsl/ShortestPath.java`
+
+**Files Modified:**
+- `src/main/java/org/frunix/dgraphql/dsl/Query.java`
+- `src/test/java/org/frunix/dgraphql/dsl/DslTest.java` (4 new unit tests)
+
+**Integration Example:**
+- `examples/src/main/java/org/frunix/dgraphql/examples/example/PathExamples.java`
+
+**Test Results:** 4 tests pass
+- Basic shortest path ✅
+- K-shortest paths (numpaths: 2) ✅
+- With depth limit ✅
+- With weight constraints ✅
+
+**Live Example Results:**
+- Shortest path (Alice to Charlie): Direct path found ✅
+- K-shortest path (k=2): Found both direct and indirect paths ✅

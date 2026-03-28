@@ -11,23 +11,24 @@ public record Query(
     List<QueryBlock> blocks,
     List<VarBlock> varBlocks,
     List<Fragment> fragments,
-    List<RecurseBlock> recurseBlocks
+    List<RecurseBlock> recurseBlocks,
+    List<ShortestPath> shortestPaths
 ) {
 
     public static Query query() {
-        return new Query(null, List.of(), List.of(), List.of(), List.of(), List.of());
+        return new Query(null, List.of(), List.of(), List.of(), List.of(), List.of(), List.of());
     }
 
     public static Query query(String name) {
-        return new Query(name, List.of(), List.of(), List.of(), List.of(), List.of());
+        return new Query(name, List.of(), List.of(), List.of(), List.of(), List.of(), List.of());
     }
 
     public static Query query(String name, List<Variable> parameters) {
-        return new Query(name, parameters, List.of(), List.of(), List.of(), List.of());
+        return new Query(name, parameters, List.of(), List.of(), List.of(), List.of(), List.of());
     }
 
     public Query withBlocks(List<QueryBlock> blocks) {
-        return new Query(this.name, this.parameters, blocks, this.varBlocks, this.fragments, this.recurseBlocks);
+        return new Query(this.name, this.parameters, blocks, this.varBlocks, this.fragments, this.recurseBlocks, this.shortestPaths);
     }
 
     public Query withBlock(QueryBlock block) {
@@ -37,7 +38,7 @@ public record Query(
     }
 
     public Query withParameters(List<Variable> parameters) {
-        return new Query(this.name, parameters, this.blocks, this.varBlocks, this.fragments, this.recurseBlocks);
+        return new Query(this.name, parameters, this.blocks, this.varBlocks, this.fragments, this.recurseBlocks, this.shortestPaths);
     }
 
     public Query withParameter(Variable parameter) {
@@ -47,7 +48,7 @@ public record Query(
     }
 
     public Query withVarBlocks(List<VarBlock> varBlocks) {
-        return new Query(this.name, this.parameters, this.blocks, varBlocks, this.fragments, this.recurseBlocks);
+        return new Query(this.name, this.parameters, this.blocks, varBlocks, this.fragments, this.recurseBlocks, this.shortestPaths);
     }
 
     public Query withVarBlock(VarBlock varBlock) {
@@ -57,7 +58,7 @@ public record Query(
     }
 
     public Query withFragments(List<Fragment> fragments) {
-        return new Query(this.name, this.parameters, this.blocks, this.varBlocks, fragments, this.recurseBlocks);
+        return new Query(this.name, this.parameters, this.blocks, this.varBlocks, fragments, this.recurseBlocks, this.shortestPaths);
     }
 
     public Query withFragment(Fragment fragment) {
@@ -67,13 +68,23 @@ public record Query(
     }
 
     public Query withRecurseBlocks(List<RecurseBlock> recurseBlocks) {
-        return new Query(this.name, this.parameters, this.blocks, this.varBlocks, this.fragments, recurseBlocks);
+        return new Query(this.name, this.parameters, this.blocks, this.varBlocks, this.fragments, recurseBlocks, this.shortestPaths);
     }
 
     public Query withRecurseBlock(RecurseBlock recurseBlock) {
         List<RecurseBlock> newRecurseBlocks = new ArrayList<>(recurseBlocks);
         newRecurseBlocks.add(recurseBlock);
         return withRecurseBlocks(newRecurseBlocks);
+    }
+
+    public Query withShortestPaths(List<ShortestPath> shortestPaths) {
+        return new Query(this.name, this.parameters, this.blocks, this.varBlocks, this.fragments, this.recurseBlocks, shortestPaths);
+    }
+
+    public Query withShortestPath(ShortestPath shortestPath) {
+        List<ShortestPath> newShortestPaths = new ArrayList<>(shortestPaths);
+        newShortestPaths.add(shortestPath);
+        return withShortestPaths(newShortestPaths);
     }
 
     public DqlResult dql() {
@@ -118,6 +129,12 @@ public record Query(
         for (VarBlock varBlock : varBlocks) {
             if (!first) sb.append(" ");
             sb.append(varBlock.dql());
+            first = false;
+        }
+
+        for (ShortestPath sp : shortestPaths) {
+            if (!first) sb.append(" ");
+            sb.append(sp.dql());
             first = false;
         }
 

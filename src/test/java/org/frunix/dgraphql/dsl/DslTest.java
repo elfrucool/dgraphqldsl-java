@@ -1140,4 +1140,119 @@ class DslTest {
         assertFalse(json.isEmpty());
         assertTrue(json.get(0).containsKey("@if"));
     }
+
+    @Test
+    void testAliasBasic() {
+        Query query = Query.query()
+            .withBlocks(List.of(
+                QueryBlock.block("me", Func.eq("name", "Alice"))
+                    .withBlocks(List.of(
+                        Block.predicate("name", "aliasName")
+                    ))
+            ));
+
+        DqlResult result = query.dql();
+        
+        assertEquals("{ me(func: eq(name, \"Alice\")) { aliasName: name } }", result.query());
+    }
+
+    @Test
+    void testAliasUid() {
+        Query query = Query.query()
+            .withBlocks(List.of(
+                QueryBlock.block("me", Func.eq("name", "Alice"))
+                    .withBlocks(List.of(
+                        Block.predicate("uid", "userId")
+                    ))
+            ));
+
+        DqlResult result = query.dql();
+        
+        assertEquals("{ me(func: eq(name, \"Alice\")) { userId: uid } }", result.query());
+    }
+
+    @Test
+    void testAliasWithLanguageTag() {
+        Query query = Query.query()
+            .withBlocks(List.of(
+                QueryBlock.block("me", Func.eq("name", "Alice"))
+                    .withBlocks(List.of(
+                        Block.predicate("name", "englishName", LanguageTag.en())
+                    ))
+            ));
+
+        DqlResult result = query.dql();
+        
+        assertEquals("{ me(func: eq(name, \"Alice\")) { englishName: name@en } }", result.query());
+    }
+
+    @Test
+    void testShortestPathBasic() {
+        Query query = Query.query()
+            .withShortestPath(
+                ShortestPath.shortest("path", "0x1", "0x5")
+                    .withPredicate(Block.predicate("friend"))
+            )
+            .withBlocks(List.of(
+                QueryBlock.block("me", Func.uid("path"))
+                    .withBlocks(List.of(Block.predicate("name")))
+            ));
+
+        DqlResult result = query.dql();
+        
+        assertEquals("{ path as shortest(from: 0x1, to: 0x5) { friend } me(func: uid(path)) { name } }", result.query());
+    }
+
+    @Test
+    void testShortestPathKPaths() {
+        Query query = Query.query()
+            .withShortestPath(
+                ShortestPath.kShortest("path", "0x1", "0x5", 2)
+                    .withPredicate(Block.predicate("friend"))
+            )
+            .withBlocks(List.of(
+                QueryBlock.block("me", Func.uid("path"))
+                    .withBlocks(List.of(Block.predicate("name")))
+            ));
+
+        DqlResult result = query.dql();
+        
+        assertEquals("{ path as shortest(from: 0x1, to: 0x5, numpaths: 2) { friend } me(func: uid(path)) { name } }", result.query());
+    }
+
+    @Test
+    void testShortestPathWithDepth() {
+        Query query = Query.query()
+            .withShortestPath(
+                ShortestPath.kShortest("path", "0x1", "0x5", 1)
+                    .withDepth(3)
+                    .withPredicate(Block.predicate("friend"))
+            )
+            .withBlocks(List.of(
+                QueryBlock.block("me", Func.uid("path"))
+                    .withBlocks(List.of(Block.predicate("name")))
+            ));
+
+        DqlResult result = query.dql();
+        
+        assertEquals("{ path as shortest(from: 0x1, to: 0x5, numpaths: 1, depth: 3) { friend } me(func: uid(path)) { name } }", result.query());
+    }
+
+    @Test
+    void testShortestPathWithWeightRange() {
+        Query query = Query.query()
+            .withShortestPath(
+                ShortestPath.kShortest("path", "0x1", "0x5", 2)
+                    .withWeightRange(2.0f, 4.0f)
+                    .withPredicate(Block.predicate("friend"))
+            )
+            .withBlocks(List.of(
+                QueryBlock.block("me", Func.uid("path"))
+                    .withBlocks(List.of(Block.predicate("name")))
+            ));
+
+        DqlResult result = query.dql();
+        
+        assertEquals("{ path as shortest(from: 0x1, to: 0x5, numpaths: 2, minweight: 2.0, maxweight: 4.0) { friend } me(func: uid(path)) { name } }", result.query());
+    }
 }
