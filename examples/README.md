@@ -2,7 +2,7 @@
 
 This subproject demonstrates the DSL library features by running queries against a live Dgraph instance.
 
-## Status: ✅ All 27 Examples Passing
+## Status: ✅ All 42 Tests Passing (16 Example Classes)
 
 ## Overview
 
@@ -57,7 +57,7 @@ examples/
 | 6 | AggregationExamples | 7 | count, math expressions | [src](./src/main/java/org/frunix/dgraphql/examples/example/AggregationExamples.java) |
 | 7 | AdvancedExamples | 8 | cascade, normalize, recurse, fragments | [src](./src/main/java/org/frunix/dgraphql/examples/example/AdvancedExamples.java) |
 | 8 | MutationExamples | 9 | Set, Delete, Conditional mutations | [src](./src/main/java/org/frunix/dgraphql/examples/example/MutationExamples.java) |
-| 9 | AdditionalExamples | 10 | GroupBy, ALTER, JSON mutations | [src](./src/main/java/org/frunix/dgraphql/examples/example/AdditionalExamples.java) |
+|  9 | AdditionalExamples | 10 | GroupBy, ALTER, JSON mutations | [src](./src/main/java/org/frunix/dgraphql/examples/example/AdditionalExamples.java) |
 | 10 | LanguageExamples | 11.1 | Language-tagged values (@en, @fr...) | [src](./src/main/java/org/frunix/dgraphql/examples/example/LanguageExamples.java) |
 | 11 | SchemaExamples | 11.2 | Schema features (@count, @upsert) | [src](./src/main/java/org/frunix/dgraphql/examples/example/SchemaExamples.java) |
 | 12 | DeleteExamples | 11.3 | Enhanced delete patterns | [src](./src/main/java/org/frunix/dgraphql/examples/example/DeleteExamples.java) |
@@ -100,11 +100,9 @@ docker compose down
 
 ## Test Results
 
-- **Total**: 27 examples
-- **Passing**: 25
+- **Total**: 42 tests (16 example classes)
+- **Passing**: 42
 - **Failing**: 0
-
-All examples passing! See [docs/examples-issues.md](../docs/examples-issues.md) for details on how issues were resolved.
 
 ## Featured: K-Shortest Path (Phase 11.5)
 
