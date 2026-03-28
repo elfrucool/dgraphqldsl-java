@@ -171,9 +171,9 @@ public class AdvancedExamples {
             if (json.isEmpty() || json.equals("{}") || json.equals("{\"me\":[]}")) {
                 json = "(no data - empty database)";
             }
-            results.record("Advanced Examples (Phase 8)", testName, query, json, success);
+            results.record("07 Advanced Examples (Phase 8)", testName, query, json, success);
         } catch (Exception e) {
-            results.record("Advanced Examples (Phase 8)", testName, query, "Error: " + e.getMessage(), false);
+            results.record("07 Advanced Examples (Phase 8)", testName, query, "Error: " + e.getMessage(), false);
         }
     }
 }

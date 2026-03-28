@@ -8,11 +8,13 @@ This document tracks known issues and failures when running the examples subproj
 
 | Total | Passed | Failed |
 | ----- | ------ | ------ |
-| 25    | 25     | 0      |
+| 34    | 34     | 0      |
 
-**Status:** All issues fixed! DSL aligned with documentation. Examples aligned with documentation. All 25 examples passing.
+**Status:** All 34 examples passing!
 
-## Failing Examples (4) - All Advanced
+## Previously Fixed Issues
+
+These issues were encountered during development and have been FIXED:
 
 ### Phase 4 - Basic (Query Variables) ✓
 
@@ -62,11 +64,11 @@ This document tracks known issues and failures when running the examples subproj
 
 #### 3. Math Expression ✓
 
-| Attribute     | Value                                                                                                                               |
-| ------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| File          | `examples/.../example/AggregationExamples.java`                                                                                     |
-| Phase         | Phase 7 (Aggregations & Math)                                                                                                       |
-| Level         | Advanced                                                                                                                            |
+| Attribute     | Value                                                                                                                                                                                              |
+| ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| File          | `examples/.../example/AggregationExamples.java`                                                                                                                                                    |
+| Phase         | Phase 7 (Aggregations & Math)                                                                                                                                                                      |
+| Level         | Advanced                                                                                                                                                                                           |
 | Generated DQL | `{ var(func: has(friend)) { friendCount as count(friend) computedScore as math(friendCount * 10) } me(func: has(name)) { name friendCount: val(friendCount) computedScore: val(computedScore) } }` |
 
 **Issue:** Example was not using `Func.math()` on the value variable.
@@ -74,6 +76,7 @@ This document tracks known issues and failures when running the examples subproj
 **Root Cause:** The example was just doing a count without any math operation. Dgraph's `math()` function works on value variables.
 
 **Solution:** Updated example to use:
+
 1. `VarAssignment.valueVar("friendCount", Func.count("friend"))` - count friends
 2. `VarAssignment.valueVar("computedScore", Func.math("friendCount * 10"))` - math on value variable
 3. `Block.predicate(Func.val("computedScore"), "computedScore")` - retrieve the result
@@ -86,18 +89,19 @@ This document tracks known issues and failures when running the examples subproj
 
 #### 4. Normalize Directive ✓
 
-| Attribute     | Value                                                                                                                                     |
-| ------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| File          | `examples/.../example/AdvancedExamples.java`                                                                                               |
-| Phase         | Phase 8 (Advanced Features)                                                                                                               |
-| Level         | Advanced                                                                                                                                  |
-| Generated DQL | `{ me(func: eq(name, "Alice")) @normalize { personName: name friend { friendName: name } } }`                                              |
+| Attribute     | Value                                                                                         |
+| ------------- | --------------------------------------------------------------------------------------------- |
+| File          | `examples/.../example/AdvancedExamples.java`                                                  |
+| Phase         | Phase 8 (Advanced Features)                                                                   |
+| Level         | Advanced                                                                                      |
+| Generated DQL | `{ me(func: eq(name, "Alice")) @normalize { personName: name friend { friendName: name } } }` |
 
 **Issue:** Returns no data.
 
 **Root Cause:** According to Dgraph docs, `@normalize` only returns **aliased predicates**. Non-aliased predicates are excluded from results.
 
 **Solution:** Updated example to use proper aliases:
+
 - `Block.predicate("name", "personName")` - aliased predicate
 - `Block.predicate("name", "friendName")` - aliased predicate in nested block
 - Changed query to `eq(name, "Alice")` for specific match
@@ -120,6 +124,7 @@ This document tracks known issues and failures when running the examples subproj
 **Root Cause:** DSL generated incorrect fragment syntax - fragments were placed inside the query block instead of outside.
 
 **Solution:** Fixed Query.java to render fragments AFTER the query block (not inside). Correct DQL syntax:
+
 ```
 { me(func: eq(name, "Alice")) { ... PersonDetails } }
 fragment PersonDetails { name age }
@@ -133,11 +138,11 @@ fragment PersonDetails { name age }
 
 #### 6. Conditional Mutation ✓
 
-| Attribute     | Value                                                                                                                         |
-| ------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| File          | `examples/.../example/MutationExamples.java`                                                                                  |
-| Phase         | Phase 9 (Mutations)                                                                                                          |
-| Level         | Advanced                                                                                                                       |
+| Attribute     | Value                                                                                                                    |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| File          | `examples/.../example/MutationExamples.java`                                                                             |
+| Phase         | Phase 9 (Mutations)                                                                                                      |
+| Level         | Advanced                                                                                                                 |
 | Generated DQL | `upsert { { alice as var(func: eq(name, "Alice")) } mutation @if(uid(alice)) { set { uid(alice) status "active" . } } }` |
 
 **Issue:** Example was incorrectly using `@if` without proper query context.
@@ -145,6 +150,7 @@ fragment PersonDetails { name age }
 **Root Cause:** The `@if` directive requires a query variable to evaluate against. Example was using `@if(eq(name, "Alice"))` without running a query first to define what `name` refers to.
 
 **Solution:** Updated example to use proper upsert block format:
+
 1. Added `Mutation.UpsertRaw` to DSL for raw query strings
 2. Query: `{ alice as var(func: eq(name, "Alice")) }` - defines variable
 3. Condition: `@if(uid(alice))` - checks if variable has UIDs
@@ -154,10 +160,31 @@ fragment PersonDetails { name age }
 
 ---
 
+### Phase 11 - Extended Features
+
+#### 7. Delete Predicate Value (RDF Format Issue)
+
+| Attribute     | Value                                               |
+| ------------- | --------------------------------------------------- |
+| File          | `examples/.../example/DeleteExamples.java`          |
+| Phase         | Phase 11.4 (Enhanced Delete)                        |
+| Level         | Basic                                              |
+| Generated DQL | `{ delete { <0x99> deleteName * . } }`           |
+
+**Issue:** Delete specific predicate value using RDF format fails.
+
+**Root Cause:** Dgraph standalone may have issues with RDF format `<uid> <predicate> * .` pattern.
+
+**Solution:** Use JSON format instead: `{"uid": "0x99", "predicate": null}`
+
+**Status:** ✓ FIXED - Now uses JSON format for delete predicate value
+
+---
+
 ## Classification Summary
 
-| Level        | Phase   | Issues       |
-| ------------ | ------- | ------------ |
+| Level        | Phase   | Issues        |
+| ------------ | ------- | ------------- |
 | **Basic**    | 4, 6    | 0 - All fixed |
 | **Advanced** | 7, 8, 9 | 0 - All fixed |
 
@@ -194,16 +221,17 @@ During development, the following DSL bugs were identified and fixed:
 ## Data Setup Analysis
 
 ### Examples WITH Proper Data Setup (own unique data):
-| Example | Data Created |
-|---------|-------------|
-| `PaginationExamples` | 26 unique persons (Alice-Z) |
-| `VariableExamples` | Unique Alice, Bob with friend |
-| `BasicExamples` | Alice, Bob, Charlie, Diana with friend |
-| `FilterExamples` | 5 persons with age, status, friend, email |
-| `FacetExamples` | Alice with friends having since facet |
-| `AdvancedExamples` | Alice, Bob, Charlie, Diana with friendships |
-| `AggregationExamples` | Alice, Bob, Charlie, Diana with score and friend |
-| `AdditionalExamples` | Alice, Bob, Charlie, Diana with friend, age, email |
+
+| Example               | Data Created                                       |
+| --------------------- | -------------------------------------------------- |
+| `PaginationExamples`  | 26 unique persons (Alice-Z)                        |
+| `VariableExamples`    | Unique Alice, Bob with friend                      |
+| `BasicExamples`       | Alice, Bob, Charlie, Diana with friend             |
+| `FilterExamples`      | 5 persons with age, status, friend, email          |
+| `FacetExamples`       | Alice with friends having since facet              |
+| `AdvancedExamples`    | Alice, Bob, Charlie, Diana with friendships        |
+| `AggregationExamples` | Alice, Bob, Charlie, Diana with score and friend   |
+| `AdditionalExamples`  | Alice, Bob, Charlie, Diana with friend, age, email |
 
 ### Status: ✓ ALL EXAMPLES NOW HAVE PROPER DATA SETUP
 
@@ -214,7 +242,9 @@ During development, the following DSL bugs were identified and fixed:
 After completing data setup, each example also cleans up its own test data after running. This ensures complete isolation between examples.
 
 ### Implementation:
+
 Each example's `run()` method now follows this pattern:
+
 ```java
 @PostConstruct
 public void run() {
@@ -230,6 +260,7 @@ public void run() {
 ### Status: ✓ COMPLETE - All 8 examples now have teardownData()
 
 The following examples now have proper teardown:
+
 1. `PaginationExamples` ✓
 2. `VariableExamples` ✓
 3. `BasicExamples` ✓

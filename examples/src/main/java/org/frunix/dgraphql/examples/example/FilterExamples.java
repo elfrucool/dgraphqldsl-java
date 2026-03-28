@@ -166,9 +166,9 @@ public class FilterExamples {
             if (json.isEmpty() || json.equals("{}") || json.equals("{\"me\":[]}")) {
                 json = "(no data - empty database)";
             }
-            results.record("Filter Examples (Phase 3)", testName, query, json, success);
+            results.record("02 Filter Examples (Phase 3)", testName, query, json, success);
         } catch (Exception e) {
-            results.record("Filter Examples (Phase 3)", testName, query, "Error: " + e.getMessage(), false);
+            results.record("02 Filter Examples (Phase 3)", testName, query, "Error: " + e.getMessage(), false);
         }
     }
 }

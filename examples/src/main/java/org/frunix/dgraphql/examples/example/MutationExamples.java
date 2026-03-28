@@ -152,9 +152,9 @@ public class MutationExamples {
                 
                 log.info("Upsert response code: {}, body: {}", code, response);
                 if (code == 200) {
-                    results.record("Mutation Examples (Phase 9)", testName, mutation.dql(), "Upsert successful", true);
+                    results.record("08 Mutation Examples (Phase 9)", testName, mutation.dql(), "Upsert successful", true);
                 } else {
-                    results.record("Mutation Examples (Phase 9)", testName, mutation.dql(), "Error: " + response, false);
+                    results.record("08 Mutation Examples (Phase 9)", testName, mutation.dql(), "Error: " + response, false);
                 }
                 return;
             }
@@ -169,7 +169,7 @@ public class MutationExamples {
                 DgraphProto.Response response = txn.mutate(mu);
                 txn.commit();
                 log.info("Mutation successful - response: {}", response);
-                results.record("Mutation Examples (Phase 9)", testName, mutation.dql(), "Mutation successful", true);
+                results.record("08 Mutation Examples (Phase 9)", testName, mutation.dql(), "Mutation successful", true);
             }
         } catch (Exception e) {
             Throwable cause = e.getCause();
@@ -180,7 +180,7 @@ public class MutationExamples {
             if (cause != null && cause.getCause() != null) {
                 log.error("Cause: {}", cause.getCause().getMessage());
             }
-            results.record("Mutation Examples (Phase 9)", testName, mutation.dql(), "Error: " + errorMsg, false);
+            results.record("08 Mutation Examples (Phase 9)", testName, mutation.dql(), "Error: " + errorMsg, false);
         }
     }
     

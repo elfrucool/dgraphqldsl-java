@@ -135,9 +135,9 @@ public class VariableExamples {
             if (json.isEmpty() || json.equals("{}") || json.equals("{\"me\":[]}")) {
                 json = "(no data - empty database)";
             }
-            results.record("Variable Examples (Phase 4)", testName, query, json, success);
+            results.record("03 Variable Examples (Phase 4)", testName, query, json, success);
         } catch (Exception e) {
-            results.record("Variable Examples (Phase 4)", testName, query, "Error: " + e.getMessage(), false);
+            results.record("03 Variable Examples (Phase 4)", testName, query, "Error: " + e.getMessage(), false);
         }
     }
 }

@@ -302,11 +302,11 @@ docker compose -f examples/docker-compose.yaml down -v
 
 ### Known Issues (3 Failing Examples)
 
-| Example                  | Issue                                              | Type              |
-| ------------------------ | -------------------------------------------------- | ----------------- |
-| **Normalize Directive**  | Returns no data                                    | Dgraph v24/v25 bug |
-| **Math Expression**      | DSL generates unsupported syntax (math on predicate) | DSL issue |
-| **Conditional Mutation** | `@if` not supported in Dgraph standalone           | Dgraph limitation |
+| Example                  | Issue                                                | Type               |
+| ------------------------ | ---------------------------------------------------- | ------------------ |
+| **Normalize Directive**  | Returns no data                                      | Dgraph v24/v25 bug |
+| **Math Expression**      | DSL generates unsupported syntax (math on predicate) | DSL issue          |
+| **Conditional Mutation** | `@if` not supported in Dgraph standalone             | Dgraph limitation  |
 
 ### DSL Bug Fixes Applied
 

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class ResultsCollector {
@@ -18,6 +19,10 @@ public class ResultsCollector {
     }
 
     public void printReport() {
+        List<ExampleResult> sortedResults = results.stream()
+            .sorted((a, b) -> a.example().compareTo(b.example()))
+            .collect(Collectors.toList());
+        
         StringBuilder output = new StringBuilder();
         output.append(""
                 + "\n╔════════════════════════════════════════════════════════════════════════════"
@@ -28,7 +33,7 @@ public class ResultsCollector {
         int passed = 0;
         int failed = 0;
         
-        for (ExampleResult r : results) {
+        for (ExampleResult r : sortedResults) {
             if (!r.example().equals(currentSection)) {
                 currentSection = r.example();
                 output.append("\n║");

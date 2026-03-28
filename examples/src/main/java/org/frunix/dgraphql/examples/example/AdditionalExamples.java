@@ -154,9 +154,9 @@ public class AdditionalExamples {
             if (json.isEmpty() || json.equals("{}") || json.equals("{\"me\":[]}")) {
                 json = "(no data - empty database)";
             }
-            results.record("Additional Examples (Phase 10)", testName, query, json, success);
+            results.record("09 Additional Examples (Phase 10)", testName, query, json, success);
         } catch (Exception e) {
-            results.record("Additional Examples (Phase 10)", testName, query, "Error: " + e.getMessage(), false);
+            results.record("09 Additional Examples (Phase 10)", testName, query, "Error: " + e.getMessage(), false);
         }
     }
 
@@ -166,10 +166,10 @@ public class AdditionalExamples {
                 .setSchema(schema)
                 .build();
             dgraphClient.alter(operation);
-            results.record("Additional Examples (Phase 10)", testName, schema, "Schema update successful", true);
+            results.record("09 Additional Examples (Phase 10)", testName, schema, "Schema update successful", true);
             log.info("Schema update successful");
         } catch (Exception e) {
-            results.record("Additional Examples (Phase 10)", testName, schema, "Error: " + e.getMessage(), false);
+            results.record("09 Additional Examples (Phase 10)", testName, schema, "Error: " + e.getMessage(), false);
             log.warn("Schema update error: {}", e.getCause() != null ? e.getCause().getMessage() : e.getMessage());
         }
     }
@@ -184,10 +184,9 @@ public class AdditionalExamples {
                 .build();
             txn.mutate(mu);
             txn.commit();
-            results.record("Additional Examples (Phase 10)", testName, mutation.dql(), "Mutation successful", true);
-            log.info("Mutation successful");
+results.record("09 Additional Examples (Phase 10)", testName, mutation.dql(), "Mutation successful", true);
         } catch (Exception e) {
-            results.record("Additional Examples (Phase 10)", testName, mutation.dql(), "Error: " + e.getMessage(), false);
+            results.record("09 Additional Examples (Phase 10)", testName, mutation.dql(), "Error: " + e.getMessage(), false);
             log.warn("Mutation error: {}", e.getCause() != null ? e.getCause().getMessage() : e.getMessage());
         }
     }

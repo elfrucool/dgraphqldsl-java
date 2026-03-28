@@ -138,9 +138,9 @@ public class PaginationExamples {
             if (json.isEmpty() || json.equals("{}") || json.equals("{\"me\":[]}")) {
                 json = "(no data - empty database)";
             }
-            results.record("Pagination Examples (Phase 6)", testName, query, json, success);
+            results.record("05 Pagination Examples (Phase 6)", testName, query, json, success);
         } catch (Exception e) {
-            results.record("Pagination Examples (Phase 6)", testName, query, "Error: " + e.getMessage(), false);
+            results.record("05 Pagination Examples (Phase 6)", testName, query, "Error: " + e.getMessage(), false);
         }
     }
 }

@@ -141,9 +141,9 @@ public class BasicExamples {
             if (json.isEmpty() || json.equals("{}") || json.equals("{\"me\":[]}")) {
                 json = "(no data - empty database)";
             }
-            results.record("Basic Examples (Phase 1-2)", testName, query, json, success);
+            results.record("01 Basic Examples (Phase 1-2)", testName, query, json, success);
         } catch (Exception e) {
-            results.record("Basic Examples (Phase 1-2)", testName, query, "Error: " + e.getMessage(), false);
+            results.record("01 Basic Examples (Phase 1-2)", testName, query, "Error: " + e.getMessage(), false);
         }
     }
 }

@@ -919,4 +919,225 @@ class DslTest {
         assertEquals("query getPerson($name: string) { me(func: eq(name, $name)) { name } }", result.query());
         assertEquals(Map.of("$name", "Alice"), result.variables());
     }
+
+    @Test
+    void testLanguageTagSingle() {
+        LanguageTag tag = LanguageTag.en();
+        assertEquals("@en", tag.dql());
+    }
+
+    @Test
+    void testLanguageTagMultiple() {
+        LanguageTag tag = LanguageTag.of("en", "fr");
+        assertEquals("@en:fr", tag.dql());
+    }
+
+    @Test
+    void testLanguageTagApplyTo() {
+        LanguageTag tag = LanguageTag.fr();
+        assertEquals("name@fr", tag.applyTo("name"));
+    }
+
+    @Test
+    void testPredicateWithLanguageTag() {
+        Query query = Query.query()
+            .withBlocks(List.of(
+                QueryBlock.block("me", Func.eq("name", "Alice"))
+                    .withBlocks(List.of(
+                        Block.predicate("name", LanguageTag.en()),
+                        Block.predicate("name", LanguageTag.fr())
+                    ))
+            ));
+
+        DqlResult result = query.dql();
+
+        assertEquals("{ me(func: eq(name, \"Alice\")) { name@en name@fr } }", result.query());
+    }
+
+    @Test
+    void testPredicateWithLanguageTagAndAlias() {
+        Query query = Query.query()
+            .withBlocks(List.of(
+                QueryBlock.block("me", Func.eq("name", "Alice"))
+                    .withBlocks(List.of(
+                        Block.predicate("name", "englishName", LanguageTag.en()),
+                        Block.predicate("name", "frenchName", LanguageTag.fr())
+                    ))
+            ));
+
+        DqlResult result = query.dql();
+
+        assertEquals("{ me(func: eq(name, \"Alice\")) { englishName: name@en frenchName: name@fr } }", result.query());
+    }
+
+    @Test
+    void testNestedWithLanguageTag() {
+        Query query = Query.query()
+            .withBlocks(List.of(
+                QueryBlock.block("me", Func.eq("name", "Alice"))
+                    .withBlocks(List.of(
+                        Block.nested("friend", LanguageTag.en())
+                            .withBlocks(List.of(Block.predicate("name")))
+                    ))
+            ));
+
+        DqlResult result = query.dql();
+
+        assertEquals("{ me(func: eq(name, \"Alice\")) { friend@en { name } } }", result.query());
+    }
+
+    @Test
+    void testReverseWithLanguageTag() {
+        Query query = Query.query()
+            .withBlocks(List.of(
+                QueryBlock.block("me", Func.eq("name", "Alice"))
+                    .withBlocks(List.of(
+                        Block.reverse("friend", LanguageTag.fr())
+                            .withBlocks(List.of(Block.predicate("name")))
+                    ))
+            ));
+
+        DqlResult result = query.dql();
+
+        assertEquals("{ me(func: eq(name, \"Alice\")) { ~friend@fr { name } } }", result.query());
+    }
+
+    @Test
+    void testSetTripleWithLanguageTag() {
+        Mutation mutation = Mutation.set(List.of(
+            SetTriple.subject("0x123").predicate("name").value("Alice").withLanguageTag(LanguageTag.en()),
+            SetTriple.subject("0x123").predicate("name").value("Alice").withLanguageTag(LanguageTag.fr())
+        ));
+
+        String dql = mutation.dql();
+
+        assertEquals("{ set { <0x123> name@en \"Alice\" . <0x123> name@fr \"Alice\" . } }", dql);
+    }
+
+    @Test
+    void testBlockWithLanguageTagViaMethod() {
+        Block block = Block.predicate("name").withLanguageTag(LanguageTag.de());
+
+        assertEquals("name@de", block.dql());
+    }
+
+    @Test
+    void testAlterPredicateWithCount() {
+        Alter alter = Alter.predicate("friend", "[uid]")
+            .withCount();
+
+        assertEquals("friend: [uid] @count .", alter.dql());
+    }
+
+    @Test
+    void testAlterPredicateWithUpsert() {
+        Alter alter = Alter.predicate("email", "string")
+            .withIndex("hash")
+            .withUpsert();
+
+        assertEquals("email: string @index(hash) @upsert .", alter.dql());
+    }
+
+    @Test
+    void testAlterPredicateWithMultipleDirectives() {
+        Alter alter = Alter.predicate("name", "string")
+            .withIndex("term")
+            .withCount();
+
+        assertEquals("name: string @index(term) @count .", alter.dql());
+    }
+
+    @Test
+    void testDeleteAllPredicatesFromNode() {
+        Mutation mutation = Mutation.delete(
+            SetTriple.subject("0x123").predicate("*").value("*")
+        );
+
+        assertEquals("{ delete { <0x123> * * . } }", mutation.dql());
+    }
+
+    @Test
+    void testDeletePredicateWithLanguageTag() {
+        Mutation mutation = Mutation.delete(
+            SetTriple.subject("0x123").predicate("name").value("*").withLanguageTag(LanguageTag.es())
+        );
+
+        assertEquals("{ delete { <0x123> name@es * . } }", mutation.dql());
+    }
+
+    @Test
+    void testDeleteWithVariable() {
+        Mutation mutation = Mutation.delete(
+            SetTriple.subject("uid(v)").predicate("status").value("*")
+        );
+
+        assertEquals("{ delete { uid(v) status * . } }", mutation.dql());
+    }
+
+    @Test
+    void testDeleteMultiplePatterns() {
+        Mutation mutation = Mutation.delete(
+            SetTriple.subject("0x123").predicate("name").value("*"),
+            SetTriple.subject("0x123").predicate("email").value("*")
+        );
+
+        String dql = mutation.dql();
+        assertTrue(dql.contains("<0x123> name * ."));
+        assertTrue(dql.contains("<0x123> email * ."));
+    }
+
+    @Test
+    void testUpsertRawWithSet() {
+        Mutation.Set set = Mutation.Set.of(
+            SetTriple.subject("uid(v)").predicate("status").value("active")
+        );
+        
+        Mutation mutation = Mutation.upsertRaw(
+            "query { v as var(func: eq(email, \"test@example.com\")) }",
+            set
+        );
+
+        String dql = mutation.dql();
+        assertTrue(dql.contains("upsert {"));
+        assertTrue(dql.contains("query { v as var"));
+        assertTrue(dql.contains("mutation @if(uid(v))"));
+        assertTrue(dql.contains("set {"));
+    }
+
+    @Test
+    void testUpsertRawWithSetAndDelete() {
+        Mutation.Set set = Mutation.Set.of(
+            SetTriple.subject("uid(v)").predicate("status").value("active")
+        );
+        Mutation.Delete delete = Mutation.Delete.of(
+            SetTriple.subject("uid(v)").predicate("oldStatus").value("*")
+        );
+        
+        Mutation mutation = Mutation.upsertRaw(
+            "query { v as var(func: eq(email, \"test@example.com\")) }",
+            set,
+            delete
+        );
+
+        String dql = mutation.dql();
+        assertTrue(dql.contains("upsert {"));
+        assertTrue(dql.contains("set {"));
+        assertTrue(dql.contains("delete {"));
+    }
+
+    @Test
+    void testUpsertRawJson() {
+        Mutation.Set set = Mutation.Set.of(
+            SetTriple.subject("uid(v)").predicate("status").value("active")
+        );
+        
+        Mutation mutation = Mutation.upsertRaw(
+            "query { v as var(func: eq(email, \"test@example.com\")) }",
+            set
+        );
+
+        var json = mutation.toJsonList();
+        assertFalse(json.isEmpty());
+        assertTrue(json.get(0).containsKey("@if"));
+    }
 }

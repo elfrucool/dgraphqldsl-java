@@ -8,6 +8,7 @@ public sealed interface Block extends DqlElement
 
     List<Block> blocks();
     List<Directive> directives();
+    default LanguageTag languageTag() { return null; }
 
     default Block withBlocks(List<Block> blocks) {
         return switch (this) {
@@ -53,23 +54,43 @@ public sealed interface Block extends DqlElement
         };
     }
 
+    default Block withLanguageTag(LanguageTag languageTag) {
+        return switch (this) {
+            case Predicate p -> p.withLanguageTag(languageTag);
+            case Nested n -> n.withLanguageTag(languageTag);
+            case Reverse r -> r.withLanguageTag(languageTag);
+            case FuncBlock f -> f;
+            case Var v -> v;
+            case GroupByBlock g -> g;
+        };
+    }
+
     record Predicate(
         String name,
         String alias,
         List<Block> blocks,
-        List<Directive> directives
+        List<Directive> directives,
+        LanguageTag languageTag
     ) implements Block {
 
         public static Predicate of(String name) {
-            return new Predicate(name, null, List.of(), List.of());
+            return new Predicate(name, null, List.of(), List.of(), null);
         }
 
         public static Predicate of(String name, String alias) {
-            return new Predicate(name, alias, List.of(), List.of());
+            return new Predicate(name, alias, List.of(), List.of(), null);
+        }
+
+        public static Predicate of(String name, LanguageTag languageTag) {
+            return new Predicate(name, null, List.of(), List.of(), languageTag);
+        }
+
+        public static Predicate of(String name, String alias, LanguageTag languageTag) {
+            return new Predicate(name, alias, List.of(), List.of(), languageTag);
         }
 
         public Predicate withBlocks(List<Block> blocks) {
-            return new Predicate(this.name, this.alias, blocks, this.directives);
+            return new Predicate(this.name, this.alias, blocks, this.directives, this.languageTag);
         }
 
         public Predicate withBlock(Block block) {
@@ -79,7 +100,7 @@ public sealed interface Block extends DqlElement
         }
 
         public Predicate withDirectives(List<Directive> directives) {
-            return new Predicate(this.name, this.alias, this.blocks, directives);
+            return new Predicate(this.name, this.alias, this.blocks, directives, this.languageTag);
         }
 
         public Predicate withDirective(Directive directive) {
@@ -89,7 +110,11 @@ public sealed interface Block extends DqlElement
         }
 
         public Predicate withAlias(String alias) {
-            return new Predicate(this.name, alias, this.blocks, this.directives);
+            return new Predicate(this.name, alias, this.blocks, this.directives, this.languageTag);
+        }
+
+        public Predicate withLanguageTag(LanguageTag languageTag) {
+            return new Predicate(this.name, this.alias, this.blocks, this.directives, languageTag);
         }
 
         @Override
@@ -101,6 +126,10 @@ public sealed interface Block extends DqlElement
             }
 
             sb.append(name);
+
+            if (languageTag != null) {
+                sb.append(languageTag.dql());
+            }
 
             if (!directives.isEmpty()) {
                 for (Directive d : directives) {
@@ -192,19 +221,28 @@ public sealed interface Block extends DqlElement
     record Nested(
         String name,
         List<Block> blocks,
-        List<Directive> directives
+        List<Directive> directives,
+        LanguageTag languageTag
     ) implements Block {
 
         public static Nested of(String name) {
-            return new Nested(name, List.of(), List.of());
+            return new Nested(name, List.of(), List.of(), null);
         }
 
         public static Nested of(String name, List<Directive> directives) {
-            return new Nested(name, List.of(), directives);
+            return new Nested(name, List.of(), directives, null);
+        }
+
+        public static Nested of(String name, LanguageTag languageTag) {
+            return new Nested(name, List.of(), List.of(), languageTag);
+        }
+
+        public static Nested of(String name, List<Directive> directives, LanguageTag languageTag) {
+            return new Nested(name, List.of(), directives, languageTag);
         }
 
         public Nested withBlocks(List<Block> blocks) {
-            return new Nested(this.name, blocks, this.directives);
+            return new Nested(this.name, blocks, this.directives, this.languageTag);
         }
 
         public Nested withBlock(Block block) {
@@ -214,7 +252,7 @@ public sealed interface Block extends DqlElement
         }
 
         public Nested withDirectives(List<Directive> directives) {
-            return new Nested(this.name, this.blocks, directives);
+            return new Nested(this.name, this.blocks, directives, this.languageTag);
         }
 
         public Nested withDirective(Directive directive) {
@@ -223,10 +261,18 @@ public sealed interface Block extends DqlElement
             return withDirectives(newDirectives);
         }
 
+        public Nested withLanguageTag(LanguageTag languageTag) {
+            return new Nested(this.name, this.blocks, this.directives, languageTag);
+        }
+
         @Override
         public String dql() {
             StringBuilder sb = new StringBuilder();
             sb.append(name);
+
+            if (languageTag != null) {
+                sb.append(languageTag.dql());
+            }
 
             if (!directives.isEmpty()) {
                 for (Directive d : directives) {
@@ -250,19 +296,28 @@ public sealed interface Block extends DqlElement
     record Reverse(
         String name,
         List<Block> blocks,
-        List<Directive> directives
+        List<Directive> directives,
+        LanguageTag languageTag
     ) implements Block {
 
         public static Reverse of(String name) {
-            return new Reverse(name, List.of(), List.of());
+            return new Reverse(name, List.of(), List.of(), null);
         }
 
         public static Reverse of(String name, List<Directive> directives) {
-            return new Reverse(name, List.of(), directives);
+            return new Reverse(name, List.of(), directives, null);
+        }
+
+        public static Reverse of(String name, LanguageTag languageTag) {
+            return new Reverse(name, List.of(), List.of(), languageTag);
+        }
+
+        public static Reverse of(String name, List<Directive> directives, LanguageTag languageTag) {
+            return new Reverse(name, List.of(), directives, languageTag);
         }
 
         public Reverse withBlocks(List<Block> blocks) {
-            return new Reverse(this.name, blocks, this.directives);
+            return new Reverse(this.name, blocks, this.directives, this.languageTag);
         }
 
         public Reverse withBlock(Block block) {
@@ -272,7 +327,7 @@ public sealed interface Block extends DqlElement
         }
 
         public Reverse withDirectives(List<Directive> directives) {
-            return new Reverse(this.name, this.blocks, directives);
+            return new Reverse(this.name, this.blocks, directives, this.languageTag);
         }
 
         public Reverse withDirective(Directive directive) {
@@ -281,10 +336,18 @@ public sealed interface Block extends DqlElement
             return withDirectives(newDirectives);
         }
 
+        public Reverse withLanguageTag(LanguageTag languageTag) {
+            return new Reverse(this.name, this.blocks, this.directives, languageTag);
+        }
+
         @Override
         public String dql() {
             StringBuilder sb = new StringBuilder();
             sb.append("~").append(name);
+
+            if (languageTag != null) {
+                sb.append(languageTag.dql());
+            }
 
             if (!directives.isEmpty()) {
                 for (Directive d : directives) {
@@ -392,6 +455,14 @@ public sealed interface Block extends DqlElement
         return Predicate.of(name, alias);
     }
 
+    static Block predicate(String name, LanguageTag languageTag) {
+        return Predicate.of(name, languageTag);
+    }
+
+    static Block predicate(String name, String alias, LanguageTag languageTag) {
+        return Predicate.of(name, alias, languageTag);
+    }
+
     static Block predicate(Func func) {
         return FuncBlock.of(func);
     }
@@ -412,12 +483,28 @@ public sealed interface Block extends DqlElement
         return Nested.of(name, directives);
     }
 
+    static Block nested(String name, LanguageTag languageTag) {
+        return Nested.of(name, languageTag);
+    }
+
+    static Block nested(String name, List<Directive> directives, LanguageTag languageTag) {
+        return Nested.of(name, directives, languageTag);
+    }
+
     static Block reverse(String name) {
         return Reverse.of(name);
     }
 
     static Block reverse(String name, List<Directive> directives) {
         return Reverse.of(name, directives);
+    }
+
+    static Block reverse(String name, LanguageTag languageTag) {
+        return Reverse.of(name, languageTag);
+    }
+
+    static Block reverse(String name, List<Directive> directives, LanguageTag languageTag) {
+        return Reverse.of(name, directives, languageTag);
     }
 
     static Block groupBy(String predicate) {

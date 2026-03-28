@@ -100,9 +100,9 @@ public class FacetExamples {
             if (json.isEmpty() || json.equals("{}") || json.equals("{\"me\":[]}")) {
                 json = "(no data - empty database)";
             }
-            results.record("Facet Examples (Phase 5)", testName, query, json, success);
+            results.record("04 Facet Examples (Phase 5)", testName, query, json, success);
         } catch (Exception e) {
-            results.record("Facet Examples (Phase 5)", testName, query, "Error: " + e.getMessage(), false);
+            results.record("04 Facet Examples (Phase 5)", testName, query, "Error: " + e.getMessage(), false);
         }
     }
 }

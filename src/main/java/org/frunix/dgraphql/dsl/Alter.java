@@ -61,6 +61,14 @@ public sealed interface Alter extends DqlElement
             return new PredicateSchema(this.predicate, this.type, this.indexes, newDirectives);
         }
 
+        public PredicateSchema withCount() {
+            return withDirective("count");
+        }
+
+        public PredicateSchema withUpsert() {
+            return withDirective("upsert");
+        }
+
         @Override
         public String dql() {
             StringBuilder sb = new StringBuilder();

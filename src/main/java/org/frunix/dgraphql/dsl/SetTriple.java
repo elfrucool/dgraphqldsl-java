@@ -1,17 +1,21 @@
 package org.frunix.dgraphql.dsl;
 
-public record SetTriple(String subject, String predicate, Object value) implements DqlElement {
+public record SetTriple(String subject, String predicate, Object value, LanguageTag languageTag) implements DqlElement {
 
     public static SetTriple subject(String subject) {
-        return new SetTriple(subject, null, null);
+        return new SetTriple(subject, null, null, null);
     }
 
     public SetTriple predicate(String predicate) {
-        return new SetTriple(this.subject, predicate, this.value);
+        return new SetTriple(this.subject, predicate, this.value, this.languageTag);
     }
 
     public SetTriple value(Object value) {
-        return new SetTriple(this.subject, this.predicate, value);
+        return new SetTriple(this.subject, this.predicate, value, this.languageTag);
+    }
+
+    public SetTriple withLanguageTag(LanguageTag languageTag) {
+        return new SetTriple(this.subject, this.predicate, this.value, languageTag);
     }
 
     @Override
@@ -22,6 +26,7 @@ public record SetTriple(String subject, String predicate, Object value) implemen
     private String formatSubject() {
         if (subject == null) return "_:";
         if (subject.startsWith("_:")) return subject;
+        if (subject.startsWith("uid(")) return subject;
         if (subject.startsWith("0x") || subject.startsWith("0X")) return "<" + subject + ">";
         if (subject.contains(":")) return "<" + subject + ">";
         return subject;
@@ -29,9 +34,14 @@ public record SetTriple(String subject, String predicate, Object value) implemen
 
     private String formatPredicate() {
         if (predicate == null) return "";
-        if (predicate.startsWith("0x") || predicate.startsWith("0X")) return "<" + predicate + ">";
-        if (predicate.contains(":")) return "<" + predicate + ">";
-        return predicate;
+        String pred = predicate;
+        if (languageTag != null) {
+            pred = predicate + languageTag.dql();
+        }
+        if ("*".equals(pred)) return "*";
+        if (pred.startsWith("0x") || pred.startsWith("0X")) return "<" + pred + ">";
+        if (pred.contains(":")) return "<" + pred + ">";
+        return pred;
     }
 
     private String formatValue() {

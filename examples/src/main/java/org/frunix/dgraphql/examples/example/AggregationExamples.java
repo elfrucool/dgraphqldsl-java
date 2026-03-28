@@ -130,9 +130,9 @@ public class AggregationExamples {
             if (json.isEmpty() || json.equals("{}") || json.equals("{\"me\":[]}")) {
                 json = "(no data - empty database)";
             }
-            results.record("Aggregation Examples (Phase 7)", testName, query, json, success);
+            results.record("06 Aggregation Examples (Phase 7)", testName, query, json, success);
         } catch (Exception e) {
-            results.record("Aggregation Examples (Phase 7)", testName, query, "Error: " + e.getMessage(), false);
+            results.record("06 Aggregation Examples (Phase 7)", testName, query, "Error: " + e.getMessage(), false);
         }
     }
 }
