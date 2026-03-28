@@ -250,11 +250,11 @@ The DSL library in `org.frunix.dgraphql.dsl` is fully implemented with:
 
 - Phase 1-9: ✅ Complete
 - Phase 10: ✅ Complete (GroupBy, ignorereflex, ALTER, Multiple Queries, JSON, Facet Filtering)
-- Phase 11: 6/6 Complete (all done)
+- Phase 11: 7/7 Complete (all done)
 
 ### Key Files
 
-- Tests: `src/test/java/org/frunix/dgraphql/dsl/DslTest.java` (72 tests)
+- Tests: `src/test/java/org/frunix/dgraphql/dsl/DslTest.java` (75 tests)
 - Documentation: `README.md`, `docs/dql-dsl-plan.md`, `docs/examples-issues.md`, `examples/README.md`
 
 ## Examples Subproject

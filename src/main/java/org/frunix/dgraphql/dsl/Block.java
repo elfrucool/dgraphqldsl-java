@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public sealed interface Block extends DqlElement 
-    permits Block.Predicate, Block.FuncBlock, Block.Nested, Block.Reverse, Block.Var, Block.GroupByBlock {
+    permits Block.Predicate, Block.FuncBlock, Block.Nested, Block.Reverse, Block.Var, Block.GroupByBlock, Block.Expand {
 
     List<Block> blocks();
     List<Directive> directives();
@@ -18,6 +18,7 @@ public sealed interface Block extends DqlElement
             case Reverse r -> r.withBlocks(blocks);
             case Var v -> v.withBlocks(blocks);
             case GroupByBlock g -> g.withBlocks(blocks);
+            case Expand e -> e.withBlocks(blocks);
         };
     }
 
@@ -29,6 +30,7 @@ public sealed interface Block extends DqlElement
             case Reverse r -> r.withBlock(block);
             case Var v -> v.withBlock(block);
             case GroupByBlock g -> g.withBlock(block);
+            case Expand e -> e.withBlock(block);
         };
     }
 
@@ -40,6 +42,7 @@ public sealed interface Block extends DqlElement
             case Reverse r -> r.withDirective(directive);
             case Var v -> v;
             case GroupByBlock g -> g.withDirective(directive);
+            case Expand e -> e.withDirective(directive);
         };
     }
 
@@ -51,6 +54,7 @@ public sealed interface Block extends DqlElement
             case Reverse r -> r.withDirectives(directives);
             case Var v -> v;
             case GroupByBlock g -> g.withDirectives(directives);
+            case Expand e -> e.withDirectives(directives);
         };
     }
 
@@ -62,6 +66,7 @@ public sealed interface Block extends DqlElement
             case FuncBlock f -> f;
             case Var v -> v;
             case GroupByBlock g -> g;
+            case Expand e -> e;
         };
     }
 
@@ -509,6 +514,96 @@ public sealed interface Block extends DqlElement
 
     static Block groupBy(String predicate) {
         return new GroupByBlock(GroupBy.groupBy(predicate));
+    }
+
+    record Expand(
+        String typeName,
+        List<Block> blocks,
+        List<Directive> directives
+    ) implements Block {
+
+        public static Expand type(String typeName) {
+            return new Expand(typeName, List.of(), List.of());
+        }
+
+        public static Expand all() {
+            return new Expand("_all_", List.of(), List.of());
+        }
+
+        public static Expand typeWithFilter(String typeName, Filter filter) {
+            return new Expand(typeName, List.of(), List.of(Directive.filter(filter)));
+        }
+
+        public static Expand allWithFilter(Filter filter) {
+            return new Expand("_all_", List.of(), List.of(Directive.filter(filter)));
+        }
+
+        public Expand withBlocks(List<Block> blocks) {
+            return new Expand(this.typeName, blocks, this.directives);
+        }
+
+        public Expand withBlock(Block block) {
+            List<Block> newBlocks = new ArrayList<>(blocks);
+            newBlocks.add(block);
+            return withBlocks(newBlocks);
+        }
+
+        public Expand withDirectives(List<Directive> directives) {
+            return new Expand(this.typeName, this.blocks, directives);
+        }
+
+        public Expand withDirective(Directive directive) {
+            List<Directive> newDirectives = new ArrayList<>(directives);
+            newDirectives.add(directive);
+            return withDirectives(newDirectives);
+        }
+
+        @Override
+        public List<Block> blocks() {
+            return blocks;
+        }
+
+        @Override
+        public List<Directive> directives() {
+            return directives;
+        }
+
+        @Override
+        public String dql() {
+            StringBuilder sb = new StringBuilder();
+            sb.append("expand(").append(typeName).append(")");
+            
+            for (Directive d : directives) {
+                sb.append(" ").append(d.dql());
+            }
+            
+            if (!blocks.isEmpty()) {
+                sb.append(" { ");
+                for (int i = 0; i < blocks.size(); i++) {
+                    if (i > 0) sb.append(" ");
+                    sb.append(blocks.get(i).dql());
+                }
+                sb.append(" }");
+            }
+            
+            return sb.toString();
+        }
+    }
+
+    static Block expand(String typeName) {
+        return new Expand(typeName, List.of(), List.of());
+    }
+
+    static Block expandAll() {
+        return new Expand("_all_", List.of(), List.of());
+    }
+
+    static Block expandWithFilter(String typeName, Filter filter) {
+        return new Expand(typeName, List.of(), List.of(Directive.filter(filter)));
+    }
+
+    static Block expandAllWithFilter(Filter filter) {
+        return new Expand("_all_", List.of(), List.of(Directive.filter(filter)));
     }
 
     static Block groupBy(String predicate, String groupByPredicate) {

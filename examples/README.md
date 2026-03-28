@@ -2,7 +2,7 @@
 
 This subproject demonstrates the DSL library features by running queries against a live Dgraph instance.
 
-## Status: ✅ All 26 Examples Passing
+## Status: ✅ All 27 Examples Passing
 
 ## Overview
 
@@ -64,6 +64,7 @@ examples/
 | UpsertExamples      | 11.4  | Upsert blocks                         |
 | AliasExamples       | 11.6  | Aliases (alias: predicate)           |
 | PathExamples        | 11.5  | K-shortest path queries               |
+| ExpandExamples      | 11.7  | Expand predicates from types          |
 
 ## Running Examples
 
@@ -99,7 +100,7 @@ docker compose down
 
 ## Test Results
 
-- **Total**: 26 examples
+- **Total**: 27 examples
 - **Passing**: 25
 - **Failing**: 0
 

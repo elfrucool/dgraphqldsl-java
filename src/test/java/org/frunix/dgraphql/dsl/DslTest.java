@@ -1255,4 +1255,50 @@ class DslTest {
         
         assertEquals("{ path as shortest(from: 0x1, to: 0x5, numpaths: 2, minweight: 2.0, maxweight: 4.0) { friend } me(func: uid(path)) { name } }", result.query());
     }
+
+    @Test
+    void testExpandType() {
+        Query query = Query.query()
+            .withBlocks(List.of(
+                QueryBlock.block("me", Func.eq("name", "Alice"))
+                    .withBlocks(List.of(
+                        Block.expand("Person")
+                    ))
+            ));
+
+        DqlResult result = query.dql();
+        
+        assertEquals("{ me(func: eq(name, \"Alice\")) { expand(Person) } }", result.query());
+    }
+
+    @Test
+    void testExpandAll() {
+        Query query = Query.query()
+            .withBlocks(List.of(
+                QueryBlock.block("me", Func.eq("name", "Alice"))
+                    .withBlocks(List.of(
+                        Block.expandAll()
+                    ))
+            ));
+
+        DqlResult result = query.dql();
+        
+        assertEquals("{ me(func: eq(name, \"Alice\")) { expand(_all_) } }", result.query());
+    }
+
+    @Test
+    void testExpandWithNested() {
+        Query query = Query.query()
+            .withBlocks(List.of(
+                QueryBlock.block("me", Func.eq("name", "Alice"))
+                    .withBlocks(List.of(
+                        Block.expand("Person")
+                            .withBlocks(List.of(Block.predicate("name")))
+                    ))
+            ));
+
+        DqlResult result = query.dql();
+        
+        assertEquals("{ me(func: eq(name, \"Alice\")) { expand(Person) { name } } }", result.query());
+    }
 }

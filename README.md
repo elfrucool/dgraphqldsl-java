@@ -305,6 +305,31 @@ Query.query()
 // => { path as shortest(from: 0x1, to: 0x5, numpaths: 2) { friend } me(func: uid(path)) { name } }
 ```
 
+### ExpandPredicates
+
+Expand predicates from type definitions.
+
+```java
+// Expand by type name
+Block.expand("Person")
+// => expand(Person)
+
+// Expand all types
+Block.expandAll()
+// => expand(_all_)
+
+// With nested predicates
+Query.query()
+    .withBlocks(List.of(
+        QueryBlock.block("me", Func.uid("0x1"))
+            .withBlocks(List.of(
+                Block.expand("Person")
+                    .withBlocks(List.of(Block.predicate("name")))
+            ))
+    ));
+// => { me(func: uid(0x1)) { expand(Person) { name } } }
+```
+
 ## Examples
 
 ### Basic Query

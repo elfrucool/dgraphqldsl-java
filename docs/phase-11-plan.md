@@ -4,7 +4,7 @@
 
 This document outlines the implementation plan for Phase 11 extended features, based on official Dgraph documentation.
 
-**Status:** 6/6 Complete (all done)
+**Status:** 7/7 Complete (all done)
 
 ## Phase 11 Expansion
 
@@ -16,6 +16,7 @@ To make 11.5 (K-Shortest Path) more manageable, it's been split into multiple sm
 |-------|---------|------------|------------|
 | 11.5 | K-Shortest Path | Implemented | Hard |
 | 11.6 | Aliases | Already supported | Easy |
+| 11.7 | Expand Predicates | Implemented | Medium |
 
 **Note:** 
 - 11.6 (Aliases) is already fully supported in DSL via `Block.Predicate.of(name, alias)`
@@ -236,6 +237,56 @@ public record KShortest(
 | `ShortestPath.kShortest(from, to, numpaths)` | with numpaths parameter        |
 | `KShortest.withDepth(n)`                     | adds depth parameter           |
 | `KShortest.withWeightRange(min, max)`        | adds weight constraints        |
+
+---
+
+## 11.7 Expand Predicates
+
+### Description
+
+Expand predicates automatically expand all predicates from a type definition. Requires type system to be set up in schema.
+
+### DQL Syntax
+
+```dql
+{
+  me(func: eq(name, "Alice")) {
+    name
+    expand(Person) { }
+  }
+}
+
+# Or expand all types
+{
+  me(func: eq(name, "Alice")) {
+    expand(_all_) { }
+  }
+}
+
+# With type filter
+{
+  me(func: eq(name, "Alice")) {
+    expand(_all_) @filter(type(Person)) { }
+  }
+}
+```
+
+### Implementation
+
+```java
+public sealed interface ExpandPredicates extends DqlElement
+    permits ExpandPredicates.ByType, ExpandPredicates.All {}
+
+public record ByType(String typeName) implements ExpandPredicates {}
+public record All() implements ExpandPredicates {}
+```
+
+### Factory Methods
+
+| Method | Output |
+|--------|--------|
+| `ExpandPredicates.type("Person")` | `expand(Person)` |
+| `ExpandPredicates.all()` | `expand(_all_)` |
 
 ---
 
