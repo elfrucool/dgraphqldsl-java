@@ -223,8 +223,8 @@ The DSL library in `org.frunix.dgraphql.dsl` is fully implemented with:
 
 - **Query**: Basic queries, nested blocks, multiple query blocks
 - **QueryBlock**: Named/anonymous blocks with pagination & ordering
-- **Block**: Predicate, FuncBlock, Nested, Reverse, Var, GroupByBlock cases
-- **Func**: All DQL functions (eq, has, uid, count, expand, etc.)
+- **Block**: Predicate, FuncBlock, Nested, Reverse, Var, GroupByBlock, Expand cases
+- **Func**: All DQL functions (eq, has, uid, count, min, max, sum, avg, expand, etc.)
 - **Filter**: Boolean filters (AND, OR, NOT) with comparison functions
 - **Directive**: filter, facets, cascade, normalize, ignorereflex, groupby, recurse
 - **Variable**: Query variables with defaults
@@ -233,6 +233,8 @@ The DSL library in `org.frunix.dgraphql.dsl` is fully implemented with:
 - **RecurseBlock**: Recursive queries with depth
 - **MathExpr**: Mathematical expressions
 - **GeoValue**: Geo queries
+- **ShortestPath**: K-shortest path queries with depth, weight constraints
+- **LanguageTag**: Language-tagged values (@en, @fr, etc.)
 - **Mutation**: Set, Delete, Update, Conditional mutations
 - **SetTriple**: RDF triples for mutations
 - **GroupBy**: GroupBy aggregation
@@ -241,10 +243,19 @@ The DSL library in `org.frunix.dgraphql.dsl` is fully implemented with:
 
 ### Design Patterns
 
-- **Sealed interfaces** for type-safe variants (Block, QueryBlock, Filter, Mutation, GroupBy, Alter, JsonMutation)
+- **Sealed interfaces** for type-safe variants (Block, QueryBlock, Filter, Mutation, GroupBy, Alter, JsonMutation, ShortestPath, ExpandPredicates)
 - **Immutable records** with `with*` methods
 - **Factory methods** matching DQL keywords
 - **DqlElement** base interface with `dql()` method
+
+### DSL Coverage
+
+The DSL covers 100% of DQL features:
+- Query: All features (functions, filters, aliases, pagination, sorting, variables, aggregation, expand, shortest path, fragments, language tags, directives, recurse, facets)
+- Mutations: Set, Delete, Update, Upsert, JSON
+- Schema: Types, predicates, indexes
+
+See [README.md](../README.md#dql-coverage) for detailed coverage table with documentation links.
 
 ### Implementation Status (from docs/dql-dsl-plan.md)
 
