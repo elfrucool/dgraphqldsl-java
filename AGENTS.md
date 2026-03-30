@@ -34,6 +34,7 @@ This is a pure Java library using Gradle with Java 21 toolchain.
 ### Auto-commit Rule
 
 When the agent believes it's ok to commit but the human has not explicitly requested it, **always ask first** before committing. Most of the time the human will say "ok", but sometimes they may want to:
+
 - Batch multiple related changes into one commit
 - Undo or modify something before committing
 - Wait for additional work to complete

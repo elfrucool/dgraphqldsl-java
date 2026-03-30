@@ -20,41 +20,43 @@ This document outlines the work required to make the dgraphqldsl-java library re
 
 The DSL library is technically complete but needs additional work to be useful and accessible to others as an open-source project.
 
-| Goal             | Priority | Impact                     |
-| ---------------- | -------- | -------------------------- |
-| Package rename   | High     | Breaking change - do first |
-| Java version fix | High     | Consistency                |
-| Javadocs         | High     | Usability                  |
-| GitHub setup     | High     | CI/CD                      |
-| Maven Central    | High     | Distribution               |
-| Tutorial/READMEs | Medium   | Onboarding                 |
-| Code quality     | Low      | Polish                     |
+| Goal             | Priority | Impact                      | Status  |
+| ---------------- | -------- | --------------------------- | --------|
+| Package rename   | High     | Breaking change - do first | ✅ Done |
+| Java version fix | High     | Consistency                 | ✅ Done |
+| Javadocs         | High     | Usability                   | Pending |
+| GitHub setup     | High     | CI/CD                       | Pending |
+| Maven Central    | High     | Distribution                | Pending |
+| Tutorial/READMEs | Medium   | Onboarding                  | Pending |
+| Code quality     | Low      | Polish                      | Pending |
 
 ---
 
-## 1. Package Rename
+## 1. Package Rename ✅
 
 **Purpose**: Align package with project group ID (`com.github.elfrucool`)
 
-| Task                    | Description                                             |
-| ----------------------- | ------------------------------------------------------- |
-| Rename package          | `org.frunix.dgraphql` → `com.github.elfrucool.dgraphql` |
-| Update imports          | Main source, tests, examples                            |
-| Update build.gradle.kts | Ensure package matches                                  |
-| Update AGENTS.md        | Reflect new package in docs                             |
+| Task                    | Description                                             | Status |
+| ----------------------- | ------------------------------------------------------- | ------ |
+| Rename package          | `org.frunix.dgraphql` → `com.github.elfrucool.dgraphql` | ✅ Done |
+| Update imports          | Main source, tests, examples                            | ✅ Done |
+| Update build.gradle.kts | Ensure package matches                                  | ✅ Done |
+| Update AGENTS.md        | Reflect new package in docs                             | ✅ Done |
+| Update this document    | Place a white check mark on completion                  | ✅ Done |
 
 **Note**: This is a breaking change for any existing users.
 
 ---
 
-## 2. Java Version (Document as Java 21)
+## 2. Java Version (Document as Java 21) ✅
 
 **Purpose**: Use Java 21 for broader adoption (not Java 25)
 
-| Task                    | Description                                |
-| ----------------------- | ------------------------------------------ |
-| Update AGENTS.md        | Document Java 21 (not 25) for broader compatibility |
-| ✅ Already correct      | build.gradle.kts already uses Java 21       |
+| Task                 | Description                                         | Status |
+| -------------------- | --------------------------------------------------- | ------ |
+| Update AGENTS.md     | Document Java 21 (not 25) for broader compatibility | ✅ Done |
+| ✅ Already correct   | build.gradle.kts already uses Java 21               | ✅ Done |
+| Update this document | Place a white check mark on completion              | ✅ Done |
 
 ---
 
@@ -67,6 +69,7 @@ The DSL library is technically complete but needs additional work to be useful a
 | Document classes      | Query, QueryBlock, Block, Func, Filter, etc. | High     |
 | Document methods      | All public methods on DSL classes            | High     |
 | Add package-info.java | Package-level documentation                  | Medium   |
+| Update this document  | Place a white check mark on completion       |          |
 
 ---
 
@@ -76,20 +79,22 @@ The DSL library is technically complete but needs additional work to be useful a
 
 ### CI Workflow
 
-| Task              | Description                                 |
-| ----------------- | ------------------------------------------- |
-| Add CI workflow   | GitHub Actions to run tests on PRs/pushes   |
-| Branch protection | Require reviews, passing tests before merge |
+| Task                 | Description                                 |
+| -------------------- | ------------------------------------------- |
+| Add CI workflow      | GitHub Actions to run tests on PRs/pushes   |
+| Branch protection    | Require reviews, passing tests before merge |
+| Update this document | Place a white check mark on completion      |
 
 ### Templates and Policies
 
-| Task               | Description                           |
-| ------------------ | ------------------------------------- |
-| CONTRIBUTING.md    | Guidelines for submitting PRs         |
-| Issue templates    | Bug report, Feature request templates |
-| PR template        | Standard PR description format        |
-| Security policy    | How to report vulnerabilities         |
-| CODE_OF_CONDUCT.md | Community guidelines                  |
+| Task                 | Description                            |
+| -------------------- | -------------------------------------- |
+| CONTRIBUTING.md      | Guidelines for submitting PRs          |
+| Issue templates      | Bug report, Feature request templates  |
+| PR template          | Standard PR description format         |
+| Security policy      | How to report vulnerabilities          |
+| CODE_OF_CONDUCT.md   | Community guidelines                   |
+| Update this document | Place a white check mark on completion |
 
 ### Files to Create
 
@@ -107,13 +112,15 @@ The DSL library is technically complete but needs additional work to be useful a
 
 **Purpose**: Make the library easily consumable via Maven/Gradle
 
-| Task             | Description                                                    |
-| ---------------- | -------------------------------------------------------------- |
-| POM metadata     | Add developers, SCM, license info for Maven Central acceptance |
-| Signing          | Configure JAR signing for release builds                       |
-| Javadoc JAR      | Generate and publish Javadoc                                   |
-| Test publication | Publish snapshot to GitHub Packages for verification           |
-| Release process  | Document how to make releases (version bump, tag, publish)     |
+| Task                 | Description                                                                                                 |
+| -------------------- | ----------------------------------------------------------------------------------------------------------- |
+| Explain              | Explain user the activities on this phase, which of these can be performed by an agent and which are manual |
+| POM metadata         | Add developers, SCM, license info for Maven Central acceptance                                              |
+| Signing              | Configure JAR signing for release builds                                                                    |
+| Javadoc JAR          | Generate and publish Javadoc                                                                                |
+| Test publication     | Publish snapshot to GitHub Packages for verification                                                        |
+| Release process      | Document how to make releases (version bump, tag, publish)                                                  |
+| Update this document | Place a white check mark on completion                                                                      |
 
 **Notes**:
 
@@ -128,9 +135,10 @@ The DSL library is technically complete but needs additional work to be useful a
 
 ### Tutorial
 
-| Task                | Description                             |
-| ------------------- | --------------------------------------- |
-| Create tutorial doc | Step-by-step guide for common use cases |
+| Task                 | Description                             |
+| -------------------- | --------------------------------------- |
+| Create tutorial doc  | Step-by-step guide for common use cases |
+| Update this document | Place a white check mark on completion  |
 
 **Tutorial Topics**:
 
@@ -148,6 +156,7 @@ The DSL library is technically complete but needs additional work to be useful a
 | Expand quick start      | More copy-paste examples                           |
 | FAQ section             | Common questions and answers                       |
 | Add badges              | CI status, Maven Central version badges            |
+| Update this document    | Place a white check mark on completion             |
 
 ---
 
@@ -155,22 +164,23 @@ The DSL library is technically complete but needs additional work to be useful a
 
 **Purpose**: Professional-grade codebase
 
-| Task                    | Description                     |
-| ----------------------- | ------------------------------- |
-| Add JaCoCo              | Code coverage reporting         |
-| Add Spotless/Checkstyle | Code formatting enforcement     |
-| Add dependency checker  | Renovate or similar for updates |
+| Task                    | Description                            |
+| ----------------------- | -------------------------------------- |
+| Add JaCoCo              | Code coverage reporting                |
+| Add Spotless/Checkstyle | Code formatting enforcement            |
+| Add dependency checker  | Renovate or similar for updates        |
+| Update this document    | Place a white check mark on completion |
 
 ---
 
 ## Summary
 
-| Phase       | Tasks                               |
-| ----------- | ----------------------------------- |
-| **Phase 1** | Package rename                      |
-| **Phase 2** | Java version fix                    |
-| **Phase 3** | Add Javadocs                        |
-| **Phase 4** | GitHub setup (workflows, templates) |
-| **Phase 5** | Maven Central prep (POM metadata)   |
-| **Phase 6** | Tutorial + README improvements      |
-| **Phase 7** | Quality tools (JaCoCo, formatting)  |
+| Phase       | Tasks                                | Status |
+| ----------- | ------------------------------------ | ------ |
+| **Phase 1** | Package rename                       | ✅ Done |
+| **Phase 2** | Java version (document as Java 21)   | ✅ Done |
+| **Phase 3** | Add Javadocs                         | Pending |
+| **Phase 4** | GitHub setup (workflows, templates)  | Pending |
+| **Phase 5** | Maven Central prep (POM metadata)    | Pending |
+| **Phase 6** | Tutorial + README improvements       | Pending |
+| **Phase 7** | Quality tools (JaCoCo, formatting)  | Pending |
