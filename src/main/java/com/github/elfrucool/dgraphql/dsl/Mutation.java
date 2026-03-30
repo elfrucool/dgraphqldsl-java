@@ -5,6 +5,27 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * A DQL mutation for modifying data.
+ *
+ * <p>Mutation is a sealed interface with six variants:</p>
+ * <ul>
+ *   <li>{@link Set} - Add or update triples</li>
+ *   <li>{@link Delete} - Remove triples</li>
+ *   <li>{@link Update} - Update existing nodes</li>
+ *   <li>{@link Conditional} - Conditional mutations with @if</li>
+ *   <li>{@link Upsert} - Upsert operations</li>
+ *   <li>{@link UpsertRaw} - Raw JSON upsert</li>
+ * </ul>
+ *
+ * <p>Example usage:</p>
+ * <pre>
+ * Mutation.set(SetTriple.subject("_:user").predicate("name").value("Alice"))
+ * Mutation.delete(SetTriple.subject("0x123").predicate("*").value("*"))
+ * </pre>
+ *
+ * @see SetTriple
+ */
 public sealed interface Mutation extends DqlElement 
     permits Mutation.Set, Mutation.Delete, Mutation.Update, Mutation.Conditional, Mutation.Upsert, Mutation.UpsertRaw {
 
@@ -43,6 +64,13 @@ public sealed interface Mutation extends DqlElement
         };
     }
 
+    /**
+     * A set mutation for adding or updating triples.
+     *
+     * <p>Example: {@code Mutation.set(SetTriple.subject("_:user").predicate("name").value("Alice"))}</p>
+     *
+     * @see SetTriple
+     */
     record Set(
         List<SetTriple> triples,
         List<Directive> directives
@@ -136,6 +164,13 @@ public sealed interface Mutation extends DqlElement
         }
     }
 
+    /**
+     * A delete mutation for removing triples.
+     *
+     * <p>Example: {@code Mutation.delete(SetTriple.subject("0x123").predicate("friend").value("0x456"))}</p>
+     *
+     * @see SetTriple
+     */
     record Delete(
         List<SetTriple> triples
     ) implements Mutation {
@@ -188,6 +223,14 @@ public sealed interface Mutation extends DqlElement
         }
     }
 
+    /**
+     * An update mutation for combining set and delete operations.
+     *
+     * <p>Example: {@code Mutation.Update.of(setMutation, deleteMutation)}</p>
+     *
+     * @see Set
+     * @see Delete
+     */
     record Update(
         Set set,
         Delete delete
@@ -236,6 +279,14 @@ public sealed interface Mutation extends DqlElement
         }
     }
 
+    /**
+     * A conditional mutation that executes based on a condition.
+     *
+     * <p>Example: {@code Mutation.Conditional.ifCondition("eq(name, \"Alice\")", setMut, null)}</p>
+     *
+     * @see Set
+     * @see Delete
+     */
     record Conditional(
         String condition,
         Set set,
@@ -311,6 +362,15 @@ public sealed interface Mutation extends DqlElement
         }
     }
 
+    /**
+     * An upsert mutation that conditionally inserts or updates based on query results.
+     *
+     * <p>Example: {@code Mutation.upsert(query, setMutation, null)}</p>
+     *
+     * @see Query
+     * @see Set
+     * @see Delete
+     */
     record Upsert(
         Query query,
         Set set,
@@ -399,6 +459,13 @@ public sealed interface Mutation extends DqlElement
         }
     }
 
+    /**
+     * A raw JSON upsert mutation with a raw query string.
+     *
+     * <p>Example: {@code Mutation.upsertRaw("{ query {...} }", setMut, null)}</p>
+     *
+     * @see Upsert
+     */
     record UpsertRaw(
         String query,
         Set set,

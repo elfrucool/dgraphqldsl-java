@@ -3,6 +3,26 @@ package com.github.elfrucool.dgraphql.dsl;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A variable block for defining query variables.
+ *
+ * <p>VarBlock creates a query variable by executing a function and storing
+ * the results. It can be used to:</p>
+ * <ul>
+ *   <li>Define variables from query results</li>
+ *   <li>Pre-filter data for reuse</li>
+ *   <li>Create complex variable expressions</li>
+ * </ul>
+ *
+ * <p>Example usage:</p>
+ * <pre>
+ * VarBlock.var(Func.eq("name", "Alice"))
+ * VarBlock.var(Func.uid("0x123")).withBlock(Block.predicate("name"))
+ * </pre>
+ *
+ * @see VarAssignment
+ * @see Query#withVarBlocks(List)
+ */
 public record VarBlock(
     Func func,
     List<VarAssignment> assignments,
@@ -10,6 +30,13 @@ public record VarBlock(
     List<Block> blocks
 ) implements DqlElement {
 
+    /**
+     * Creates a variable block from a function.
+     *
+     * <p>Example: {@code VarBlock.var(Func.eq("name", "Alice"))}</p>
+     *
+     * @see Func
+     */
     public static VarBlock var(Func func) {
         return new VarBlock(func, List.of(), List.of(), List.of());
     }

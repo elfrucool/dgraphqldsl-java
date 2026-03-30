@@ -1,19 +1,65 @@
 package com.github.elfrucool.dgraphql.dsl;
 
+/**
+ * A RDF triple for mutations (subject-predicate-object).
+ *
+ * <p>Used in Set and Delete mutations to specify what data to add or remove.
+ * Uses a fluent builder pattern:</p>
+ *
+ * <pre>
+ * SetTriple.subject("0x123").predicate("name").value("Alice")
+ * SetTriple.subject("_:newUser").predicate("email").value("alice@example.com")
+ * </pre>
+ *
+ * <p>Supported subject forms:</p>
+ * <ul>
+ *   <li>UID: {@code 0x123}, {@code <0x123>}</li>
+ *   <li>Blank node: {@code _:newNode}</li>
+ *   <li>Name: {@code user} (no prefix)</li>
+ *   <li>UID function: {@code uid(0x123)}</li>
+ * </ul>
+ *
+ * @see Mutation.Set
+ * @see Mutation.Delete
+ */
 public record SetTriple(String subject, String predicate, Object value, LanguageTag languageTag) implements DqlElement {
 
+    /**
+     * Creates a triple with just a subject (for blank nodes).
+     *
+     * <p>Example: {@code SetTriple.subject("_:newUser")}</p>
+     */
     public static SetTriple subject(String subject) {
         return new SetTriple(subject, null, null, null);
     }
 
+    /**
+     * Sets the predicate for this triple.
+     *
+     * <p>Example: {@code SetTriple.subject("0x123").predicate("name")}</p>
+     */
     public SetTriple predicate(String predicate) {
         return new SetTriple(this.subject, predicate, this.value, this.languageTag);
     }
 
+    /**
+     * Sets the value (object) for this triple.
+     *
+     * <p>Example: {@code SetTriple.subject("0x123").predicate("name").value("Alice")}</p>
+     *
+     * @param value The object value (String, Number, Boolean, or UID)
+     */
     public SetTriple value(Object value) {
         return new SetTriple(this.subject, this.predicate, value, this.languageTag);
     }
 
+    /**
+     * Sets the language tag for language-tagged predicates.
+     *
+     * <p>Example: {@code SetTriple.subject("0x123").predicate("name").withLanguageTag(LanguageTag.en)}</p>
+     *
+     * @see LanguageTag
+     */
     public SetTriple withLanguageTag(LanguageTag languageTag) {
         return new SetTriple(this.subject, this.predicate, this.value, languageTag);
     }
