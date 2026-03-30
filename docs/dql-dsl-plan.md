@@ -225,7 +225,7 @@ DqlResult result = query.dql();
 ## Dependencies
 
 - None (pure Java, no external libraries)
-- Java 25 toolchain (per project requirements)
+- Java 21 toolchain (per project requirements)
 
 ## Testing Strategy
 

@@ -707,7 +707,7 @@ Each example class must:
 ## Dependencies
 
 - None (pure Java, no external libraries)
-- Java 25 toolchain
+- Java 21 toolchain
 
 ---
 
