@@ -12,13 +12,14 @@ To make 11.5 (K-Shortest Path) more manageable, it's been split into multiple sm
 
 ### New Feature Summary
 
-| Phase | Feature | DSL Status | Difficulty |
-|-------|---------|------------|------------|
-| 11.5 | K-Shortest Path | Implemented | Hard |
-| 11.6 | Aliases | Already supported | Easy |
-| 11.7 | Expand Predicates | Implemented | Medium |
+| Phase | Feature           | DSL Status        | Difficulty |
+| ----- | ----------------- | ----------------- | ---------- |
+| 11.5  | K-Shortest Path   | Implemented       | Hard       |
+| 11.6  | Aliases           | Already supported | Easy       |
+| 11.7  | Expand Predicates | Implemented       | Medium     |
 
-**Note:** 
+**Note:**
+
 - 11.6 (Aliases) is already fully supported in DSL via `Block.Predicate.of(name, alias)`
 - Aggregation already covered in Phase 7 (see `AggregationExamples.java`)
 - Edge Facets already covered in Phase 5 (see `FacetExamples.java`)
@@ -53,8 +54,8 @@ Already supported via Block.Predicate - use `alias: predicate` syntax in predica
 
 ### Factory Methods
 
-| Method | Output |
-|--------|--------|
+| Method                           | Output          |
+| -------------------------------- | --------------- |
 | `Block.alias("name", "name@en")` | `name: name@en` |
 
 ---
@@ -96,8 +97,8 @@ public record Avg(String variable) implements Aggregation {}
 
 ### Factory Methods
 
-| Method | Output |
-|--------|--------|
+| Method                       | Output              |
+| ---------------------------- | ------------------- |
 | `Aggregation.min("varName")` | `min(val(varName))` |
 | `Aggregation.max("varName")` | `max(val(varName))` |
 | `Aggregation.sum("varName")` | `sum(val(varName))` |
@@ -127,6 +128,7 @@ Flattens results and only returns aliased predicates.
 ### Implementation
 
 Already implemented in `Directive.java`:
+
 ```java
 public static Directive normalize() {
     return new Directive("normalize", null);
@@ -154,6 +156,7 @@ Query facets on edges to retrieve edge-level metadata (weights, timestamps, etc.
 ```
 
 With weight filtering:
+
 ```dql
 {
   me(func: uid(0x1)) {
@@ -167,6 +170,7 @@ With weight filtering:
 ### Implementation
 
 Already partially implemented in `Directive.java`:
+
 ```java
 public static Directive facets(String... facetNames) {
     return new Directive("facets", String.join(", ", facetNames));
@@ -283,10 +287,10 @@ public record All() implements ExpandPredicates {}
 
 ### Factory Methods
 
-| Method | Output |
-|--------|--------|
+| Method                            | Output           |
+| --------------------------------- | ---------------- |
 | `ExpandPredicates.type("Person")` | `expand(Person)` |
-| `ExpandPredicates.all()` | `expand(_all_)` |
+| `ExpandPredicates.all()`          | `expand(_all_)`  |
 
 ---
 
@@ -572,16 +576,19 @@ src/main/java/org/frunix/dgraphql/dsl/
 ## Implementation Order
 
 ### Already Complete (11.1-11.4)
+
 1. **11.1 LanguageTag** ✅
 2. **11.2 SchemaDirective** ✅
 3. **11.3 Enhanced Delete** ✅
 4. **11.4 Upsert Block** ✅
 
 ### New Phases 11.5-11.6 (Easiest First)
+
 1. **11.6 Aliases** ✅ DONE
 2. **11.5 K-Shortest Path** ✅ DONE
 
-**Note:** 
+**Note:**
+
 - Aggregation already covered in Phase 7 (see `AggregationExamples.java`)
 - Edge Facets already covered in Phase 5 (see `FacetExamples.java`)
 - GraphQL Variables covered in Phase 4 (see `VariableExamples.java`)
@@ -640,25 +647,25 @@ If DSL, data setup, and example are all correct, but the feature still fails:
 
 ### Common Pitfalls (Lessons Learned)
 
-| Pitfall | Solution |
-|---------|----------|
-| Schema not defined | Use `dgraphClient.alter()` to define predicates first |
-| UID doesn't exist | Create test data with specific UID in `setupData()` |
-| Predicate conflict | Use unique predicate names per example (e.g., `deleteName` not `name`) |
-| Wrong delete format | Try JSON format `{"pred": null}` instead of RDF `S P * .` |
-| Type required | Add `dgraph.type` for `* *` delete operations |
-| Shared schema conflict | Don't drop shared predicates (`name`, `age`, `email`) in teardown |
+| Pitfall                | Solution                                                               |
+| ---------------------- | ---------------------------------------------------------------------- |
+| Schema not defined     | Use `dgraphClient.alter()` to define predicates first                  |
+| UID doesn't exist      | Create test data with specific UID in `setupData()`                    |
+| Predicate conflict     | Use unique predicate names per example (e.g., `deleteName` not `name`) |
+| Wrong delete format    | Try JSON format `{"pred": null}` instead of RDF `S P * .`              |
+| Type required          | Add `dgraph.type` for `* *` delete operations                          |
+| Shared schema conflict | Don't drop shared predicates (`name`, `age`, `email`) in teardown      |
 
 ### Summary Table
 
-| Issue Type | Action | Test Required |
-|------------|--------|---------------|
-| DSL generates wrong DQL | Fix DSL | Add/update unit test in `DslTest.java` |
-| Missing schema | Add schema setup in example | Verify schema is created |
-| Missing data | Add data setup in example | Verify data exists |
-| Example uses DSL incorrectly | Fix example | Verify fix works |
-| Wrong format (RDF vs JSON) | Try alternative format | Test both approaches |
-| Dgraph limitation/bug | Document in `examples-issues.md` | Mark for follow-up |
+| Issue Type                   | Action                           | Test Required                          |
+| ---------------------------- | -------------------------------- | -------------------------------------- |
+| DSL generates wrong DQL      | Fix DSL                          | Add/update unit test in `DslTest.java` |
+| Missing schema               | Add schema setup in example      | Verify schema is created               |
+| Missing data                 | Add data setup in example        | Verify data exists                     |
+| Example uses DSL incorrectly | Fix example                      | Verify fix works                       |
+| Wrong format (RDF vs JSON)   | Try alternative format           | Test both approaches                   |
+| Dgraph limitation/bug        | Document in `examples-issues.md` | Mark for follow-up                     |
 
 ---
 
@@ -673,22 +680,24 @@ If DSL, data setup, and example are all correct, but the feature still fails:
 
 Each Phase 11 feature MUST include an integration example in the examples subproject to be validated against a live Dgraph instance:
 
-| Feature | Example Class | File | Status | Complexity |
-|---------|--------------|------|--------|------------|
-| 11.1 Language-Tagged Values | `LanguageExamples.java` | `examples/.../example/LanguageExamples.java` | **DONE** | Easy |
-| 11.2 Schema Features | `SchemaExamples.java` | `examples/.../example/SchemaExamples.java` | **DONE** | Easy-Medium |
-| 11.3 Enhanced Delete | `DeleteExamples.java` | `examples/.../example/DeleteExamples.java` | **DONE** | Medium |
-| 11.4 Upsert Block | `UpsertExamples.java` | `examples/.../example/UpsertExamples.java` | **DONE** | Medium |
-| 11.6 Aliases | `AliasExamples.java` | `examples/.../example/AliasExamples.java` | **DONE** | Easy |
-| 11.5 K-Shortest Path | `PathExamples.java` | `examples/.../example/PathExamples.java` | **DONE** | Hard |
+| Feature                     | Example Class           | File                                         | Status   | Complexity  |
+| --------------------------- | ----------------------- | -------------------------------------------- | -------- | ----------- |
+| 11.1 Language-Tagged Values | `LanguageExamples.java` | `examples/.../example/LanguageExamples.java` | **DONE** | Easy        |
+| 11.2 Schema Features        | `SchemaExamples.java`   | `examples/.../example/SchemaExamples.java`   | **DONE** | Easy-Medium |
+| 11.3 Enhanced Delete        | `DeleteExamples.java`   | `examples/.../example/DeleteExamples.java`   | **DONE** | Medium      |
+| 11.4 Upsert Block           | `UpsertExamples.java`   | `examples/.../example/UpsertExamples.java`   | **DONE** | Medium      |
+| 11.6 Aliases                | `AliasExamples.java`    | `examples/.../example/AliasExamples.java`    | **DONE** | Easy        |
+| 11.5 K-Shortest Path        | `PathExamples.java`     | `examples/.../example/PathExamples.java`     | **DONE** | Hard        |
 
-**Note:** 
+**Note:**
+
 - Aggregation already covered in Phase 7 (`AggregationExamples.java`)
 - Edge Facets already covered in Phase 5 (`FacetExamples.java`)
 - GraphQL Variables already covered in Phase 4 (`VariableExamples.java`)
 - @normalize already implemented in `Directive.normalize()` (covered in Phase 8)
 
 Each example class must:
+
 1. Have proper `setupData()` with schema and test data
 2. Run the query/mutation and print results
 3. Have `teardownData()` to clean up test data
@@ -722,22 +731,27 @@ Each example class must:
 ### 11.1 Language-Tagged Values - COMPLETED
 
 **Implementation:**
+
 - Created `LanguageTag.java` - immutable record with factory methods (`en()`, `fr()`, `de()`, `es()`, `of(...)`)
 - Updated `Block.java` - added `languageTag` field to `Predicate`, `Nested`, `Reverse` records
 - Updated `SetTriple.java` - added `languageTag` field for mutations
 
 **Files Created:**
+
 - `src/main/java/org/frunix/dgraphql/dsl/LanguageTag.java`
 
 **Files Modified:**
+
 - `src/main/java/org/frunix/dgraphql/dsl/Block.java`
 - `src/main/java/org/frunix/dgraphql/dsl/SetTriple.java`
 - `src/test/java/org/frunix/dgraphql/dsl/DslTest.java` (9 new unit tests)
 
 **Integration Example:**
+
 - `examples/src/main/java/org/frunix/dgraphql/examples/example/LanguageExamples.java`
 
 **Troubleshooting Applied:**
+
 1. DSL generated correct DQL (`localename@en`) - verified vs Dgraph docs
 2. Example had schema setup issue - was using mutation instead of `dgraphClient.alter()`
 3. Fixed by using `DgraphProto.Operation` with `setSchema()` for schema definition
@@ -750,14 +764,17 @@ Each example class must:
 ### 11.2 Schema Features - COMPLETED
 
 **Implementation:**
+
 - Added convenience methods `withCount()` and `withUpsert()` to `PredicateSchema`
 - These build on existing `withDirective()` method
 
 **Files Modified:**
+
 - `src/main/java/org/frunix/dgraphql/dsl/Alter.java`
 - `src/test/java/org/frunix/dgraphql/dsl/DslTest.java` (3 new unit tests)
 
 **Integration Example:**
+
 - `examples/src/main/java/org/frunix/dgraphql/examples/example/SchemaExamples.java`
 
 **Test Results:** 30/30 passing (includes 11.3 + 11.5)
@@ -767,23 +784,28 @@ Each example class must:
 ### 11.3 Enhanced Delete - COMPLETED
 
 **Implementation:**
+
 - Enhanced SetTriple to support:
   - `uid(varName)` as subject for variable-based deletes
   - `*` as predicate for delete all predicates pattern
   - Already supported: LanguageTag for language-specific deletes
 
 **Files Modified:**
+
 - `src/main/java/org/frunix/dgraphql/dsl/SetTriple.java`
 - `src/test/java/org/frunix/dgraphql/dsl/DslTest.java` (4 new unit tests)
 
 **Integration Example:**
+
 - `examples/src/main/java/org/frunix/dgraphql/examples/example/DeleteExamples.java`
 
 **Test Results:** 32/32 passing
+
 - "Delete All Predicates" (`<uid> * * .`) - PASS ✓
 - "Delete Predicate Value" (JSON format) - PASS ✓
 
 **Troubleshooting Applied:**
+
 1. First tried RDF format `<uid> <pred> * .` - failed
 2. Switched to JSON format `{"pred": null}` - works!
 3. Used port 8080 instead of 9080 for HTTP calls
@@ -793,18 +815,22 @@ Each example class must:
 ### 11.4 Upsert Block - COMPLETED
 
 **Implementation:**
+
 - DSL already had `Mutation.Upsert` and `Mutation.UpsertRaw` implemented
 - Factory methods: `Mutation.upsert()`, `Mutation.upsertRaw()`
 
 **Files Modified:**
+
 - `src/test/java/org/frunix/dgraphql/dsl/DslTest.java` (3 new unit tests)
 
 **Integration Example:**
+
 - `examples/src/main/java/org/frunix/dgraphql/examples/example/UpsertExamples.java`
 
 **Test Results:** 34/34 passing (all Phase 11 features)
 
 **Troubleshooting Applied:**
+
 1. DSL generates correct upsert syntax - verified
 2. First used wrong port (9080) - fixed to 8080
 3. Now works on Dgraph standalone via HTTP
@@ -814,17 +840,21 @@ Each example class must:
 ### 11.6 Aliases - COMPLETED
 
 **Implementation:**
+
 - DSL already had full alias support via `Block.Predicate` record
 - Factory methods: `Block.predicate(name, alias)`, `Block.Predicate.withAlias(alias)`
 - The `dql()` method renders `alias: name` format automatically
 
 **Files Modified:**
+
 - `src/test/java/org/frunix/dgraphql/dsl/DslTest.java` (3 new unit tests)
 
 **Integration Example:**
+
 - `examples/src/main/java/org/frunix/dgraphql/examples/example/AliasExamples.java`
 
 **Test Results:** 4 tests pass
+
 - Basic alias: `{ userName: name userAge: age }` ✅
 - UID alias: `{ userId: uid name }` ✅
 - Count alias: `{ name friend { friendName: name } }` ✅
@@ -835,27 +865,33 @@ Each example class must:
 ### 11.5 K-Shortest Path - COMPLETED
 
 **Implementation:**
+
 - Created `ShortestPath.java` - sealed interface with `KShortest` record
 - Factory methods: `shortest()`, `kShortest()`, `withDepth()`, `withWeightRange()`
 - Updated `Query.java` - added `shortestPaths` field and `withShortestPath()` method
 - The shortest path renders as `path as shortest(from: UID, to: UID) { predicate }`
 
 **Files Created:**
+
 - `src/main/java/org/frunix/dgraphql/dsl/ShortestPath.java`
 
 **Files Modified:**
+
 - `src/main/java/org/frunix/dgraphql/dsl/Query.java`
 - `src/test/java/org/frunix/dgraphql/dsl/DslTest.java` (4 new unit tests)
 
 **Integration Example:**
+
 - `examples/src/main/java/org/frunix/dgraphql/examples/example/PathExamples.java`
 
 **Test Results:** 4 tests pass
+
 - Basic shortest path ✅
 - K-shortest paths (numpaths: 2) ✅
 - With depth limit ✅
 - With weight constraints ✅
 
 **Live Example Results:**
+
 - Shortest path (Alice to Charlie): Direct path found ✅
 - K-shortest path (k=2): Found both direct and indirect paths ✅

@@ -164,12 +164,12 @@ fragment PersonDetails { name age }
 
 #### 7. Delete Predicate Value (RDF Format Issue)
 
-| Attribute     | Value                                               |
-| ------------- | --------------------------------------------------- |
-| File          | `examples/.../example/DeleteExamples.java`          |
-| Phase         | Phase 11.4 (Enhanced Delete)                        |
-| Level         | Basic                                              |
-| Generated DQL | `{ delete { <0x99> deleteName * . } }`           |
+| Attribute     | Value                                      |
+| ------------- | ------------------------------------------ |
+| File          | `examples/.../example/DeleteExamples.java` |
+| Phase         | Phase 11.4 (Enhanced Delete)               |
+| Level         | Basic                                      |
+| Generated DQL | `{ delete { <0x99> deleteName * . } }`     |
 
 **Issue:** Delete specific predicate value using RDF format fails.
 
