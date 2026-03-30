@@ -3,6 +3,33 @@ package com.github.elfrucool.dgraphql.dsl;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A block element within a DQL query that represents predicates, nested blocks, or relationships.
+ *
+ * <p>Block is a sealed interface with seven variants:</p>
+ * <ul>
+ *   <li>{@link Predicate} - A simple predicate or alias (e.g., {@code name}, {@code userName: name})</li>
+ *   <li>{@link FuncBlock} - A function-based block (e.g., {@code count(friend)})</li>
+ *   <li>{@link Nested} - A nested relationship block (e.g., {@code friend { name }})</li>
+ *   <li>{@link Reverse} - A reverse edge block (e.g., {@code ~friend { name }})</li>
+ *   <li>{@link Var} - A variable assignment block (e.g., {@code count as uid})</li>
+ *   <li>{@link GroupByBlock} - A groupBy aggregation block</li>
+ *   <li>{@link Expand} - An expand predicates block (e.g., {@code expand(Person)})</li>
+ * </ul>
+ *
+ * <p>Use factory methods to create blocks:</p>
+ *
+ * <pre>
+ * Block.predicate("name")                    // Simple predicate
+ * Block.predicate("name", "fullName")         // With alias
+ * Block.nested("friend")                     // Nested relationship
+ * Block.reverse("friend")                    // Reverse edge
+ * </pre>
+ *
+ * @see QueryBlock
+ * @see Directive
+ * @see Func
+ */
 public sealed interface Block extends DqlElement 
     permits Block.Predicate, Block.FuncBlock, Block.Nested, Block.Reverse, Block.Var, Block.GroupByBlock, Block.Expand {
 
@@ -70,6 +97,11 @@ public sealed interface Block extends DqlElement
         };
     }
 
+    /**
+     * A predicate block representing a field to retrieve.
+     *
+     * <p>Example: {@code name}, {@code userName: name}</p>
+     */
     record Predicate(
         String name,
         String alias,
@@ -155,6 +187,11 @@ public sealed interface Block extends DqlElement
         }
     }
 
+    /**
+     * A function-based block for aggregations and computed values.
+     *
+     * <p>Example: {@code count(friend)}, {@code min(age)}</p>
+     */
     record FuncBlock(
         Func func,
         String alias,
@@ -223,6 +260,11 @@ public sealed interface Block extends DqlElement
         }
     }
 
+    /**
+     * A nested relationship block for traversing edges.
+     *
+     * <p>Example: {@code friend { name age }}</p>
+     */
     record Nested(
         String name,
         List<Block> blocks,
@@ -298,6 +340,11 @@ public sealed interface Block extends DqlElement
         }
     }
 
+    /**
+     * A reverse edge block for traversing incoming edges.
+     *
+     * <p>Example: {@code ~friend { name }}</p>
+     */
     record Reverse(
         String name,
         List<Block> blocks,
@@ -373,6 +420,11 @@ public sealed interface Block extends DqlElement
         }
     }
 
+    /**
+     * A variable assignment block for storing query results in variables.
+     *
+     * <p>Example: {@code count as uid}, {@code myVar: friend { name }}</p>
+     */
     record Var(
         String varName,
         String predicate,
@@ -416,6 +468,13 @@ public sealed interface Block extends DqlElement
         }
     }
 
+    /**
+     * A groupBy aggregation block for grouping query results.
+     *
+     * <p>Example: {@code groupBy(predicate) { count } }</p>
+     *
+     * @see GroupBy
+     */
     record GroupByBlock(
         GroupBy groupBy
     ) implements Block {
@@ -516,6 +575,14 @@ public sealed interface Block extends DqlElement
         return new GroupByBlock(GroupBy.groupBy(predicate));
     }
 
+    /**
+     * An expand predicates block for expanding all predicates of a type.
+     *
+     * <p>Example: {@code expand(Person)}, {@code expand(_all_)}</p>
+     *
+     * @see #expand(String)
+     * @see #expandAll()
+     */
     record Expand(
         String typeName,
         List<Block> blocks,

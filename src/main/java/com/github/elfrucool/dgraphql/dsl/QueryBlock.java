@@ -3,6 +3,29 @@ package com.github.elfrucool.dgraphql.dsl;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A query block that defines a root function and nested predicates for a DQL query.
+ *
+ * <p>QueryBlock is a sealed interface with two variants:</p>
+ * <ul>
+ *   <li>{@link Named} - A query block with a name (e.g., {@code me(func: eq(name, "Alice"))})</li>
+ *   <li>{@link Anonymous} - An anonymous query block (e.g., {@code func: eq(name, "Alice")})</li>
+ * </ul>
+ *
+ * <p>Use factory methods to create query blocks:</p>
+ *
+ * <pre>
+ * QueryBlock.block("me", Func.eq("name", "Alice"))
+ *     .withFirst(10)
+ *     .withOrderasc("name")
+ *     .withDirective(Directive.filter(...))
+ * </pre>
+ *
+ * @see Query
+ * @see Block
+ * @see Func
+ * @see Directive
+ */
 public sealed interface QueryBlock extends DqlElement 
     permits QueryBlock.Named, QueryBlock.Anonymous {
 
@@ -77,6 +100,11 @@ public sealed interface QueryBlock extends DqlElement
         };
     }
 
+    /**
+     * A named query block with a name and root function.
+     *
+     * <p>Example: {@code me(func: eq(name, "Alice")) { name age }}</p>
+     */
     record Named(
         String name,
         Func func,
@@ -89,6 +117,13 @@ public sealed interface QueryBlock extends DqlElement
         String after
     ) implements QueryBlock {
 
+        /**
+         * Creates a named query block with the given name and root function.
+         *
+         * @param name the block name (e.g., "me")
+         * @param func the root function (e.g., Func.eq("name", "Alice"))
+         * @return a new Named query block
+         */
         public static Named of(String name, Func func) {
             return new Named(name, func, List.of(), List.of(), null, null, null, null, null);
         }
@@ -171,6 +206,11 @@ public sealed interface QueryBlock extends DqlElement
         }
     }
 
+    /**
+     * An anonymous query block with only a root function (no name).
+     *
+     * <p>Example: {@code func: eq(name, "Alice") { name age }}</p>
+     */
     record Anonymous(
         Func func,
         List<Block> blocks,
@@ -187,6 +227,12 @@ public sealed interface QueryBlock extends DqlElement
             return null;
         }
 
+        /**
+         * Creates an anonymous query block with the given root function.
+         *
+         * @param func the root function (e.g., Func.eq("name", "Alice"))
+         * @return a new Anonymous query block
+         */
         public static Anonymous of(Func func) {
             return new Anonymous(func, List.of(), List.of(), null, null, null, null, null);
         }
