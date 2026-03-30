@@ -29,7 +29,16 @@ This is a pure Java library using Gradle with Java 21 toolchain.
 ./gradlew check
 ```
 
-## Git Commit Messages
+## Git Workflow
+
+### Auto-commit Rule
+
+When the agent believes it's ok to commit but the human has not explicitly requested it, **always ask first** before committing. Most of the time the human will say "ok", but sometimes they may want to:
+- Batch multiple related changes into one commit
+- Undo or modify something before committing
+- Wait for additional work to complete
+
+### Git Commit Messages
 
 Follow Linus Torvalds' commit message style (from subsurface project):
 
@@ -266,7 +275,7 @@ See [README.md](../README.md#dql-coverage) for detailed coverage table with docu
 
 ### Key Files
 
-- Tests: `src/test/java/org/frunix/dgraphql/dsl/DslTest.java` (75 tests)
+- Tests: `src/test/java/com/github/elfrucool/dgraphql/dsl/DslTest.java` (99 tests)
 - Documentation: `README.md`, `docs/dql-dsl-plan.md`, `docs/examples-issues.md`, `examples/README.md`
 
 ## Examples Subproject
