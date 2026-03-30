@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-This is a pure Java library using Gradle with Java 25 toolchain.
+This is a pure Java library using Gradle with Java 21 toolchain.
 
 ## Build Commands
 
@@ -211,7 +211,7 @@ public Optional<User> findById(Long id) {
 
 ## Tools and Versions
 
-- Java: 25
+- Java: 21
 - Build Tool: Gradle (via gradlew wrapper)
 - Test Framework: JUnit 5 (Jupiter)
 

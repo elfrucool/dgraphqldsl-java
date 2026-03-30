@@ -47,14 +47,14 @@ The DSL library is technically complete but needs additional work to be useful a
 
 ---
 
-## 2. Java Version Fix
+## 2. Java Version (Document as Java 21)
 
-**Purpose**: Fix inconsistencies between documentation and build config
+**Purpose**: Use Java 21 for broader adoption (not Java 25)
 
 | Task                    | Description                                |
 | ----------------------- | ------------------------------------------ |
-| Update build.gradle.kts | Use Java 25 toolchain (matching AGENTS.md) |
-| Verify compatibility    | Test with Java 25                          |
+| Update AGENTS.md        | Document Java 21 (not 25) for broader compatibility |
+| ✅ Already correct      | build.gradle.kts already uses Java 21       |
 
 ---
 
