@@ -4,11 +4,30 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * A JSON-format mutation for adding or deleting data.
+ *
+ * <p>JsonMutation is a sealed interface with two variants:</p>
+ * <ul>
+ *   <li>{@link Set} - JSON set mutation</li>
+ *   <li>{@link Delete} - JSON delete mutation</li>
+ * </ul>
+ *
+ * <p>Example usage:</p>
+ * <pre>
+ * JsonMutation.Set.of(Map.of("uid", "_:new", "name", "Alice", "age", 30))
+ * </pre>
+ */
 public sealed interface JsonMutation extends DqlElement 
     permits JsonMutation.Set, JsonMutation.Delete {
 
     List<Map<String, Object>> getJson();
 
+    /**
+     * JSON set mutation for adding or updating nodes.
+     *
+     * <p>Example: {@code JsonMutation.Set.of(Map.of("uid", "_:new", "name", "Alice"))}</p>
+     */
     record Set(List<Map<String, Object>> jsonObjects) implements JsonMutation {
 
         public static Set of(Map<String, Object>... jsonObjects) {
@@ -81,6 +100,11 @@ public sealed interface JsonMutation extends DqlElement
         }
     }
 
+    /**
+     * JSON delete mutation for removing nodes.
+     *
+     * <p>Example: {@code JsonMutation.Delete.of(Map.of("uid", "0x123"))}</p>
+     */
     record Delete(List<Map<String, Object>> jsonObjects) implements JsonMutation {
 
         public static Delete of(Map<String, Object>... jsonObjects) {

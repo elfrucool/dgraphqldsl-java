@@ -3,17 +3,58 @@ package com.github.elfrucool.dgraphql.dsl;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A shortest path query for finding paths between nodes.
+ *
+ * <p>Used to find shortest or k-shortest paths between two nodes:</p>
+ *
+ * <pre>
+ * ShortestPath.shortest("path", "0x1", "0x100")
+ * ShortestPath.kShortest("paths", "0x1", "0x100", 5).withDepth(10)
+ * </pre>
+ *
+ * <p>Example DQL output:</p>
+ * <pre>
+ * path as shortest(from: 0x1, to: 0x100)
+ * paths as kshortest(from: 0x1, to: 0x100, numpaths: 5) @recurse(depth: 10)
+ * </pre>
+ */
 public sealed interface ShortestPath extends DqlElement
     permits ShortestPath.KShortest {
 
+    /**
+     * Creates a shortest path query.
+     *
+     * <p>Example: {@code ShortestPath.shortest("path", "0x1", "0x100")}</p>
+     *
+     * @param varName Variable name to store the result
+     * @param from Source node UID
+     * @param to Destination node UID
+     */
     static KShortest shortest(String varName, String from, String to) {
         return new KShortest(varName, from, to, null, null, null, null, null, List.of());
     }
 
+    /**
+     * Creates a k-shortest paths query.
+     *
+     * <p>Example: {@code ShortestPath.kShortest("paths", "0x1", "0x100", 5)}</p>
+     *
+     * @param varName Variable name to store the result
+     * @param from Source node UID
+     * @param to Destination node UID
+     * @param numpaths Number of paths to find
+     */
     static KShortest kShortest(String varName, String from, String to, int numpaths) {
         return new KShortest(varName, from, to, numpaths, null, null, null, null, List.of());
     }
 
+    /**
+     * K-shortest paths configuration.
+     *
+     * <p>Use factory methods {@link #shortest(String, String, String)} or
+     * {@link #kShortest(String, String, String, int)} to create.</p>
+     */
     record KShortest(
         String varName,
         String from,

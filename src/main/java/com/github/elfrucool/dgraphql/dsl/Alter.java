@@ -3,11 +3,33 @@ package com.github.elfrucool.dgraphql.dsl;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A schema alteration operation.
+ *
+ * <p>Alter is a sealed interface with four variants:</p>
+ * <ul>
+ *   <li>{@link TypeDefinition} - Define a type with fields</li>
+ *   <li>{@link PredicateSchema} - Define or modify a predicate schema</li>
+ *   <li>{@link Drop} - Drop a type or predicate</li>
+ *   <li>{@link All} - Perform multiple alterations</li>
+ * </ul>
+ *
+ * <p>Example usage:</p>
+ * <pre>
+ * Alter.TypeDefinition.of("Person", "name", "email", "age")
+ * Alter.PredicateSchema.predicate("owner", "uid").withIndex("exact")
+ * </pre>
+ */
 public sealed interface Alter extends DqlElement 
     permits Alter.TypeDefinition, Alter.PredicateSchema, Alter.Drop, Alter.All {
 
     String dql();
 
+    /**
+     * Defines a type with its fields.
+     *
+     * <p>Example: {@code Alter.TypeDefinition.of("Person", "name", "email", "age")}</p>
+     */
     record TypeDefinition(
         String typeName,
         List<String> fields
@@ -34,6 +56,11 @@ public sealed interface Alter extends DqlElement
         }
     }
 
+    /**
+     * Defines or modifies a predicate schema.
+     *
+     * <p>Example: {@code Alter.PredicateSchema.predicate("name", "string").withIndex("exact")}</p>
+     */
     record PredicateSchema(
         String predicate,
         String type,
@@ -92,6 +119,11 @@ public sealed interface Alter extends DqlElement
         }
     }
 
+    /**
+     * Drops a type or predicate from the schema.
+     *
+     * <p>Example: {@code Alter.Drop.dropType("Person")} or {@code Alter.Drop.dropPredicate("owner")}</p>
+     */
     record Drop(
         String target,
         boolean isAll
@@ -118,6 +150,11 @@ public sealed interface Alter extends DqlElement
         }
     }
 
+    /**
+     * Groups multiple schema alterations into one operation.
+     *
+     * <p>Example: {@code Alter.All.of(List.of(typeDef, predSchema))}</p>
+     */
     record All(
         List<Alter> operations
     ) implements Alter {

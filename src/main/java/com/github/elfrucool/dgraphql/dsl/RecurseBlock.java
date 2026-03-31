@@ -3,6 +3,21 @@ package com.github.elfrucool.dgraphql.dsl;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A recurse block for recursive query traversal.
+ *
+ * <p>Used to traverse relationships recursively to a specified depth:</p>
+ *
+ * <pre>
+ * RecurseBlock.recurse("friend").withDepth(3).withBlock(Block.predicate("name"))
+ * RecurseBlock.recurse("path", "friend").withBlock(Block.predicate("uid"))
+ * </pre>
+ *
+ * <p>Example DQL output:</p>
+ * <pre>
+ * friend @recurse(depth: 3) { name }
+ * </pre>
+ */
 public record RecurseBlock(
     String name,
     String queryVariable,
@@ -11,10 +26,23 @@ public record RecurseBlock(
     List<Block> blocks
 ) implements DqlElement {
 
+    /**
+     * Creates a recurse block on a query variable.
+     *
+     * <p>Example: {@code RecurseBlock.recurse("friend")}</p>
+     */
     public static RecurseBlock recurse(String queryVariable) {
         return new RecurseBlock(null, queryVariable, null, List.of(), List.of());
     }
 
+    /**
+     * Creates a named recurse block.
+     *
+     * <p>Example: {@code RecurseBlock.recurse("path", "friend")}</p>
+     *
+     * @param name Alias for the result
+     * @param queryVariable The variable to recurse on
+     */
     public static RecurseBlock recurse(String name, String queryVariable) {
         return new RecurseBlock(name, queryVariable, null, List.of(), List.of());
     }

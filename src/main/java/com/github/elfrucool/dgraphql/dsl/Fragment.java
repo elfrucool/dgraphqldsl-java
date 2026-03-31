@@ -3,11 +3,29 @@ package com.github.elfrucool.dgraphql.dsl;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A query fragment for reusable query definitions.
+ *
+ * <p>Fragments define reusable sets of blocks that can be referenced
+ * in queries using {@link FragmentRef}:</p>
+ *
+ * <pre>
+ * Fragment.fragment("userFields").withBlock(Block.predicate("name")).withBlock(Block.predicate("email"))
+ * </pre>
+ *
+ * @see FragmentRef
+ * @see Query#withFragments(List)
+ */
 public record Fragment(
     String name,
     List<Block> blocks
 ) implements DqlElement {
 
+    /**
+     * Creates a fragment with the given name.
+     *
+     * <p>Example: {@code Fragment.fragment("userFields")}</p>
+     */
     public static Fragment fragment(String name) {
         return new Fragment(name, List.of());
     }
