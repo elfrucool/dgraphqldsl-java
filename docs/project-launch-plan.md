@@ -24,7 +24,7 @@ The DSL library is technically complete but needs additional work to be useful a
 | ---------------- | -------- | --------------------------- | --------|
 | Package rename   | High     | Breaking change - do first | ✅ Done |
 | Java version fix | High     | Consistency                 | ✅ Done |
-| Javadocs         | High     | Usability                   | Pending |
+| Javadocs         | High     | Usability                   | ✅ Done |
 | GitHub setup     | High     | CI/CD                       | Pending |
 | Maven Central    | High     | Distribution                | Pending |
 | Tutorial/READMEs | Medium   | Onboarding                  | Pending |
@@ -60,16 +60,16 @@ The DSL library is technically complete but needs additional work to be useful a
 
 ---
 
-## 3. Add Javadocs
+## 3. Add Javadocs ✅
 
 **Purpose**: Document all public APIs
 
-| Task                  | Description                                  | Priority |
-| --------------------- | -------------------------------------------- | -------- |
-| Document classes      | Query, QueryBlock, Block, Func, Filter, etc. | High     |
-| Document methods      | All public methods on DSL classes            | High     |
-| Add package-info.java | Package-level documentation                  | Medium   |
-| Update this document  | Place a white check mark on completion       |          |
+| Task                  | Description                                  | Status |
+| --------------------- | -------------------------------------------- | ------ |
+| Document classes      | Query, QueryBlock, Block, Func, Filter, etc. | ✅ Done |
+| Document methods      | All public methods on DSL classes            | ✅ Done |
+| Add package-info.java | Package-level documentation                  | Pending |
+| Update this document  | Place a white check mark on completion       | ✅ Done |
 
 ---
 
@@ -179,7 +179,7 @@ The DSL library is technically complete but needs additional work to be useful a
 | ----------- | ------------------------------------ | ------ |
 | **Phase 1** | Package rename                       | ✅ Done |
 | **Phase 2** | Java version (document as Java 21)   | ✅ Done |
-| **Phase 3** | Add Javadocs                         | Pending |
+| **Phase 3** | Add Javadocs                         | ✅ Done |
 | **Phase 4** | GitHub setup (workflows, templates)  | Pending |
 | **Phase 5** | Maven Central prep (POM metadata)    | Pending |
 | **Phase 6** | Tutorial + README improvements       | Pending |
