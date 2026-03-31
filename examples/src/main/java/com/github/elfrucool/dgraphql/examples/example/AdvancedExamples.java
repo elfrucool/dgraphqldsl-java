@@ -12,6 +12,20 @@ import org.springframework.stereotype.Component;
 import jakarta.annotation.PostConstruct;
 import java.util.List;
 
+/**
+ * Demonstrates advanced query features using the DSL.
+ * <p>
+ * This example shows how to use various advanced features:
+ * <ul>
+ *   <li>{@link com.github.elfrucool.dgraphql.dsl.Directive#cascade()} - cascade directive</li>
+ *   <li>{@link com.github.elfrucool.dgraphql.dsl.Directive#normalize()} - normalize directive</li>
+ *   <li>{@link com.github.elfrucool.dgraphql.dsl.Directive#recurse(int)} - recurse directive</li>
+ *   <li>{@link com.github.elfrucool.dgraphql.dsl.Fragment} - query fragments</li>
+ * </ul>
+ *
+ * @see com.github.elfrucool.dgraphql.dsl.Directive
+ * @see com.github.elfrucool.dgraphql.dsl.Fragment
+ */
 @Component
 public class AdvancedExamples {
 

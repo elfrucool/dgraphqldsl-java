@@ -12,6 +12,23 @@ import org.springframework.stereotype.Component;
 import jakarta.annotation.PostConstruct;
 import java.util.List;
 
+/**
+ * Pagination examples demonstrating query pagination and ordering.
+ *
+ * <p>This class demonstrates:</p>
+ * <ul>
+ *   <li>Using {@link QueryBlock#withFirst(int)} for limit</li>
+ *   <li>Using {@link QueryBlock#withOffset(int)} for offset</li>
+ *   <li>Using {@link QueryBlock#withOrderAsc(String)} for ascending order</li>
+ *   <li>Using {@link QueryBlock#withOrderDesc(String)} for descending order</li>
+ *   <li>Combining pagination with filters</li>
+ *   <li>Using order on nested blocks</li>
+ * </ul>
+ *
+ * <p>DSL classes used: QueryBlock</p>
+ *
+ * @see QueryBlock
+ */
 @Component
 public class PaginationExamples {
 

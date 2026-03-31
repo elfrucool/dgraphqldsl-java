@@ -12,6 +12,21 @@ import org.springframework.stereotype.Component;
 import jakarta.annotation.PostConstruct;
 import java.util.List;
 
+/**
+ * Facet examples demonstrating edge facets (metadata on edges).
+ *
+ * <p>This class demonstrates:</p>
+ * <ul>
+ *   <li>Using {@link Directive#facets(String...)} to request facet data</li>
+ *   <li>Using facets with specific edge names</li>
+ *   <li>Querying multiple facets</li>
+ *   <li>Using facets on nested relationships</li>
+ * </ul>
+ *
+ * <p>DSL classes used: Directive</p>
+ *
+ * @see Directive
+ */
 @Component
 public class FacetExamples {
 

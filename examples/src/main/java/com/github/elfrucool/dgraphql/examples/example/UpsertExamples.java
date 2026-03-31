@@ -16,6 +16,17 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Demonstrates upsert mutations using the DSL.
+ * <p>
+ * This example shows how to use {@link com.github.elfrucool.dgraphql.dsl.Mutation} to:
+ * <ul>
+ *   <li>Perform upsert operations with set clause only</li>
+ *   <li>Perform upsert operations with both set and delete clauses</li>
+ * </ul>
+ *
+ * @see com.github.elfrucool.dgraphql.dsl.Mutation
+ */
 @Component
 public class UpsertExamples {
 

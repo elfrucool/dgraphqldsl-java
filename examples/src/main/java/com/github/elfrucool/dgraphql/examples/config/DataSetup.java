@@ -9,6 +9,18 @@ import org.springframework.stereotype.Component;
 
 import jakarta.annotation.PostConstruct;
 
+/**
+ * Sets up the initial schema and test data for examples.
+ * <p>
+ * This component runs at application startup and creates:
+ * <ul>
+ *   <li>Schema predicates: name, age, email, friend, status, score</li>
+ *   <li>Test data: 4 persons (Alice, Bob, Charlie, Diana) with friendships</li>
+ * </ul>
+ * <p>
+ * The test data is used by most example classes as the baseline dataset for
+ * demonstrating various DSL features.
+ */
 @Component
 public class DataSetup {
 

@@ -20,15 +20,15 @@ This document outlines the work required to make the dgraphqldsl-java library re
 
 The DSL library is technically complete but needs additional work to be useful and accessible to others as an open-source project.
 
-| Goal             | Priority | Impact                      | Status  |
-| ---------------- | -------- | --------------------------- | --------|
+| Goal             | Priority | Impact                     | Status  |
+| ---------------- | -------- | -------------------------- | ------- |
 | Package rename   | High     | Breaking change - do first | ✅ Done |
-| Java version fix | High     | Consistency                 | ✅ Done |
-| Javadocs         | High     | Usability                   | ✅ Done |
-| GitHub setup     | High     | CI/CD                       | Pending |
-| Maven Central    | High     | Distribution                | Pending |
-| Tutorial/READMEs | Medium   | Onboarding                  | Pending |
-| Code quality     | Low      | Polish                      | Pending |
+| Java version fix | High     | Consistency                | ✅ Done |
+| Javadocs         | High     | Usability                  | ✅ Done |
+| GitHub setup     | High     | CI/CD                      | Pending |
+| Maven Central    | High     | Distribution               | Pending |
+| Tutorial/READMEs | Medium   | Onboarding                 | Pending |
+| Code quality     | Low      | Polish                     | Pending |
 
 ---
 
@@ -36,8 +36,8 @@ The DSL library is technically complete but needs additional work to be useful a
 
 **Purpose**: Align package with project group ID (`com.github.elfrucool`)
 
-| Task                    | Description                                             | Status |
-| ----------------------- | ------------------------------------------------------- | ------ |
+| Task                    | Description                                             | Status  |
+| ----------------------- | ------------------------------------------------------- | ------- |
 | Rename package          | `org.frunix.dgraphql` → `com.github.elfrucool.dgraphql` | ✅ Done |
 | Update imports          | Main source, tests, examples                            | ✅ Done |
 | Update build.gradle.kts | Ensure package matches                                  | ✅ Done |
@@ -52,8 +52,8 @@ The DSL library is technically complete but needs additional work to be useful a
 
 **Purpose**: Use Java 21 for broader adoption (not Java 25)
 
-| Task                 | Description                                         | Status |
-| -------------------- | --------------------------------------------------- | ------ |
+| Task                 | Description                                         | Status  |
+| -------------------- | --------------------------------------------------- | ------- |
 | Update AGENTS.md     | Document Java 21 (not 25) for broader compatibility | ✅ Done |
 | ✅ Already correct   | build.gradle.kts already uses Java 21               | ✅ Done |
 | Update this document | Place a white check mark on completion              | ✅ Done |
@@ -64,8 +64,8 @@ The DSL library is technically complete but needs additional work to be useful a
 
 **Purpose**: Document all public APIs
 
-| Task                  | Description                                  | Status |
-| --------------------- | -------------------------------------------- | ------ |
+| Task                  | Description                                  | Status  |
+| --------------------- | -------------------------------------------- | ------- |
 | Document classes      | Query, QueryBlock, Block, Func, Filter, etc. | ✅ Done |
 | Document methods      | All public methods on DSL classes            | ✅ Done |
 | Add package-info.java | Package-level documentation                  | ✅ Done |
@@ -175,12 +175,12 @@ The DSL library is technically complete but needs additional work to be useful a
 
 ## Summary
 
-| Phase       | Tasks                                | Status |
-| ----------- | ------------------------------------ | ------ |
-| **Phase 1** | Package rename                       | ✅ Done |
-| **Phase 2** | Java version (document as Java 21)   | ✅ Done |
-| **Phase 3** | Add Javadocs                         | ✅ Done |
-| **Phase 4** | GitHub setup (workflows, templates)  | Pending |
-| **Phase 5** | Maven Central prep (POM metadata)    | Pending |
-| **Phase 6** | Tutorial + README improvements       | Pending |
+| Phase       | Tasks                               | Status  |
+| ----------- | ----------------------------------- | ------- |
+| **Phase 1** | Package rename                      | ✅ Done |
+| **Phase 2** | Java version (document as Java 21)  | ✅ Done |
+| **Phase 3** | Add Javadocs                        | ✅ Done |
+| **Phase 4** | GitHub setup (workflows, templates) | Pending |
+| **Phase 5** | Maven Central prep (POM metadata)   | Pending |
+| **Phase 6** | Tutorial + README improvements      | Pending |
 | **Phase 7** | Quality tools (JaCoCo, formatting)  | Pending |

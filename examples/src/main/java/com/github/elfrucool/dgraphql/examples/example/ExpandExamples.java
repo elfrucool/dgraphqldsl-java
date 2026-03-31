@@ -13,6 +13,18 @@ import org.springframework.stereotype.Component;
 import jakarta.annotation.PostConstruct;
 import java.util.List;
 
+/**
+ * Demonstrates expand() block queries using the DSL.
+ * <p>
+ * This example shows how to use {@link com.github.elfrucool.dgraphql.dsl.Block#expand(String)} and
+ * {@link com.github.elfrucool.dgraphql.dsl.Block#expandAll()} to:
+ * <ul>
+ *   <li>Expand predicates by type definition</li>
+ *   <li>Expand all predicates for a node</li>
+ * </ul>
+ *
+ * @see com.github.elfrucool.dgraphql.dsl.Block
+ */
 @Component
 public class ExpandExamples {
 

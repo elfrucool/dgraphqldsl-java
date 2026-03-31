@@ -12,6 +12,25 @@ import org.springframework.stereotype.Component;
 import jakarta.annotation.PostConstruct;
 import java.util.List;
 
+/**
+ * Basic query examples demonstrating fundamental DSL usage.
+ *
+ * <p>This class demonstrates:</p>
+ * <ul>
+ *   <li>Building a simple query with {@link Query#query()}</li>
+ *   <li>Using {@link QueryBlock} to define query blocks</li>
+ *   <li>Adding {@link Block#predicate(String)} for simple predicates</li>
+ *   <li>Using {@link Block#nested(String)} for nested relationships</li>
+ *   <li>Using aliases with predicates</li>
+ *   <li>Filtering with {@link Func#eq(String, Object)}</li>
+ * </ul>
+ *
+ * <p>DSL classes used: Query, QueryBlock, Block, Func</p>
+ *
+ * @see Query
+ * @see QueryBlock
+ * @see Block
+ */
 @Component
 public class BasicExamples {
 

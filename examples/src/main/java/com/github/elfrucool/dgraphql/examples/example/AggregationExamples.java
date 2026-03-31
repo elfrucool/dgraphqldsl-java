@@ -12,6 +12,25 @@ import org.springframework.stereotype.Component;
 import jakarta.annotation.PostConstruct;
 import java.util.List;
 
+/**
+ * Aggregation examples demonstrating query aggregation functions.
+ *
+ * <p>This class demonstrates:</p>
+ * <ul>
+ *   <li>Using {@link Func#count(String)} to count edges</li>
+ *   <li>Using {@link Func#min(String)} for minimum values</li>
+ *   <li>Using {@link Func#max(String)} for maximum values</li>
+ *   <li>Using {@link Func#sum(String)} for sum aggregation</li>
+ *   <li>Using {@link Func#avg(String)} for average values</li>
+ *   <li>Using {@link GroupBy} for grouped aggregations</li>
+ *   <li>Using {@link Block#groupBy(String)} in queries</li>
+ * </ul>
+ *
+ * <p>DSL classes used: Func, GroupBy, Block</p>
+ *
+ * @see Func
+ * @see GroupBy
+ */
 @Component
 public class AggregationExamples {
 

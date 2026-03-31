@@ -15,6 +15,21 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+/**
+ * Alias examples demonstrating predicate and function aliases.
+ *
+ * <p>This class demonstrates:</p>
+ * <ul>
+ *   <li>Using aliases with {@link Block#predicate(String, String)}</li>
+ *   <li>Using aliases with {@link FuncBlock}</li>
+ *   <li>Using aliases with nested blocks</li>
+ *   <li>Applying aliases to function results (count, min, max, etc.)</li>
+ * </ul>
+ *
+ * <p>DSL classes used: Block, FuncBlock</p>
+ *
+ * @see Block
+ */
 @Component
 public class AliasExamples {
 

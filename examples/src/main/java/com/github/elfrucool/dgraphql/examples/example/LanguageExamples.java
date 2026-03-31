@@ -15,6 +15,22 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+/**
+ * Language examples demonstrating language-tagged predicates.
+ *
+ * <p>This class demonstrates:</p>
+ * <ul>
+ *   <li>Using {@link LanguageTag} for language-specific queries</li>
+ *   <li>Using {@link LanguageTag#en()}, {@link LanguageTag#fr()}, etc.</li>
+ *   <li>Using {@link LanguageTag#of(String...)} for custom tags</li>
+ *   <li>Applying language tags with {@link Block#predicate(String, LanguageTag)}</li>
+ *   <li>Using language tags in nested blocks</li>
+ * </ul>
+ *
+ * <p>DSL classes used: LanguageTag, Block</p>
+ *
+ * @see LanguageTag
+ */
 @Component
 public class LanguageExamples {
 

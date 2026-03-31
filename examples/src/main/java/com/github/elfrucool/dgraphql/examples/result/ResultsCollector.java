@@ -8,6 +8,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Collects and reports test results from all example classes.
+ * <p>
+ * This component collects results from each example as they execute, then
+ * prints a formatted report when {@link #printReport()} is called.
+ * <p>
+ * Each result records:
+ * <ul>
+ *   <li>Example name - the example class this result belongs to</li>
+ *   <li>Test name - the specific test within the example</li>
+ *   <li>Query/DQL - the DSL query or mutation that was executed</li>
+ *   <li>Response - the response from Dgraph or error message</li>
+ *   <li>Success - whether the test passed or failed</li>
+ * </ul>
+ */
 @Component
 public class ResultsCollector {
 

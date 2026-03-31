@@ -12,6 +12,25 @@ import org.springframework.stereotype.Component;
 import jakarta.annotation.PostConstruct;
 import java.util.List;
 
+/**
+ * Filter examples demonstrating query filtering with Filter API.
+ *
+ * <p>This class demonstrates:</p>
+ * <ul>
+ *   <li>Using {@link Filter#eq(String, Object)} for equality filters</li>
+ *   <li>Using {@link Filter#and(Filter...)} for AND combinations</li>
+ *   <li>Using {@link Filter#or(Filter...)} for OR combinations</li>
+ *   <li>Using {@link Filter#not(Filter)} for negation</li>
+ *   <li>Using {@link Filter#ge}, {@link Filter#gt}, {@link Filter#lt}, {@link Filter#le} for comparisons</li>
+ *   <li>Using {@link Filter#has(String)} to check predicate existence</li>
+ *   <li>Using {@link Directive#filter(Filter)} to apply filters</li>
+ * </ul>
+ *
+ * <p>DSL classes used: Filter, Func, Directive</p>
+ *
+ * @see Filter
+ * @see Directive
+ */
 @Component
 public class FilterExamples {
 

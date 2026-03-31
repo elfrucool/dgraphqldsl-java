@@ -15,6 +15,21 @@ import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+/**
+ * Demonstrates additional DSL features.
+ * <p>
+ * This example shows various additional features:
+ * <ul>
+ *   <li>{@link com.github.elfrucool.dgraphql.dsl.Directive#groupby(String)} - groupBy aggregation</li>
+ *   <li>{@link com.github.elfrucool.dgraphql.dsl.Alter} - schema alterations</li>
+ *   <li>{@link com.github.elfrucool.dgraphql.dsl.JsonMutation} - JSON-based mutations</li>
+ *   <li>Multiple query blocks in a single query</li>
+ * </ul>
+ *
+ * @see com.github.elfrucool.dgraphql.dsl.Directive
+ * @see com.github.elfrucool.dgraphql.dsl.Alter
+ * @see com.github.elfrucool.dgraphql.dsl.JsonMutation
+ */
 @Component
 public class AdditionalExamples {
 

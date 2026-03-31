@@ -13,6 +13,23 @@ import jakarta.annotation.PostConstruct;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Mutation examples demonstrating data modification with DSL.
+ *
+ * <p>This class demonstrates:</p>
+ * <ul>
+ *   <li>Using {@link Mutation.Set} to add new nodes and edges</li>
+ *   <li>Using {@link SetTriple} builder to create RDF triples</li>
+ *   <li>Setting various value types (String, Number, Boolean, UID)</li>
+ *   <li>Using blank nodes ({@code _:} for new nodes)</li>
+ *   <li>Using language tags with {@link SetTriple#withLanguageTag(LanguageTag)}</li>
+ * </ul>
+ *
+ * <p>DSL classes used: Mutation, SetTriple, LanguageTag</p>
+ *
+ * @see Mutation
+ * @see SetTriple
+ */
 @Component
 public class MutationExamples {
 

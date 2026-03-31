@@ -1,5 +1,6 @@
 package com.github.elfrucool.dgraphql.examples.example;
 
+import com.github.elfrucool.dgraphql.dsl.Alter;
 import io.dgraph.DgraphClient;
 import io.dgraph.DgraphProto;
 import com.github.elfrucool.dgraphql.dsl.*;
@@ -10,6 +11,18 @@ import org.springframework.stereotype.Component;
 
 import jakarta.annotation.PostConstruct;
 
+/**
+ * Demonstrates schema operations using the DSL.
+ * <p>
+ * This example shows how to use {@link Alter} to:
+ * <ul>
+ *   <li>Create predicates with {@code @count} directive for counting edges</li>
+ *   <li>Create predicates with {@code @upsert} directive for upsert operations</li>
+ *   <li>Define type definitions with named types</li>
+ * </ul>
+ *
+ * @see Alter
+ */
 @Component
 public class SchemaExamples {
 

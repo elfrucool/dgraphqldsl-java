@@ -13,6 +13,17 @@ import org.springframework.stereotype.Component;
 import jakarta.annotation.PostConstruct;
 import java.util.List;
 
+/**
+ * Demonstrates shortest path queries using the DSL.
+ * <p>
+ * This example shows how to use {@link com.github.elfrucool.dgraphql.dsl.ShortestPath} to:
+ * <ul>
+ *   <li>Find the shortest path between two nodes</li>
+ *   <li>Find k-shortest paths between two nodes</li>
+ * </ul>
+ *
+ * @see com.github.elfrucool.dgraphql.dsl.ShortestPath
+ */
 @Component
 public class PathExamples {
 

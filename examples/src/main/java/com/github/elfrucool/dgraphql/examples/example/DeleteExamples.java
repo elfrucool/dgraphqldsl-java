@@ -12,6 +12,17 @@ import org.springframework.stereotype.Component;
 
 import jakarta.annotation.PostConstruct;
 
+/**
+ * Demonstrates delete mutations using the DSL.
+ * <p>
+ * This example shows how to use {@link com.github.elfrucool.dgraphql.dsl.Mutation} to:
+ * <ul>
+ *   <li>Delete specific predicate values from nodes</li>
+ *   <li>Delete all predicates from nodes</li>
+ * </ul>
+ *
+ * @see com.github.elfrucool.dgraphql.dsl.Mutation
+ */
 @Component
 public class DeleteExamples {
 

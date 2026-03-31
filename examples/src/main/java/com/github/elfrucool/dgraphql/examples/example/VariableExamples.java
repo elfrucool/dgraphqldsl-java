@@ -13,6 +13,25 @@ import jakarta.annotation.PostConstruct;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Variable examples demonstrating query variables and parameterization.
+ *
+ * <p>This class demonstrates:</p>
+ * <ul>
+ *   <li>Using {@link Variable#param(String)} for query parameters</li>
+ *   <li>Using {@link Variable#queryVar(String, String)} for typed variables</li>
+ *   <li>Using {@link Variable#queryVar(String, String, Object)} for default values</li>
+ *   <li>Using {@link Query#withVariables(List)} to add variables to queries</li>
+ *   <li>Using {@link VarBlock} to create query variables from results</li>
+ *   <li>Using {@link VarAssignment} for value assignments</li>
+ *   <li>Referencing variables in filters with {@link Func#val(String)}</li>
+ * </ul>
+ *
+ * <p>DSL classes used: Variable, VarBlock, VarAssignment, Query</p>
+ *
+ * @see Variable
+ * @see VarBlock
+ */
 @Component
 public class VariableExamples {
 
