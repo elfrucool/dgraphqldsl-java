@@ -3,6 +3,23 @@ package com.github.elfrucool.dgraphql.dsl;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A groupBy aggregation for grouping query results.
+ *
+ * <p>GroupBy is a sealed interface with two variants:</p>
+ * <ul>
+ *   <li>{@link Aggregation} - Simple groupBy on a predicate</li>
+ *   <li>{@link Nested} - Nested groupBy with multiple grouping levels</li>
+ * </ul>
+ *
+ * <p>Example usage:</p>
+ * <pre>
+ * GroupBy.groupBy("genre").withBlock(Block.predicate("count"))
+ * GroupBy.nested(List.of("genre", "year")).withBlock(Block.predicate("count"))
+ * </pre>
+ *
+ * @see Block#groupBy(String)
+ */
 public sealed interface GroupBy extends DqlElement 
     permits GroupBy.Aggregation, GroupBy.Nested {
 
@@ -38,6 +55,11 @@ public sealed interface GroupBy extends DqlElement
         };
     }
 
+    /**
+     * Simple groupBy on a single predicate.
+     *
+     * <p>Example: {@code GroupBy.groupBy("genre")}</p>
+     */
     record Aggregation(
         String predicate,
         List<Block> blocks,
@@ -92,6 +114,11 @@ public sealed interface GroupBy extends DqlElement
         }
     }
 
+    /**
+     * Nested groupBy with multiple grouping levels.
+     *
+     * <p>Example: {@code GroupBy.nested("genre", "year")}</p>
+     */
     record Nested(
         String predicate,
         String groupByPredicate,
