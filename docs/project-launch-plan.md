@@ -68,7 +68,7 @@ The DSL library is technically complete but needs additional work to be useful a
 | --------------------- | -------------------------------------------- | ------ |
 | Document classes      | Query, QueryBlock, Block, Func, Filter, etc. | ✅ Done |
 | Document methods      | All public methods on DSL classes            | ✅ Done |
-| Add package-info.java | Package-level documentation                  | Pending |
+| Add package-info.java | Package-level documentation                  | ✅ Done |
 | Update this document  | Place a white check mark on completion       | ✅ Done |
 
 ---
