@@ -34,11 +34,11 @@ The DSL library is technically complete but needs additional work to be useful a
 
 ## 1. Package Rename ✅
 
-**Purpose**: Align package with project group ID (`com.github.elfrucool`)
+**Purpose**: Align package with project group ID (`io.github.elfrucool`)
 
 | Task                    | Description                                             | Status  |
 | ----------------------- | ------------------------------------------------------- | ------- |
-| Rename package          | `org.frunix.dgraphql` → `com.github.elfrucool.dgraphql` | ✅ Done |
+| Rename package          | `org.frunix.dgraphql` → `io.github.elfrucool.dgraphql` | ✅ Done |
 | Update imports          | Main source, tests, examples                            | ✅ Done |
 | Update build.gradle.kts | Ensure package matches                                  | ✅ Done |
 | Update AGENTS.md        | Reflect new package in docs                             | ✅ Done |
@@ -122,7 +122,7 @@ The DSL library is technically complete but needs additional work to be useful a
 | Signing               | Configure JAR signing for release builds                                                                    | ✅ Done   |
 | Javadoc JAR           | Generate and publish Javadoc                                                                                | ✅ Done   |
 | Publish workflow      | Add GitHub Actions workflow for publishing                                                                  | ✅ Done   |
-| Sonatype registration | Register with Sonatype and request group ID `com.github.elfrucool`                                          | ⏳ Manual |
+| Sonatype registration | Register with Sonatype and request group ID `io.github.elfrucool`                                          | ⏳ Manual |
 | Maven secrets         | Add MAVEN_USERNAME and MAVEN_PASSWORD secrets                                                               | ⏳ Manual |
 | Test publication      | Publish snapshot to Maven Central for verification                                                          | ⏳ Manual |
 | Release process       | Document how to make releases (version bump, tag, publish)                                                  | ⏳ Manual |
@@ -130,7 +130,7 @@ The DSL library is technically complete but needs additional work to be useful a
 
 **Notes**:
 
-- Group ID `com.github.elfrucool` is already set - works for both GitHub Packages and Maven Central
+- Group ID `io.github.elfrucool` is already set - works for both GitHub Packages and Maven Central
 - Need to register with Maven Central (Sonatype) for the group ID
 - GPG keys are set up, secrets added to GitHub
 
