@@ -49,6 +49,7 @@ Follow Linus Torvalds' commit message style (from subsurface project):
 - **Body**: Explain _why_, not just _what_ - describe the solution and reasoning
 - **Width**: Keep lines under 74 characters
 - **Signed-off-by**: Add at end of each commit: `Signed-off-by: Name <email>`
+- The signed-off user + email should come from git settings (git config --get user.name/email)
 
 Example:
 
