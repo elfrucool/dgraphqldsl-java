@@ -79,11 +79,14 @@ The DSL library is technically complete but needs additional work to be useful a
 
 ### CI Workflow
 
-| Task                 | Description                                 | Status    |
-| -------------------- | ------------------------------------------- | --------- |
-| Add CI workflow      | GitHub Actions to run tests on PRs/pushes   | ✅ Done   |
-| Branch protection    | Require reviews, passing tests before merge | ⏳ Manual |
-| Update this document | Place a white check mark on completion      | ✅ Done   |
+| Task                 | Description                                 | Status                                                             |
+| -------------------- | ------------------------------------------- | ------------------------------------------------------------------ |
+| Add CI workflow      | GitHub Actions to run tests on PRs/pushes   | ✅ Done                                                            |
+| Branch protection    | Require reviews, passing tests before merge | ✅ Done                                                            |
+| CI status check      | Require CI to pass before merge             | ⏳ Pending - workflow needs to run in PR context first (see below) |
+| Update this document | Place a white check mark on completion      | ✅ Done                                                            |
+
+> **Note on CI status check**: GitHub requires the workflow to have run at least once in a PR context before it appears in the "require status checks" dropdown. This will be automatically available after the first PR is opened and CI runs on it.
 
 ### Templates and Policies
 
@@ -112,20 +115,24 @@ The DSL library is technically complete but needs additional work to be useful a
 
 **Purpose**: Make the library easily consumable via Maven/Gradle
 
-| Task                 | Description                                                                                                 |
-| -------------------- | ----------------------------------------------------------------------------------------------------------- |
-| Explain              | Explain user the activities on this phase, which of these can be performed by an agent and which are manual |
-| POM metadata         | Add developers, SCM, license info for Maven Central acceptance                                              |
-| Signing              | Configure JAR signing for release builds                                                                    |
-| Javadoc JAR          | Generate and publish Javadoc                                                                                |
-| Test publication     | Publish snapshot to GitHub Packages for verification                                                        |
-| Release process      | Document how to make releases (version bump, tag, publish)                                                  |
-| Update this document | Place a white check mark on completion                                                                      |
+| Task                  | Description                                                                                                 | Status    |
+| --------------------- | ----------------------------------------------------------------------------------------------------------- | --------- |
+| Explain               | Explain user the activities on this phase, which of these can be performed by an agent and which are manual | ✅ Done   |
+| POM metadata          | Add developers, SCM, license info for Maven Central acceptance                                              | ✅ Done   |
+| Signing               | Configure JAR signing for release builds                                                                    | ✅ Done   |
+| Javadoc JAR           | Generate and publish Javadoc                                                                                | ✅ Done   |
+| Publish workflow      | Add GitHub Actions workflow for publishing                                                                  | ✅ Done   |
+| Sonatype registration | Register with Sonatype and request group ID `com.github.elfrucool`                                          | ⏳ Manual |
+| Maven secrets         | Add MAVEN_USERNAME and MAVEN_PASSWORD secrets                                                               | ⏳ Manual |
+| Test publication      | Publish snapshot to Maven Central for verification                                                          | ⏳ Manual |
+| Release process       | Document how to make releases (version bump, tag, publish)                                                  | ⏳ Manual |
+| Update this document  | Place a white check mark on completion                                                                      | ⏳ Manual |
 
 **Notes**:
 
 - Group ID `com.github.elfrucool` is already set - works for both GitHub Packages and Maven Central
 - Need to register with Maven Central (Sonatype) for the group ID
+- GPG keys are set up, secrets added to GitHub
 
 ---
 
