@@ -93,7 +93,6 @@ publishing {
 
 signing {
 	sign(publishing.publications.getByName("java"))
-	useGpgCmd()
 }
 
 spotless {
