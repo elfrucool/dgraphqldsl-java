@@ -96,11 +96,6 @@ signing {
 	useGpgCmd()
 }
 
-tasks.withType<Sign>().configureEach {
-	// Required for CI environments without TTY
-	gpgUseAgent.set(System.getenv("CI") != null)
-}
-
 spotless {
 	java {
 		palantirJavaFormat()
