@@ -19,8 +19,7 @@ import java.util.List;
  * paths as kshortest(from: 0x1, to: 0x100, numpaths: 5) @recurse(depth: 10)
  * </pre>
  */
-public sealed interface ShortestPath extends DqlElement
-    permits ShortestPath.KShortest {
+public sealed interface ShortestPath extends DqlElement permits ShortestPath.KShortest {
 
     /**
      * Creates a shortest path query.
@@ -56,40 +55,80 @@ public sealed interface ShortestPath extends DqlElement
      * {@link #kShortest(String, String, String, int)} to create.</p>
      */
     record KShortest(
-        String varName,
-        String from,
-        String to,
-        Integer numpaths,
-        Integer depth,
-        Float minweight,
-        Float maxweight,
-        Block predicate,
-        List<Directive> directives
-    ) implements ShortestPath {
+            String varName,
+            String from,
+            String to,
+            Integer numpaths,
+            Integer depth,
+            Float minweight,
+            Float maxweight,
+            Block predicate,
+            List<Directive> directives)
+            implements ShortestPath {
 
         public KShortest withNumpaths(int numpaths) {
-            return new KShortest(this.varName, this.from, this.to, numpaths, this.depth, 
-                this.minweight, this.maxweight, this.predicate, this.directives);
+            return new KShortest(
+                    this.varName,
+                    this.from,
+                    this.to,
+                    numpaths,
+                    this.depth,
+                    this.minweight,
+                    this.maxweight,
+                    this.predicate,
+                    this.directives);
         }
 
         public KShortest withDepth(int depth) {
-            return new KShortest(this.varName, this.from, this.to, this.numpaths, depth, 
-                this.minweight, this.maxweight, this.predicate, this.directives);
+            return new KShortest(
+                    this.varName,
+                    this.from,
+                    this.to,
+                    this.numpaths,
+                    depth,
+                    this.minweight,
+                    this.maxweight,
+                    this.predicate,
+                    this.directives);
         }
 
         public KShortest withWeightRange(float minweight, float maxweight) {
-            return new KShortest(this.varName, this.from, this.to, this.numpaths, this.depth, 
-                minweight, maxweight, this.predicate, this.directives);
+            return new KShortest(
+                    this.varName,
+                    this.from,
+                    this.to,
+                    this.numpaths,
+                    this.depth,
+                    minweight,
+                    maxweight,
+                    this.predicate,
+                    this.directives);
         }
 
         public KShortest withPredicate(Block predicate) {
-            return new KShortest(this.varName, this.from, this.to, this.numpaths, this.depth, 
-                this.minweight, this.maxweight, predicate, this.directives);
+            return new KShortest(
+                    this.varName,
+                    this.from,
+                    this.to,
+                    this.numpaths,
+                    this.depth,
+                    this.minweight,
+                    this.maxweight,
+                    predicate,
+                    this.directives);
         }
 
         public KShortest withDirectives(List<Directive> directives) {
-            return new KShortest(this.varName, this.from, this.to, this.numpaths, this.depth, 
-                this.minweight, this.maxweight, this.predicate, directives);
+            return new KShortest(
+                    this.varName,
+                    this.from,
+                    this.to,
+                    this.numpaths,
+                    this.depth,
+                    this.minweight,
+                    this.maxweight,
+                    this.predicate,
+                    directives);
         }
 
         public KShortest withDirective(Directive directive) {
@@ -101,13 +140,13 @@ public sealed interface ShortestPath extends DqlElement
         @Override
         public String dql() {
             StringBuilder sb = new StringBuilder();
-            
+
             if (varName != null && !varName.isEmpty()) {
                 sb.append(varName).append(" as ");
             }
-            
+
             sb.append("shortest(");
-            
+
             boolean first = true;
             if (from != null) {
                 sb.append("from: ").append(from);
@@ -137,19 +176,19 @@ public sealed interface ShortestPath extends DqlElement
                 if (!first) sb.append(", ");
                 sb.append("maxweight: ").append(maxweight);
             }
-            
+
             sb.append(") { ");
-            
+
             if (predicate != null) {
                 sb.append(predicate.dql());
             }
-            
+
             for (Directive d : directives) {
                 sb.append(" ").append(d.dql());
             }
-            
+
             sb.append(" }");
-            
+
             return sb.toString();
         }
     }

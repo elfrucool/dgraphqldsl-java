@@ -5,13 +5,12 @@ import io.dgraph.DgraphProto;
 import io.dgraph.Transaction;
 import io.github.elfrucool.dgraphql.dsl.*;
 import io.github.elfrucool.dgraphql.examples.result.ResultsCollector;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-
 import jakarta.annotation.PostConstruct;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * Mutation examples demonstrating data modification with DSL.
@@ -58,13 +57,13 @@ public class MutationExamples {
     private void setupData() {
         log.info("Setting up test data for mutations...");
         Mutation mutation = Mutation.set(List.of(
-            SetTriple.subject("_:alice").predicate("name").value("Alice"),
-            SetTriple.subject("_:bob").predicate("name").value("Bob")
-        ));
+                SetTriple.subject("_:alice").predicate("name").value("Alice"),
+                SetTriple.subject("_:bob").predicate("name").value("Bob")));
         try (Transaction txn = dgraphClient.newTransaction()) {
             DgraphProto.Mutation mu = DgraphProto.Mutation.newBuilder()
-                .setSetJson(com.google.protobuf.ByteString.copyFromUtf8("{\"set\":[{\"name\":\"Alice\"},{\"name\":\"Bob\"}]}"))
-                .build();
+                    .setSetJson(com.google.protobuf.ByteString.copyFromUtf8(
+                            "{\"set\":[{\"name\":\"Alice\"},{\"name\":\"Bob\"}]}"))
+                    .build();
             txn.mutate(mu);
             txn.commit();
             log.info("Created Alice and Bob for mutation testing");
@@ -77,9 +76,8 @@ public class MutationExamples {
         log.info("Cleaning up mutation test data...");
         try (Transaction txn = dgraphClient.newTransaction()) {
             DgraphProto.Mutation mu = DgraphProto.Mutation.newBuilder()
-                .setDeleteJson(com.google.protobuf.ByteString.copyFromUtf8(
-                    "{\"delete\":[{\"name\":null}]}"))
-                .build();
+                    .setDeleteJson(com.google.protobuf.ByteString.copyFromUtf8("{\"delete\":[{\"name\":null}]}"))
+                    .build();
             txn.mutate(mu);
             txn.commit();
         } catch (Exception e) {
@@ -89,11 +87,10 @@ public class MutationExamples {
 
     private void setMutation() {
         log.info("--- Set Mutation ---");
-        
+
         Mutation mutation = Mutation.set(List.of(
-            SetTriple.subject("_:newPerson1").predicate("name").value("NewPerson1"),
-            SetTriple.subject("_:newPerson2").predicate("name").value("NewPerson2")
-        ));
+                SetTriple.subject("_:newPerson1").predicate("name").value("NewPerson1"),
+                SetTriple.subject("_:newPerson2").predicate("name").value("NewPerson2")));
 
         log.info("Mutation (JSON): {}", mutation.toJsonList());
         executeMutation(mutation, "Set Mutation");
@@ -101,10 +98,9 @@ public class MutationExamples {
 
     private void deleteMutation() {
         log.info("--- Delete Mutation ---");
-        
-        Mutation mutation = Mutation.Delete.of(List.of(
-            SetTriple.subject("0x1").predicate("name").value("*")
-        ));
+
+        Mutation mutation = Mutation.Delete.of(
+                List.of(SetTriple.subject("0x1").predicate("name").value("*")));
 
         log.info("Mutation (JSON): {}", mutation.toJsonList());
         executeMutation(mutation, "Delete Mutation");
@@ -112,13 +108,12 @@ public class MutationExamples {
 
     private void conditionalMutation() {
         log.info("--- Conditional Mutation ---");
-        
-        Mutation.Set setMutation = Mutation.Set.of(List.of(
-            SetTriple.subject("uid(alice)").predicate("status").value("active")
-        ));
-        
+
+        Mutation.Set setMutation = Mutation.Set.of(
+                List.of(SetTriple.subject("uid(alice)").predicate("status").value("active")));
+
         String query = "{ alice as var(func: eq(name, \"Alice\")) }";
-        
+
         Mutation mutation = Mutation.upsertRaw(query, setMutation);
 
         log.info("Mutation (JSON): {}", mutation.toJsonList());
@@ -128,11 +123,11 @@ public class MutationExamples {
     private void executeMutation(Mutation mutation, String testName) {
         try {
             String jsonStr;
-            
+
             if (mutation instanceof io.github.elfrucool.dgraphql.dsl.Mutation.UpsertRaw upsert) {
                 Map<String, Object> upsertJson = new java.util.LinkedHashMap<>();
                 upsertJson.put("query", upsert.query());
-                
+
                 List<Map<String, Object>> mutationList = new java.util.ArrayList<>();
                 List<Map<String, Object>> setList = new java.util.ArrayList<>();
                 for (var t : upsert.set().triples()) {
@@ -146,10 +141,10 @@ public class MutationExamples {
                 mutObj.put("set", setList);
                 mutationList.add(mutObj);
                 upsertJson.put("mutations", mutationList);
-                
+
                 jsonStr = new com.fasterxml.jackson.databind.ObjectMapper().writeValueAsString(upsertJson);
                 log.info("Upsert JSON: {}", jsonStr);
-                
+
                 java.net.URL url = new java.net.URL("http://localhost:8080/mutate?commitNow=true");
                 java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("POST");
@@ -160,29 +155,31 @@ public class MutationExamples {
                 }
                 int code = conn.getResponseCode();
                 java.io.BufferedReader reader = new java.io.BufferedReader(
-                    new java.io.InputStreamReader(code == 200 ? conn.getInputStream() : conn.getErrorStream()));
+                        new java.io.InputStreamReader(code == 200 ? conn.getInputStream() : conn.getErrorStream()));
                 StringBuilder response = new StringBuilder();
                 String line;
                 while ((line = reader.readLine()) != null) response.append(line);
                 reader.close();
                 conn.disconnect();
-                
+
                 log.info("Upsert response code: {}, body: {}", code, response);
                 if (code == 200) {
-                    results.record("08 Mutation Examples (Phase 9)", testName, mutation.dql(), "Upsert successful", true);
+                    results.record(
+                            "08 Mutation Examples (Phase 9)", testName, mutation.dql(), "Upsert successful", true);
                 } else {
-                    results.record("08 Mutation Examples (Phase 9)", testName, mutation.dql(), "Error: " + response, false);
+                    results.record(
+                            "08 Mutation Examples (Phase 9)", testName, mutation.dql(), "Error: " + response, false);
                 }
                 return;
             }
-            
+
             try (Transaction txn = dgraphClient.newTransaction()) {
                 Map<String, Object> jsonBody = Map.of("set", mutation.toJsonList());
                 jsonStr = new com.fasterxml.jackson.databind.ObjectMapper().writeValueAsString(jsonBody);
-                
+
                 DgraphProto.Mutation mu = DgraphProto.Mutation.newBuilder()
-                    .setSetJson(com.google.protobuf.ByteString.copyFromUtf8(jsonStr))
-                    .build();
+                        .setSetJson(com.google.protobuf.ByteString.copyFromUtf8(jsonStr))
+                        .build();
                 DgraphProto.Response response = txn.mutate(mu);
                 txn.commit();
                 log.info("Mutation successful - response: {}", response);
@@ -200,7 +197,7 @@ public class MutationExamples {
             results.record("08 Mutation Examples (Phase 9)", testName, mutation.dql(), "Error: " + errorMsg, false);
         }
     }
-    
+
     private String extractVarName(String query) {
         int asPos = query.indexOf(" as ");
         int start = asPos;

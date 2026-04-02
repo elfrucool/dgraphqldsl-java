@@ -1,12 +1,11 @@
 package io.github.elfrucool.dgraphql.examples.result;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * Collects and reports test results from all example classes.
@@ -35,19 +34,19 @@ public class ResultsCollector {
 
     public void printReport() {
         List<ExampleResult> sortedResults = results.stream()
-            .sorted((a, b) -> a.example().compareTo(b.example()))
-            .collect(Collectors.toList());
-        
+                .sorted((a, b) -> a.example().compareTo(b.example()))
+                .collect(Collectors.toList());
+
         StringBuilder output = new StringBuilder();
         output.append(""
                 + "\n╔════════════════════════════════════════════════════════════════════════════"
                 + "\n║                           EXAMPLES REPORT"
                 + "\n╠════════════════════════════════════════════════════════════════════════════");
-        
+
         String currentSection = "";
         int passed = 0;
         int failed = 0;
-        
+
         for (ExampleResult r : sortedResults) {
             if (!r.example().equals(currentSection)) {
                 currentSection = r.example();
@@ -55,19 +54,21 @@ public class ResultsCollector {
                 output.append("\n║  %s".formatted(String.format("%-74s", currentSection)));
                 output.append("\n║");
             }
-            
+
             String status = r.success() ? "✓ PASS" : "✗ FAIL";
-            if (r.success()) passed++; else failed++;
-            
+            if (r.success()) passed++;
+            else failed++;
+
             output.append("\n║    %s: %s".formatted(String.format("%-10s", status), String.format("%-60s", r.test())));
         }
-        
+
         output.append("\n║");
         output.append("\n╠════════════════════════════════════════════════════════════════════════════");
-        output.append("\n║  Total: %s | Passed: %s | Failed: %s".formatted( 
-            String.format("%-6s", passed + failed),
-            String.format("%-6s", passed),
-            String.format("%-6s", failed)));
+        output.append("\n║  Total: %s | Passed: %s | Failed: %s"
+                .formatted(
+                        String.format("%-6s", passed + failed),
+                        String.format("%-6s", passed),
+                        String.format("%-6s", failed)));
         output.append("\n╚════════════════════════════════════════════════════════════════════════════");
         output.append("\n");
         log.info("{}", output);

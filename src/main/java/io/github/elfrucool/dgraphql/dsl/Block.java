@@ -30,12 +30,22 @@ import java.util.List;
  * @see Directive
  * @see Func
  */
-public sealed interface Block extends DqlElement 
-    permits Block.Predicate, Block.FuncBlock, Block.Nested, Block.Reverse, Block.Var, Block.GroupByBlock, Block.Expand {
+public sealed interface Block extends DqlElement
+        permits Block.Predicate,
+                Block.FuncBlock,
+                Block.Nested,
+                Block.Reverse,
+                Block.Var,
+                Block.GroupByBlock,
+                Block.Expand {
 
     List<Block> blocks();
+
     List<Directive> directives();
-    default LanguageTag languageTag() { return null; }
+
+    default LanguageTag languageTag() {
+        return null;
+    }
 
     default Block withBlocks(List<Block> blocks) {
         return switch (this) {
@@ -102,13 +112,8 @@ public sealed interface Block extends DqlElement
      *
      * <p>Example: {@code name}, {@code userName: name}</p>
      */
-    record Predicate(
-        String name,
-        String alias,
-        List<Block> blocks,
-        List<Directive> directives,
-        LanguageTag languageTag
-    ) implements Block {
+    record Predicate(String name, String alias, List<Block> blocks, List<Directive> directives, LanguageTag languageTag)
+            implements Block {
 
         public static Predicate of(String name) {
             return new Predicate(name, null, List.of(), List.of(), null);
@@ -192,12 +197,7 @@ public sealed interface Block extends DqlElement
      *
      * <p>Example: {@code count(friend)}, {@code min(age)}</p>
      */
-    record FuncBlock(
-        Func func,
-        String alias,
-        List<Block> blocks,
-        List<Directive> directives
-    ) implements Block {
+    record FuncBlock(Func func, String alias, List<Block> blocks, List<Directive> directives) implements Block {
 
         public static FuncBlock of(Func func) {
             return new FuncBlock(func, null, List.of(), List.of());
@@ -265,12 +265,8 @@ public sealed interface Block extends DqlElement
      *
      * <p>Example: {@code friend { name age }}</p>
      */
-    record Nested(
-        String name,
-        List<Block> blocks,
-        List<Directive> directives,
-        LanguageTag languageTag
-    ) implements Block {
+    record Nested(String name, List<Block> blocks, List<Directive> directives, LanguageTag languageTag)
+            implements Block {
 
         public static Nested of(String name) {
             return new Nested(name, List.of(), List.of(), null);
@@ -345,12 +341,8 @@ public sealed interface Block extends DqlElement
      *
      * <p>Example: {@code ~friend { name }}</p>
      */
-    record Reverse(
-        String name,
-        List<Block> blocks,
-        List<Directive> directives,
-        LanguageTag languageTag
-    ) implements Block {
+    record Reverse(String name, List<Block> blocks, List<Directive> directives, LanguageTag languageTag)
+            implements Block {
 
         public static Reverse of(String name) {
             return new Reverse(name, List.of(), List.of(), null);
@@ -425,11 +417,7 @@ public sealed interface Block extends DqlElement
      *
      * <p>Example: {@code count as uid}, {@code myVar: friend { name }}</p>
      */
-    record Var(
-        String varName,
-        String predicate,
-        List<Block> blocks
-    ) implements Block {
+    record Var(String varName, String predicate, List<Block> blocks) implements Block {
 
         public static Var of(String varName, String predicate) {
             return new Var(varName, predicate, List.of());
@@ -475,9 +463,7 @@ public sealed interface Block extends DqlElement
      *
      * @see GroupBy
      */
-    record GroupByBlock(
-        GroupBy groupBy
-    ) implements Block {
+    record GroupByBlock(GroupBy groupBy) implements Block {
 
         public GroupByBlock withBlocks(List<Block> blocks) {
             return new GroupByBlock(groupBy.withBlocks(blocks));
@@ -583,11 +569,7 @@ public sealed interface Block extends DqlElement
      * @see #expand(String)
      * @see #expandAll()
      */
-    record Expand(
-        String typeName,
-        List<Block> blocks,
-        List<Directive> directives
-    ) implements Block {
+    record Expand(String typeName, List<Block> blocks, List<Directive> directives) implements Block {
 
         public static Expand type(String typeName) {
             return new Expand(typeName, List.of(), List.of());
@@ -639,11 +621,11 @@ public sealed interface Block extends DqlElement
         public String dql() {
             StringBuilder sb = new StringBuilder();
             sb.append("expand(").append(typeName).append(")");
-            
+
             for (Directive d : directives) {
                 sb.append(" ").append(d.dql());
             }
-            
+
             if (!blocks.isEmpty()) {
                 sb.append(" { ");
                 for (int i = 0; i < blocks.size(); i++) {
@@ -652,7 +634,7 @@ public sealed interface Block extends DqlElement
                 }
                 sb.append(" }");
             }
-            
+
             return sb.toString();
         }
     }

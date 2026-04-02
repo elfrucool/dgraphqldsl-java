@@ -23,8 +23,7 @@ package io.github.elfrucool.dgraphql.dsl;
  * @see Func
  * @see Directive#filter(Filter)
  */
-public sealed interface Filter extends DqlElement 
-    permits Filter.And, Filter.Or, Filter.Not, Filter.FuncFilter {
+public sealed interface Filter extends DqlElement permits Filter.And, Filter.Or, Filter.Not, Filter.FuncFilter {
 
     /**
      * Boolean AND of two filters.

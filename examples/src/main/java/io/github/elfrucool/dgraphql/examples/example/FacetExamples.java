@@ -5,12 +5,11 @@ import io.dgraph.DgraphProto;
 import io.dgraph.Transaction;
 import io.github.elfrucool.dgraphql.dsl.*;
 import io.github.elfrucool.dgraphql.examples.result.ResultsCollector;
+import jakarta.annotation.PostConstruct;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
-import jakarta.annotation.PostConstruct;
-import java.util.List;
 
 /**
  * Facet examples demonstrating edge facets (metadata on edges).
@@ -60,8 +59,8 @@ public class FacetExamples {
             """;
         try (Transaction txn = dgraphClient.newTransaction()) {
             DgraphProto.Mutation mu = DgraphProto.Mutation.newBuilder()
-                .setSetNquads(com.google.protobuf.ByteString.copyFromUtf8(nquads))
-                .build();
+                    .setSetNquads(com.google.protobuf.ByteString.copyFromUtf8(nquads))
+                    .build();
             txn.mutate(mu);
             txn.commit();
             log.info("FacetExamples: Test data inserted (Alice with friends having since facet)");
@@ -78,8 +77,8 @@ public class FacetExamples {
             """;
         try (Transaction txn = dgraphClient.newTransaction()) {
             DgraphProto.Mutation mu = DgraphProto.Mutation.newBuilder()
-                .setDelNquads(com.google.protobuf.ByteString.copyFromUtf8(nquads))
-                .build();
+                    .setDelNquads(com.google.protobuf.ByteString.copyFromUtf8(nquads))
+                    .build();
             txn.mutate(mu);
             txn.commit();
             log.info("FacetExamples: Test data cleaned up");
@@ -90,17 +89,14 @@ public class FacetExamples {
 
     private void basicFacets() {
         log.info("--- Basic Facets ---");
-        
+
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.eq("name", "Alice"))
-                    .withBlocks(List.of(
-                        Block.predicate("name"),
-                        Block.nested("friend")
-                            .withDirective(Directive.facets("since"))
-                            .withBlocks(List.of(Block.predicate("name")))
-                    ))
-            ));
+                .withBlocks(List.of(QueryBlock.block("me", Func.eq("name", "Alice"))
+                        .withBlocks(List.of(
+                                Block.predicate("name"),
+                                Block.nested("friend")
+                                        .withDirective(Directive.facets("since"))
+                                        .withBlocks(List.of(Block.predicate("name")))))));
 
         DqlResult result = query.dql();
         log.info("Query: {}", result.query());
@@ -109,7 +105,8 @@ public class FacetExamples {
 
     private void executeQuery(String query, String testName) {
         try {
-            DgraphProto.Response response = dgraphClient.newReadOnlyTransaction().query(query);
+            DgraphProto.Response response =
+                    dgraphClient.newReadOnlyTransaction().query(query);
             String json = response.getJson().toStringUtf8();
             boolean success = !json.isEmpty() && !json.equals("{}") && !json.equals("{\"me\":[]}");
             if (json.isEmpty() || json.equals("{}") || json.equals("{\"me\":[]}")) {

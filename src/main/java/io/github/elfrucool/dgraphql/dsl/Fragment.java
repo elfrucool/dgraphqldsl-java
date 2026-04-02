@@ -16,10 +16,7 @@ import java.util.List;
  * @see FragmentRef
  * @see Query#withFragments(List)
  */
-public record Fragment(
-    String name,
-    List<Block> blocks
-) implements DqlElement {
+public record Fragment(String name, List<Block> blocks) implements DqlElement {
 
     /**
      * Creates a fragment with the given name.

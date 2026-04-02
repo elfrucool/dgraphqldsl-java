@@ -5,12 +5,11 @@ import io.dgraph.DgraphProto;
 import io.dgraph.Transaction;
 import io.github.elfrucool.dgraphql.dsl.*;
 import io.github.elfrucool.dgraphql.examples.result.ResultsCollector;
+import jakarta.annotation.PostConstruct;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
-import jakarta.annotation.PostConstruct;
-import java.util.List;
 
 /**
  * Demonstrates advanced query features using the DSL.
@@ -69,8 +68,8 @@ public class AdvancedExamples {
             """;
         try (Transaction txn = dgraphClient.newTransaction()) {
             DgraphProto.Mutation mu = DgraphProto.Mutation.newBuilder()
-                .setSetNquads(com.google.protobuf.ByteString.copyFromUtf8(nquads))
-                .build();
+                    .setSetNquads(com.google.protobuf.ByteString.copyFromUtf8(nquads))
+                    .build();
             txn.mutate(mu);
             txn.commit();
             log.info("AdvancedExamples: Test data inserted (Alice, Bob, Charlie, Diana with friendships)");
@@ -88,8 +87,8 @@ public class AdvancedExamples {
             """;
         try (Transaction txn = dgraphClient.newTransaction()) {
             DgraphProto.Mutation mu = DgraphProto.Mutation.newBuilder()
-                .setDelNquads(com.google.protobuf.ByteString.copyFromUtf8(nquads))
-                .build();
+                    .setDelNquads(com.google.protobuf.ByteString.copyFromUtf8(nquads))
+                    .build();
             txn.mutate(mu);
             txn.commit();
             log.info("AdvancedExamples: Test data cleaned up");
@@ -100,17 +99,13 @@ public class AdvancedExamples {
 
     private void cascadeDirective() {
         log.info("--- Cascade Directive ---");
-        
+
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.has("friend"))
-                    .withDirective(Directive.cascade())
-                    .withBlocks(List.of(
-                        Block.predicate("name"),
-                        Block.nested("friend")
-                            .withBlocks(List.of(Block.predicate("name")))
-                    ))
-            ));
+                .withBlocks(List.of(QueryBlock.block("me", Func.has("friend"))
+                        .withDirective(Directive.cascade())
+                        .withBlocks(List.of(
+                                Block.predicate("name"),
+                                Block.nested("friend").withBlocks(List.of(Block.predicate("name")))))));
 
         DqlResult result = query.dql();
         log.info("Query: {}", result.query());
@@ -119,17 +114,13 @@ public class AdvancedExamples {
 
     private void normalizeDirective() {
         log.info("--- Normalize Directive ---");
-        
+
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.eq("name", "Alice"))
-                    .withDirective(Directive.normalize())
-                    .withBlocks(List.of(
-                        Block.predicate("name", "personName"),
-                        Block.nested("friend")
-                            .withBlocks(List.of(Block.predicate("name", "friendName")))
-                    ))
-            ));
+                .withBlocks(List.of(QueryBlock.block("me", Func.eq("name", "Alice"))
+                        .withDirective(Directive.normalize())
+                        .withBlocks(List.of(
+                                Block.predicate("name", "personName"),
+                                Block.nested("friend").withBlocks(List.of(Block.predicate("name", "friendName")))))));
 
         DqlResult result = query.dql();
         log.info("Query: {}", result.query());
@@ -138,16 +129,11 @@ public class AdvancedExamples {
 
     private void recurseQuery() {
         log.info("--- Recurse Query ---");
-        
+
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.has("friend"))
-                    .withDirective(Directive.recurse(3))
-                    .withBlocks(List.of(
-                        Block.predicate("name"),
-                        Block.predicate("friend")
-                    ))
-            ));
+                .withBlocks(List.of(QueryBlock.block("me", Func.has("friend"))
+                        .withDirective(Directive.recurse(3))
+                        .withBlocks(List.of(Block.predicate("name"), Block.predicate("friend")))));
 
         DqlResult result = query.dql();
         log.info("Query: {}", result.query());
@@ -156,21 +142,12 @@ public class AdvancedExamples {
 
     private void fragmentExample() {
         log.info("--- Fragment Example ---");
-        
+
         Query query = Query.query()
-            .withFragment(
-                Fragment.fragment("PersonDetails")
-                    .withBlocks(List.of(
-                        Block.predicate("name"),
-                        Block.predicate("age")
-                    ))
-            )
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.eq("name", "Alice"))
-                    .withBlocks(List.of(
-                        Block.predicate("... PersonDetails")
-                    ))
-            ));
+                .withFragment(Fragment.fragment("PersonDetails")
+                        .withBlocks(List.of(Block.predicate("name"), Block.predicate("age"))))
+                .withBlocks(List.of(QueryBlock.block("me", Func.eq("name", "Alice"))
+                        .withBlocks(List.of(Block.predicate("... PersonDetails")))));
 
         DqlResult result = query.dql();
         log.info("Query: {}", result.query());
@@ -179,7 +156,8 @@ public class AdvancedExamples {
 
     private void executeQuery(String query, String testName) {
         try {
-            DgraphProto.Response response = dgraphClient.newReadOnlyTransaction().query(query);
+            DgraphProto.Response response =
+                    dgraphClient.newReadOnlyTransaction().query(query);
             String json = response.getJson().toStringUtf8();
             boolean success = !json.isEmpty() && !json.equals("{}") && !json.equals("{\"me\":[]}");
             if (json.isEmpty() || json.equals("{}") || json.equals("{\"me\":[]}")) {

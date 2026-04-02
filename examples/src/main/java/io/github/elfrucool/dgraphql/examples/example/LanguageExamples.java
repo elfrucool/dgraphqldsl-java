@@ -1,19 +1,17 @@
 package io.github.elfrucool.dgraphql.examples.example;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.protobuf.ByteString;
 import io.dgraph.DgraphClient;
 import io.dgraph.DgraphProto;
 import io.dgraph.Transaction;
 import io.github.elfrucool.dgraphql.dsl.*;
 import io.github.elfrucool.dgraphql.examples.result.ResultsCollector;
+import jakarta.annotation.PostConstruct;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
-import jakarta.annotation.PostConstruct;
-import java.util.List;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Language examples demonstrating language-tagged predicates.
@@ -59,11 +57,10 @@ public class LanguageExamples {
 
     private void setupSchema() {
         String schema = "localename: string @lang .";
-        
+
         try {
-            DgraphProto.Operation operation = DgraphProto.Operation.newBuilder()
-                .setSchema(schema)
-                .build();
+            DgraphProto.Operation operation =
+                    DgraphProto.Operation.newBuilder().setSchema(schema).build();
             dgraphClient.alter(operation);
         } catch (Exception e) {
             log.warn("LanguageExamples: Schema setup error: {}", e.getMessage());
@@ -84,8 +81,8 @@ public class LanguageExamples {
 
         try (Transaction txn = dgraphClient.newTransaction()) {
             DgraphProto.Mutation mu = DgraphProto.Mutation.newBuilder()
-                .setSetNquads(ByteString.copyFromUtf8(nquads))
-                .build();
+                    .setSetNquads(ByteString.copyFromUtf8(nquads))
+                    .build();
             txn.mutate(mu);
             txn.commit();
         } catch (Exception e) {
@@ -97,15 +94,10 @@ public class LanguageExamples {
     private void queryLanguageTags() {
         String testName = "Single Language Tag";
         log.info("--- Query with single language tag ---");
-        
+
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.uid("0x1"))
-                    .withBlocks(List.of(
-                        Block.predicate("localename", LanguageTag.en()),
-                        Block.predicate("age")
-                    ))
-            ));
+                .withBlocks(List.of(QueryBlock.block("me", Func.uid("0x1"))
+                        .withBlocks(List.of(Block.predicate("localename", LanguageTag.en()), Block.predicate("age")))));
 
         DqlResult result = query.dql();
         log.info("DSL: {}", result.query());
@@ -116,7 +108,8 @@ public class LanguageExamples {
             results.record("11 Language Examples (Phase 11.1)", testName, result.query(), json, true);
             log.info("Response: {}", json);
         } catch (Exception e) {
-            results.record("11 Language Examples (Phase 11.1)", testName, result.query(), "Error: " + e.getMessage(), false);
+            results.record(
+                    "11 Language Examples (Phase 11.1)", testName, result.query(), "Error: " + e.getMessage(), false);
             log.warn("Error: {}", e.getMessage());
         }
     }
@@ -124,15 +117,12 @@ public class LanguageExamples {
     private void queryLanguageFallback() {
         String testName = "Language Fallback";
         log.info("--- Query with language fallback ---");
-        
+
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.uid("0x1"))
-                    .withBlocks(List.of(
-                        Block.predicate("localename", LanguageTag.of("en", "fr")),
-                        Block.predicate("localename", LanguageTag.es())
-                    ))
-            ));
+                .withBlocks(List.of(QueryBlock.block("me", Func.uid("0x1"))
+                        .withBlocks(List.of(
+                                Block.predicate("localename", LanguageTag.of("en", "fr")),
+                                Block.predicate("localename", LanguageTag.es())))));
 
         DqlResult result = query.dql();
         log.info("DSL: {}", result.query());
@@ -143,7 +133,8 @@ public class LanguageExamples {
             results.record("11 Language Examples (Phase 11.1)", testName, result.query(), json, true);
             log.info("Response: {}", json);
         } catch (Exception e) {
-            results.record("11 Language Examples (Phase 11.1)", testName, result.query(), "Error: " + e.getMessage(), false);
+            results.record(
+                    "11 Language Examples (Phase 11.1)", testName, result.query(), "Error: " + e.getMessage(), false);
             log.warn("Error: {}", e.getMessage());
         }
     }
@@ -156,8 +147,8 @@ public class LanguageExamples {
 
         try (Transaction txn = dgraphClient.newTransaction()) {
             DgraphProto.Mutation mu = DgraphProto.Mutation.newBuilder()
-                .setDelNquads(ByteString.copyFromUtf8(nquads))
-                .build();
+                    .setDelNquads(ByteString.copyFromUtf8(nquads))
+                    .build();
             txn.mutate(mu);
             txn.commit();
         } catch (Exception e) {

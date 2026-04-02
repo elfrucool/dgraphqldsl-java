@@ -5,12 +5,11 @@ import io.dgraph.DgraphProto;
 import io.dgraph.Transaction;
 import io.github.elfrucool.dgraphql.dsl.*;
 import io.github.elfrucool.dgraphql.examples.result.ResultsCollector;
+import jakarta.annotation.PostConstruct;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
-import jakarta.annotation.PostConstruct;
-import java.util.List;
 
 /**
  * Filter examples demonstrating query filtering with Filter API.
@@ -82,8 +81,8 @@ public class FilterExamples {
             """;
         try (Transaction txn = dgraphClient.newTransaction()) {
             DgraphProto.Mutation mu = DgraphProto.Mutation.newBuilder()
-                .setSetNquads(com.google.protobuf.ByteString.copyFromUtf8(nquads))
-                .build();
+                    .setSetNquads(com.google.protobuf.ByteString.copyFromUtf8(nquads))
+                    .build();
             txn.mutate(mu);
             txn.commit();
             log.info("FilterExamples: Test data inserted (5 persons with age, status, friend, email)");
@@ -102,8 +101,8 @@ public class FilterExamples {
             """;
         try (Transaction txn = dgraphClient.newTransaction()) {
             DgraphProto.Mutation mu = DgraphProto.Mutation.newBuilder()
-                .setDelNquads(com.google.protobuf.ByteString.copyFromUtf8(nquads))
-                .build();
+                    .setDelNquads(com.google.protobuf.ByteString.copyFromUtf8(nquads))
+                    .build();
             txn.mutate(mu);
             txn.commit();
             log.info("FilterExamples: Test data cleaned up");
@@ -114,16 +113,12 @@ public class FilterExamples {
 
     private void andFilter() {
         log.info("--- AND Filter ---");
-        
+
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.has("friend"))
-                    .withDirective(Directive.filter(Filter.and(
-                        Filter.ge("age", 18),
-                        Filter.eq("status", "active")
-                    )))
-                    .withBlocks(List.of(Block.predicate("name")))
-            ));
+                .withBlocks(List.of(QueryBlock.block("me", Func.has("friend"))
+                        .withDirective(
+                                Directive.filter(Filter.and(Filter.ge("age", 18), Filter.eq("status", "active"))))
+                        .withBlocks(List.of(Block.predicate("name")))));
 
         DqlResult result = query.dql();
         log.info("Query: {}", result.query());
@@ -132,16 +127,12 @@ public class FilterExamples {
 
     private void orFilter() {
         log.info("--- OR Filter ---");
-        
+
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.has("friend"))
-                    .withDirective(Directive.filter(Filter.or(
-                        Filter.eq("status", "active"),
-                        Filter.eq("status", "pending")
-                    )))
-                    .withBlocks(List.of(Block.predicate("name")))
-            ));
+                .withBlocks(List.of(QueryBlock.block("me", Func.has("friend"))
+                        .withDirective(Directive.filter(
+                                Filter.or(Filter.eq("status", "active"), Filter.eq("status", "pending"))))
+                        .withBlocks(List.of(Block.predicate("name")))));
 
         DqlResult result = query.dql();
         log.info("Query: {}", result.query());
@@ -150,13 +141,11 @@ public class FilterExamples {
 
     private void notFilter() {
         log.info("--- NOT Filter ---");
-        
+
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.has("friend"))
-                    .withDirective(Directive.filter(Filter.not(Filter.has("banned"))))
-                    .withBlocks(List.of(Block.predicate("name")))
-            ));
+                .withBlocks(List.of(QueryBlock.block("me", Func.has("friend"))
+                        .withDirective(Directive.filter(Filter.not(Filter.has("banned"))))
+                        .withBlocks(List.of(Block.predicate("name")))));
 
         DqlResult result = query.dql();
         log.info("Query: {}", result.query());
@@ -165,12 +154,10 @@ public class FilterExamples {
 
     private void hasFilter() {
         log.info("--- Has Filter ---");
-        
+
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.has("email"))
-                    .withBlocks(List.of(Block.predicate("name"), Block.predicate("email")))
-            ));
+                .withBlocks(List.of(QueryBlock.block("me", Func.has("email"))
+                        .withBlocks(List.of(Block.predicate("name"), Block.predicate("email")))));
 
         DqlResult result = query.dql();
         log.info("Query: {}", result.query());
@@ -179,7 +166,8 @@ public class FilterExamples {
 
     private void executeQuery(String query, String testName) {
         try {
-            DgraphProto.Response response = dgraphClient.newReadOnlyTransaction().query(query);
+            DgraphProto.Response response =
+                    dgraphClient.newReadOnlyTransaction().query(query);
             String json = response.getJson().toStringUtf8();
             boolean success = !json.isEmpty() && !json.equals("{}") && !json.equals("{\"me\":[]}");
             if (json.isEmpty() || json.equals("{}") || json.equals("{\"me\":[]}")) {

@@ -2,6 +2,8 @@ plugins {
 	java
 	id("maven-publish")
 	id("signing")
+	id("jacoco")
+	id("com.diffplug.spotless") version "8.4.0"
 }
 
 group = "io.github.elfrucool"
@@ -82,4 +84,20 @@ publishing {
 
 signing {
 	sign(publishing.publications.getByName("java"))
+}
+
+spotless {
+	java {
+		palantirJavaFormat()
+	}
+}
+
+subprojects {
+	apply(plugin = "com.diffplug.spotless")
+	
+	spotless {
+		java {
+			palantirJavaFormat()
+		}
+	}
 }

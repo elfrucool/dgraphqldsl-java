@@ -2,7 +2,6 @@ package io.github.elfrucool.dgraphql.examples.config;
 
 import io.dgraph.DgraphClient;
 import io.dgraph.DgraphGrpc;
-import io.dgraph.DgraphProto.Operation;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import org.slf4j.Logger;
@@ -37,9 +36,8 @@ public class DgraphConfig {
     @Bean
     public DgraphClient dgraphClient() {
         log.info("Connecting to Dgraph at {}:{}", host, port);
-        ManagedChannel channel = ManagedChannelBuilder.forAddress(host, port)
-            .usePlaintext()
-            .build();
+        ManagedChannel channel =
+                ManagedChannelBuilder.forAddress(host, port).usePlaintext().build();
         DgraphGrpc.DgraphStub stub = DgraphGrpc.newStub(channel);
         return new DgraphClient(stub);
     }

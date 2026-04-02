@@ -20,11 +20,12 @@ import java.util.List;
  *
  * @see Block#groupBy(String)
  */
-public sealed interface GroupBy extends DqlElement 
-    permits GroupBy.Aggregation, GroupBy.Nested {
+public sealed interface GroupBy extends DqlElement permits GroupBy.Aggregation, GroupBy.Nested {
 
     String predicate();
+
     List<Block> blocks();
+
     List<Directive> directives();
 
     default GroupBy withBlock(Block block) {
@@ -60,11 +61,7 @@ public sealed interface GroupBy extends DqlElement
      *
      * <p>Example: {@code GroupBy.groupBy("genre")}</p>
      */
-    record Aggregation(
-        String predicate,
-        List<Block> blocks,
-        List<Directive> directives
-    ) implements GroupBy {
+    record Aggregation(String predicate, List<Block> blocks, List<Directive> directives) implements GroupBy {
 
         public static Aggregation of(String predicate) {
             return new Aggregation(predicate, List.of(), List.of());
@@ -119,12 +116,8 @@ public sealed interface GroupBy extends DqlElement
      *
      * <p>Example: {@code GroupBy.nested("genre", "year")}</p>
      */
-    record Nested(
-        String predicate,
-        String groupByPredicate,
-        List<Block> blocks,
-        List<Directive> directives
-    ) implements GroupBy {
+    record Nested(String predicate, String groupByPredicate, List<Block> blocks, List<Directive> directives)
+            implements GroupBy {
 
         public static Nested of(String predicate, String groupByPredicate) {
             return new Nested(predicate, groupByPredicate, List.of(), List.of());

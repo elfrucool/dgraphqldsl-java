@@ -5,12 +5,11 @@ import io.dgraph.DgraphProto;
 import io.dgraph.Transaction;
 import io.github.elfrucool.dgraphql.dsl.*;
 import io.github.elfrucool.dgraphql.examples.result.ResultsCollector;
+import jakarta.annotation.PostConstruct;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
-import jakarta.annotation.PostConstruct;
-import java.util.List;
 
 /**
  * Aggregation examples demonstrating query aggregation functions.
@@ -72,8 +71,8 @@ public class AggregationExamples {
             """;
         try (Transaction txn = dgraphClient.newTransaction()) {
             DgraphProto.Mutation mu = DgraphProto.Mutation.newBuilder()
-                .setSetNquads(com.google.protobuf.ByteString.copyFromUtf8(nquads))
-                .build();
+                    .setSetNquads(com.google.protobuf.ByteString.copyFromUtf8(nquads))
+                    .build();
             txn.mutate(mu);
             txn.commit();
             log.info("AggregationExamples: Test data inserted (Alice, Bob, Charlie, Diana with score and friend)");
@@ -91,8 +90,8 @@ public class AggregationExamples {
             """;
         try (Transaction txn = dgraphClient.newTransaction()) {
             DgraphProto.Mutation mu = DgraphProto.Mutation.newBuilder()
-                .setDelNquads(com.google.protobuf.ByteString.copyFromUtf8(nquads))
-                .build();
+                    .setDelNquads(com.google.protobuf.ByteString.copyFromUtf8(nquads))
+                    .build();
             txn.mutate(mu);
             txn.commit();
             log.info("AggregationExamples: Test data cleaned up");
@@ -103,15 +102,10 @@ public class AggregationExamples {
 
     private void countAggregation() {
         log.info("--- Count Aggregation ---");
-        
+
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.has("friend"))
-                    .withBlocks(List.of(
-                        Block.predicate("name"),
-                        Block.predicate("count(friend)")
-                    ))
-            ));
+                .withBlocks(List.of(QueryBlock.block("me", Func.has("friend"))
+                        .withBlocks(List.of(Block.predicate("name"), Block.predicate("count(friend)")))));
 
         DqlResult result = query.dql();
         log.info("Query: {}", result.query());
@@ -120,21 +114,16 @@ public class AggregationExamples {
 
     private void mathExpression() {
         log.info("--- Math Expression ---");
-        
+
         Query query = Query.query()
-            .withVarBlock(
-                VarBlock.var(Func.has("friend"))
-                    .withAssignment(VarAssignment.valueVar("friendCount", Func.count("friend")))
-                    .withAssignment(VarAssignment.valueVar("computedScore", Func.math("friendCount * 10")))
-            )
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.has("name"))
-                    .withBlocks(List.of(
-                        Block.predicate("name"),
-                        Block.predicate(Func.val("friendCount"), "friendCount"),
-                        Block.predicate(Func.val("computedScore"), "computedScore")
-                    ))
-            ));
+                .withVarBlock(VarBlock.var(Func.has("friend"))
+                        .withAssignment(VarAssignment.valueVar("friendCount", Func.count("friend")))
+                        .withAssignment(VarAssignment.valueVar("computedScore", Func.math("friendCount * 10"))))
+                .withBlocks(List.of(QueryBlock.block("me", Func.has("name"))
+                        .withBlocks(List.of(
+                                Block.predicate("name"),
+                                Block.predicate(Func.val("friendCount"), "friendCount"),
+                                Block.predicate(Func.val("computedScore"), "computedScore")))));
 
         DqlResult result = query.dql();
         log.info("Query: {}", result.query());
@@ -143,7 +132,8 @@ public class AggregationExamples {
 
     private void executeQuery(String query, String testName) {
         try {
-            DgraphProto.Response response = dgraphClient.newReadOnlyTransaction().query(query);
+            DgraphProto.Response response =
+                    dgraphClient.newReadOnlyTransaction().query(query);
             String json = response.getJson().toStringUtf8();
             boolean success = !json.isEmpty() && !json.equals("{}") && !json.equals("{\"me\":[]}");
             if (json.isEmpty() || json.equals("{}") || json.equals("{\"me\":[]}")) {

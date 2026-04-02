@@ -75,7 +75,9 @@ public record GeoValue(String type, Object value) implements DqlElement {
      * @param radiusKm Radius in kilometers
      */
     public static GeoValue circle(double lat, double lon, double radiusKm) {
-        return new GeoValue("Circle", "{\"type\":\"Circle\",\"coordinates\":[" + lon + "," + lat + "],\"radius\":" + radiusKm + "}");
+        return new GeoValue(
+                "Circle",
+                "{\"type\":\"Circle\",\"coordinates\":[" + lon + "," + lat + "],\"radius\":" + radiusKm + "}");
     }
 
     @Override

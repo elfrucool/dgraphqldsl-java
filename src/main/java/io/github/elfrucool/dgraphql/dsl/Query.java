@@ -32,14 +32,13 @@ import java.util.Map;
  * @see ShortestPath
  */
 public record Query(
-    String name,
-    List<Variable> parameters,
-    List<QueryBlock> blocks,
-    List<VarBlock> varBlocks,
-    List<Fragment> fragments,
-    List<RecurseBlock> recurseBlocks,
-    List<ShortestPath> shortestPaths
-) {
+        String name,
+        List<Variable> parameters,
+        List<QueryBlock> blocks,
+        List<VarBlock> varBlocks,
+        List<Fragment> fragments,
+        List<RecurseBlock> recurseBlocks,
+        List<ShortestPath> shortestPaths) {
 
     /**
      * Creates an anonymous query with no name or parameters.
@@ -78,7 +77,14 @@ public record Query(
      * @return a new Query with the given blocks
      */
     public Query withBlocks(List<QueryBlock> blocks) {
-        return new Query(this.name, this.parameters, blocks, this.varBlocks, this.fragments, this.recurseBlocks, this.shortestPaths);
+        return new Query(
+                this.name,
+                this.parameters,
+                blocks,
+                this.varBlocks,
+                this.fragments,
+                this.recurseBlocks,
+                this.shortestPaths);
     }
 
     /**
@@ -100,7 +106,14 @@ public record Query(
      * @return a new Query with the given parameters
      */
     public Query withParameters(List<Variable> parameters) {
-        return new Query(this.name, parameters, this.blocks, this.varBlocks, this.fragments, this.recurseBlocks, this.shortestPaths);
+        return new Query(
+                this.name,
+                parameters,
+                this.blocks,
+                this.varBlocks,
+                this.fragments,
+                this.recurseBlocks,
+                this.shortestPaths);
     }
 
     /**
@@ -122,7 +135,14 @@ public record Query(
      * @return a new Query with the given variable blocks
      */
     public Query withVarBlocks(List<VarBlock> varBlocks) {
-        return new Query(this.name, this.parameters, this.blocks, varBlocks, this.fragments, this.recurseBlocks, this.shortestPaths);
+        return new Query(
+                this.name,
+                this.parameters,
+                this.blocks,
+                varBlocks,
+                this.fragments,
+                this.recurseBlocks,
+                this.shortestPaths);
     }
 
     /**
@@ -144,7 +164,14 @@ public record Query(
      * @return a new Query with the given fragments
      */
     public Query withFragments(List<Fragment> fragments) {
-        return new Query(this.name, this.parameters, this.blocks, this.varBlocks, fragments, this.recurseBlocks, this.shortestPaths);
+        return new Query(
+                this.name,
+                this.parameters,
+                this.blocks,
+                this.varBlocks,
+                fragments,
+                this.recurseBlocks,
+                this.shortestPaths);
     }
 
     /**
@@ -166,7 +193,14 @@ public record Query(
      * @return a new Query with the given recurse blocks
      */
     public Query withRecurseBlocks(List<RecurseBlock> recurseBlocks) {
-        return new Query(this.name, this.parameters, this.blocks, this.varBlocks, this.fragments, recurseBlocks, this.shortestPaths);
+        return new Query(
+                this.name,
+                this.parameters,
+                this.blocks,
+                this.varBlocks,
+                this.fragments,
+                recurseBlocks,
+                this.shortestPaths);
     }
 
     /**
@@ -188,7 +222,14 @@ public record Query(
      * @return a new Query with the given shortest paths
      */
     public Query withShortestPaths(List<ShortestPath> shortestPaths) {
-        return new Query(this.name, this.parameters, this.blocks, this.varBlocks, this.fragments, this.recurseBlocks, shortestPaths);
+        return new Query(
+                this.name,
+                this.parameters,
+                this.blocks,
+                this.varBlocks,
+                this.fragments,
+                this.recurseBlocks,
+                shortestPaths);
     }
 
     /**

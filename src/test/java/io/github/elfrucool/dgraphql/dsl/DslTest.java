@@ -1,25 +1,21 @@
 package io.github.elfrucool.dgraphql.dsl;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
 
 class DslTest {
 
     @Test
     void testBasicQuery() {
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.eq("name", "Alice"))
-                    .withBlocks(List.of(
-                        Block.predicate("name"),
-                        Block.predicate("age")
-                    ))
-            ));
+                .withBlocks(List.of(QueryBlock.block("me", Func.eq("name", "Alice"))
+                        .withBlocks(List.of(Block.predicate("name"), Block.predicate("age")))));
 
         DqlResult result = query.dql();
-        
+
         assertEquals("{ me(func: eq(name, \"Alice\")) { name age } }", result.query());
         assertTrue(result.variables().isEmpty());
     }
@@ -27,52 +23,42 @@ class DslTest {
     @Test
     void testNestedBlocks() {
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.eq("name", "Alice"))
-                    .withBlocks(List.of(
-                        Block.predicate("name"),
-                        Block.nested("friend")
-                            .withBlocks(List.of(
+                .withBlocks(List.of(QueryBlock.block("me", Func.eq("name", "Alice"))
+                        .withBlocks(List.of(
                                 Block.predicate("name"),
-                                Block.predicate("age")
-                            ))
-                    ))
-            ));
+                                Block.nested("friend")
+                                        .withBlocks(List.of(Block.predicate("name"), Block.predicate("age")))))));
 
         DqlResult result = query.dql();
-        
+
         assertEquals("{ me(func: eq(name, \"Alice\")) { name friend { name age } } }", result.query());
     }
 
     @Test
     void testWithFilter() {
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.eq("name", "Alice"))
-                    .withBlocks(List.of(
-                        Block.predicate("name"),
-                        Block.nested("friend")
-                            .withDirective(Directive.filter(Filter.has("birthdate")))
-                            .withBlocks(List.of(Block.predicate("name")))
-                    ))
-            ));
+                .withBlocks(List.of(QueryBlock.block("me", Func.eq("name", "Alice"))
+                        .withBlocks(List.of(
+                                Block.predicate("name"),
+                                Block.nested("friend")
+                                        .withDirective(Directive.filter(Filter.has("birthdate")))
+                                        .withBlocks(List.of(Block.predicate("name")))))));
 
         DqlResult result = query.dql();
-        
-        assertEquals("{ me(func: eq(name, \"Alice\")) { name friend @filter(has(birthdate)) { name } } }", result.query());
+
+        assertEquals(
+                "{ me(func: eq(name, \"Alice\")) { name friend @filter(has(birthdate)) { name } } }", result.query());
     }
 
     @Test
     void testQueryWithVariables() {
         Query query = Query.query("getPerson")
-            .withParameters(List.of(Variable.queryVar("name", "string")))
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.eq("name", Variable.param("name")))
-                    .withBlocks(List.of(Block.predicate("name")))
-            ));
+                .withParameters(List.of(Variable.queryVar("name", "string")))
+                .withBlocks(List.of(QueryBlock.block("me", Func.eq("name", Variable.param("name")))
+                        .withBlocks(List.of(Block.predicate("name")))));
 
         DqlResult result = query.dql();
-        
+
         assertEquals("query getPerson($name: string) { me(func: eq(name, $name)) { name } }", result.query());
         assertTrue(result.variables().isEmpty());
     }
@@ -80,159 +66,130 @@ class DslTest {
     @Test
     void testQueryWithDefaultVariable() {
         Query query = Query.query("getPerson")
-            .withParameters(List.of(Variable.queryVar("name", "string", "Alice")))
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.eq("name", Variable.param("name")))
-                    .withBlocks(List.of(Block.predicate("name")))
-            ));
+                .withParameters(List.of(Variable.queryVar("name", "string", "Alice")))
+                .withBlocks(List.of(QueryBlock.block("me", Func.eq("name", Variable.param("name")))
+                        .withBlocks(List.of(Block.predicate("name")))));
 
         DqlResult result = query.dql();
-        
-        assertEquals("query getPerson($name: string = \"Alice\") { me(func: eq(name, $name)) { name } }", result.query());
+
+        assertEquals(
+                "query getPerson($name: string = \"Alice\") { me(func: eq(name, $name)) { name } }", result.query());
         assertEquals("Alice", result.variables().get("$name"));
     }
 
     @Test
     void testAllofterms() {
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.allofterms("name", "alice bob"))
-                    .withBlocks(List.of(Block.predicate("name")))
-            ));
+                .withBlocks(List.of(QueryBlock.block("me", Func.allofterms("name", "alice bob"))
+                        .withBlocks(List.of(Block.predicate("name")))));
 
         DqlResult result = query.dql();
-        
+
         assertEquals("{ me(func: allofterms(name, \"alice bob\")) { name } }", result.query());
     }
 
     @Test
     void testHas() {
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.has("name"))
-                    .withBlocks(List.of(Block.predicate("name")))
-            ));
+                .withBlocks(
+                        List.of(QueryBlock.block("me", Func.has("name")).withBlocks(List.of(Block.predicate("name")))));
 
         DqlResult result = query.dql();
-        
+
         assertEquals("{ me(func: has(name)) { name } }", result.query());
     }
 
     @Test
     void testOrderAndPagination() {
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.has("name"))
-                    .withOrderasc("name")
-                    .withFirst(10)
-                    .withOffset(20)
-                    .withBlocks(List.of(Block.predicate("name")))
-            ));
+                .withBlocks(List.of(QueryBlock.block("me", Func.has("name"))
+                        .withOrderasc("name")
+                        .withFirst(10)
+                        .withOffset(20)
+                        .withBlocks(List.of(Block.predicate("name")))));
 
         DqlResult result = query.dql();
-        
+
         assertEquals("{ me(func: has(name), orderasc: name, first: 10, offset: 20) { name } }", result.query());
     }
 
     @Test
     void testBooleanFilters() {
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.allofterms("name", "alice"))
-                    .withDirective(Directive.filter(
-                        Filter.and(Filter.has("friend"), Filter.ge("age", 18))
-                    ))
-                    .withBlocks(List.of(Block.predicate("name")))
-            ));
+                .withBlocks(List.of(QueryBlock.block("me", Func.allofterms("name", "alice"))
+                        .withDirective(Directive.filter(Filter.and(Filter.has("friend"), Filter.ge("age", 18))))
+                        .withBlocks(List.of(Block.predicate("name")))));
 
         DqlResult result = query.dql();
-        
-        assertEquals("{ me(func: allofterms(name, \"alice\")) @filter((has(friend) AND ge(age, 18))) { name } }", result.query());
+
+        assertEquals(
+                "{ me(func: allofterms(name, \"alice\")) @filter((has(friend) AND ge(age, 18))) { name } }",
+                result.query());
     }
 
     @Test
     void testFacets() {
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.eq("name", "Alice"))
-                    .withBlocks(List.of(
-                        Block.nested("friend")
-                            .withDirective(Directive.facets("since"))
-                            .withBlocks(List.of(Block.predicate("name")))
-                    ))
-            ));
+                .withBlocks(List.of(QueryBlock.block("me", Func.eq("name", "Alice"))
+                        .withBlocks(List.of(Block.nested("friend")
+                                .withDirective(Directive.facets("since"))
+                                .withBlocks(List.of(Block.predicate("name")))))));
 
         DqlResult result = query.dql();
-        
+
         assertEquals("{ me(func: eq(name, \"Alice\")) { friend @facets(since) { name } } }", result.query());
     }
 
     @Test
     void testAlias() {
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.eq("name", "Alice"))
-                    .withBlocks(List.of(
-                        Block.predicate("name", "fullName"),
-                        Block.predicate("age", "years")
-                    ))
-            ));
+                .withBlocks(List.of(QueryBlock.block("me", Func.eq("name", "Alice"))
+                        .withBlocks(List.of(Block.predicate("name", "fullName"), Block.predicate("age", "years")))));
 
         DqlResult result = query.dql();
-        
+
         assertEquals("{ me(func: eq(name, \"Alice\")) { fullName: name years: age } }", result.query());
     }
 
     @Test
     void testUid() {
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.uid("0x1", "0x2", "0x3"))
-                    .withBlocks(List.of(Block.predicate("name")))
-            ));
+                .withBlocks(List.of(QueryBlock.block("me", Func.uid("0x1", "0x2", "0x3"))
+                        .withBlocks(List.of(Block.predicate("name")))));
 
         DqlResult result = query.dql();
-        
+
         assertEquals("{ me(func: uid(0x1, 0x2, 0x3)) { name } }", result.query());
     }
 
     @Test
     void testTypeFunction() {
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.type("Person"))
-                    .withBlocks(List.of(Block.predicate("name")))
-            ));
+                .withBlocks(List.of(
+                        QueryBlock.block("me", Func.type("Person")).withBlocks(List.of(Block.predicate("name")))));
 
         DqlResult result = query.dql();
-        
+
         assertEquals("{ me(func: type(Person)) { name } }", result.query());
     }
 
     @Test
     void testCascadeDirective() {
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.has("name"))
-                    .withDirective(Directive.cascade())
-                    .withBlocks(List.of(Block.predicate("name")))
-            ));
+                .withBlocks(List.of(QueryBlock.block("me", Func.has("name"))
+                        .withDirective(Directive.cascade())
+                        .withBlocks(List.of(Block.predicate("name")))));
 
         DqlResult result = query.dql();
-        
+
         assertEquals("{ me(func: has(name)) @cascade { name } }", result.query());
     }
 
     @Test
     void testImmutability() {
-        Query original = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.eq("name", "Alice"))
-            ));
+        Query original = Query.query().withBlocks(List.of(QueryBlock.block("me", Func.eq("name", "Alice"))));
 
-        Query modified = original.withBlock(
-            QueryBlock.block("you", Func.eq("name", "Bob"))
-        );
+        Query modified = original.withBlock(QueryBlock.block("you", Func.eq("name", "Bob")));
 
         assertEquals(1, original.blocks().size());
         assertEquals(2, modified.blocks().size());
@@ -241,85 +198,72 @@ class DslTest {
     @Test
     void testRegexpCaseInsensitive() {
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.regexp("name", "alice", true))
-                    .withBlocks(List.of(Block.predicate("name")))
-            ));
+                .withBlocks(List.of(QueryBlock.block("me", Func.regexp("name", "alice", true))
+                        .withBlocks(List.of(Block.predicate("name")))));
 
         DqlResult result = query.dql();
-        
+
         assertEquals("{ me(func: regexp(name, \"alice\", \"i\")) { name } }", result.query());
     }
 
     @Test
     void testAlloftext() {
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.alloftext("name", "alice bob"))
-                    .withBlocks(List.of(Block.predicate("name")))
-            ));
+                .withBlocks(List.of(QueryBlock.block("me", Func.alloftext("name", "alice bob"))
+                        .withBlocks(List.of(Block.predicate("name")))));
 
         DqlResult result = query.dql();
-        
+
         assertEquals("{ me(func: alloftext(name, \"alice bob\")) { name } }", result.query());
     }
 
     @Test
     void testUidIn() {
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.uidIn("friend", "0x1", "0x2", "0x3"))
-                    .withBlocks(List.of(Block.predicate("name")))
-            ));
+                .withBlocks(List.of(QueryBlock.block("me", Func.uidIn("friend", "0x1", "0x2", "0x3"))
+                        .withBlocks(List.of(Block.predicate("name")))));
 
         DqlResult result = query.dql();
-        
+
         assertEquals("{ me(func: uid_in(friend, 0x1, 0x2, 0x3)) { name } }", result.query());
     }
 
     @Test
     void testGeoNear() {
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.near("location", GeoValue.circle(40.7128, -74.0060, 10.0)))
-                    .withBlocks(List.of(Block.predicate("name")))
-            ));
+                .withBlocks(
+                        List.of(QueryBlock.block("me", Func.near("location", GeoValue.circle(40.7128, -74.0060, 10.0)))
+                                .withBlocks(List.of(Block.predicate("name")))));
 
         DqlResult result = query.dql();
-        
-        assertEquals("{ me(func: near(location, \"{\\\"type\\\":\\\"Circle\\\",\\\"coordinates\\\":[-74.006,40.7128],\\\"radius\\\":10.0}\")) { name } }", result.query());
+
+        assertEquals(
+                "{ me(func: near(location, \"{\\\"type\\\":\\\"Circle\\\",\\\"coordinates\\\":[-74.006,40.7128],\\\"radius\\\":10.0}\")) { name } }",
+                result.query());
     }
 
     @Test
     void testCount() {
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.eq("name", "Alice"))
-                    .withBlocks(List.of(
-                        Block.predicate("friend", "numFriends"),
-                        Block.nested("friend")
-                            .withBlocks(List.of(
-                                Block.predicate("name", "count")
-                            ))
-                    ))
-            ));
+                .withBlocks(List.of(QueryBlock.block("me", Func.eq("name", "Alice"))
+                        .withBlocks(List.of(
+                                Block.predicate("friend", "numFriends"),
+                                Block.nested("friend").withBlocks(List.of(Block.predicate("name", "count")))))));
 
         DqlResult result = query.dql();
-        
+
         assertEquals("{ me(func: eq(name, \"Alice\")) { numFriends: friend friend { count: name } } }", result.query());
     }
 
     @Test
     void testQueryWithBindings() {
         Query query = Query.query("getPerson")
-            .withParameters(List.of(Variable.queryVar("name", "string")))
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.eq("name", Variable.param("name")))
-                    .withBlocks(List.of(Block.predicate("name")))
-            ));
+                .withParameters(List.of(Variable.queryVar("name", "string")))
+                .withBlocks(List.of(QueryBlock.block("me", Func.eq("name", Variable.param("name")))
+                        .withBlocks(List.of(Block.predicate("name")))));
 
         DqlResult result = query.dql(Map.of("name", "Bob"));
-        
+
         assertEquals("query getPerson($name: string) { me(func: eq(name, $name)) { name } }", result.query());
         assertEquals("Bob", result.variables().get("$name"));
     }
@@ -327,231 +271,180 @@ class DslTest {
     @Test
     void testBindingsOverrideDefault() {
         Query query = Query.query("getPerson")
-            .withParameters(List.of(Variable.queryVar("name", "string", "Default")))
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.eq("name", Variable.param("name")))
-                    .withBlocks(List.of(Block.predicate("name")))
-            ));
+                .withParameters(List.of(Variable.queryVar("name", "string", "Default")))
+                .withBlocks(List.of(QueryBlock.block("me", Func.eq("name", Variable.param("name")))
+                        .withBlocks(List.of(Block.predicate("name")))));
 
         DqlResult result = query.dql(Map.of("name", "Override"));
-        
-        assertEquals("query getPerson($name: string = \"Default\") { me(func: eq(name, $name)) { name } }", result.query());
+
+        assertEquals(
+                "query getPerson($name: string = \"Default\") { me(func: eq(name, $name)) { name } }", result.query());
         assertEquals("Override", result.variables().get("$name"));
     }
 
     @Test
     void testVarBlockWithQueryVar() {
         Query query = Query.query()
-            .withVarBlock(
-                VarBlock.var(Func.eq("name", "Alice"))
-                    .withAssignment(VarAssignment.queryVar("friends", Func.count("friend")))
-            )
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.uid("friends"))
-                    .withBlocks(List.of(Block.predicate("name")))
-            ));
+                .withVarBlock(VarBlock.var(Func.eq("name", "Alice"))
+                        .withAssignment(VarAssignment.queryVar("friends", Func.count("friend"))))
+                .withBlocks(List.of(
+                        QueryBlock.block("me", Func.uid("friends")).withBlocks(List.of(Block.predicate("name")))));
 
         DqlResult result = query.dql();
-        
-        assertEquals("{ var(func: eq(name, \"Alice\")) { friends as count(friend) } me(func: uid(friends)) { name } }", result.query());
+
+        assertEquals(
+                "{ var(func: eq(name, \"Alice\")) { friends as count(friend) } me(func: uid(friends)) { name } }",
+                result.query());
     }
 
     @Test
     void testVarBlockWithValueVar() {
         Query query = Query.query()
-            .withVarBlock(
-                VarBlock.var(Func.eq("name", "Alice"))
-                    .withAssignment(VarAssignment.valueVar("score", Func.math("friend_count * 10")))
-            )
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.has("name"))
-                    .withBlocks(List.of(
-                        Block.predicate("name"),
-                        Block.predicate(Func.val("score"), "computedScore")
-                    ))
-            ));
+                .withVarBlock(VarBlock.var(Func.eq("name", "Alice"))
+                        .withAssignment(VarAssignment.valueVar("score", Func.math("friend_count * 10"))))
+                .withBlocks(List.of(QueryBlock.block("me", Func.has("name"))
+                        .withBlocks(List.of(
+                                Block.predicate("name"), Block.predicate(Func.val("score"), "computedScore")))));
 
         DqlResult result = query.dql();
-        
-        assertEquals("{ var(func: eq(name, \"Alice\")) { score as math(friend_count * 10) } me(func: has(name)) { name computedScore: val(score) } }", result.query());
+
+        assertEquals(
+                "{ var(func: eq(name, \"Alice\")) { score as math(friend_count * 10) } me(func: has(name)) { name computedScore: val(score) } }",
+                result.query());
     }
 
     @Test
     void testMathExpression() {
         Query query = Query.query()
-            .withVarBlock(
-                VarBlock.var(Func.eq("name", "Alice"))
-                    .withAssignment(VarAssignment.valueVar("score", 
-                        Func.math("friend_count + age")))
-            )
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.has("name"))
-                    .withBlocks(List.of(Block.predicate(Func.val("score"), "total")))
-            ));
+                .withVarBlock(VarBlock.var(Func.eq("name", "Alice"))
+                        .withAssignment(VarAssignment.valueVar("score", Func.math("friend_count + age"))))
+                .withBlocks(List.of(QueryBlock.block("me", Func.has("name"))
+                        .withBlocks(List.of(Block.predicate(Func.val("score"), "total")))));
 
         DqlResult result = query.dql();
-        
-        assertEquals("{ var(func: eq(name, \"Alice\")) { score as math(friend_count + age) } me(func: has(name)) { total: val(score) } }", result.query());
+
+        assertEquals(
+                "{ var(func: eq(name, \"Alice\")) { score as math(friend_count + age) } me(func: has(name)) { total: val(score) } }",
+                result.query());
     }
 
     @Test
     void testRecurseQuery() {
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.has("friend"))
-                    .withDirective(Directive.recurse(5))
-                    .withBlocks(List.of(
-                        Block.predicate("name"),
-                        Block.nested("friend")
-                    ))
-            ));
+                .withBlocks(List.of(QueryBlock.block("me", Func.has("friend"))
+                        .withDirective(Directive.recurse(5))
+                        .withBlocks(List.of(Block.predicate("name"), Block.nested("friend")))));
 
         DqlResult result = query.dql();
-        
+
         assertTrue(result.query().contains("@recurse(depth: 5)"));
     }
 
     @Test
     void testFragment() {
         Query query = Query.query()
-            .withFragment(
-                Fragment.fragment("PersonDetails")
-                    .withBlocks(List.of(
-                        Block.predicate("name"),
-                        Block.predicate("age")
-                    ))
-            )
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.eq("name", "Alice"))
-                    .withBlocks(List.of(Block.predicate("... PersonDetails")))
-            ));
+                .withFragment(Fragment.fragment("PersonDetails")
+                        .withBlocks(List.of(Block.predicate("name"), Block.predicate("age"))))
+                .withBlocks(List.of(QueryBlock.block("me", Func.eq("name", "Alice"))
+                        .withBlocks(List.of(Block.predicate("... PersonDetails")))));
 
         DqlResult result = query.dql();
-        
-        assertEquals("{ me(func: eq(name, \"Alice\")) { ... PersonDetails } } fragment PersonDetails { name age }", result.query());
+
+        assertEquals(
+                "{ me(func: eq(name, \"Alice\")) { ... PersonDetails } } fragment PersonDetails { name age }",
+                result.query());
     }
 
     @Test
     void testExpand() {
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.eq("name", "Alice"))
-                    .withBlocks(List.of(
-                        Block.predicate(Func.expand("friend")),
-                        Block.predicate(Func.expandAll()),
-                        Block.predicate(Func.expandReverse())
-                    ))
-            ));
+                .withBlocks(List.of(QueryBlock.block("me", Func.eq("name", "Alice"))
+                        .withBlocks(List.of(
+                                Block.predicate(Func.expand("friend")),
+                                Block.predicate(Func.expandAll()),
+                                Block.predicate(Func.expandReverse())))));
 
         DqlResult result = query.dql();
-        
-        assertEquals("{ me(func: eq(name, \"Alice\")) { expand(friend) expand(_all_) expand(_reverse_) } }", result.query());
+
+        assertEquals(
+                "{ me(func: eq(name, \"Alice\")) { expand(friend) expand(_all_) expand(_reverse_) } }", result.query());
     }
 
     @Test
     void testCondMathExpression() {
         Query query = Query.query()
-            .withVarBlock(
-                VarBlock.var(Func.eq("name", "Alice"))
-                    .withAssignment(VarAssignment.valueVar("score",
-                        Func.math(MathExpr.cond(MathExpr.gt("age", 18), 10, 0).dql())))
-            )
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.has("name"))
-                    .withBlocks(List.of(Block.predicate(Func.val("score"), "adultScore")))
-            ));
+                .withVarBlock(VarBlock.var(Func.eq("name", "Alice"))
+                        .withAssignment(VarAssignment.valueVar(
+                                "score",
+                                Func.math(MathExpr.cond(MathExpr.gt("age", 18), 10, 0)
+                                        .dql()))))
+                .withBlocks(List.of(QueryBlock.block("me", Func.has("name"))
+                        .withBlocks(List.of(Block.predicate(Func.val("score"), "adultScore")))));
 
         DqlResult result = query.dql();
-        
-        assertEquals("{ var(func: eq(name, \"Alice\")) { score as math(cond((age > 18), 10, 0)) } me(func: has(name)) { adultScore: val(score) } }", result.query());
+
+        assertEquals(
+                "{ var(func: eq(name, \"Alice\")) { score as math(cond((age > 18), 10, 0)) } me(func: has(name)) { adultScore: val(score) } }",
+                result.query());
     }
 
     @Test
     void testNeq() {
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.has("name"))
-                    .withDirective(Directive.filter(Filter.neq("state", "completed")))
-                    .withBlocks(List.of(Block.predicate("name")))
-            ));
+                .withBlocks(List.of(QueryBlock.block("me", Func.has("name"))
+                        .withDirective(Directive.filter(Filter.neq("state", "completed")))
+                        .withBlocks(List.of(Block.predicate("name")))));
 
         DqlResult result = query.dql();
-        
+
         assertEquals("{ me(func: has(name)) @filter(neq(state, \"completed\")) { name } }", result.query());
     }
 
     @Test
     void testReverseEdge() {
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.has("top_level"))
-                    .withBlocks(List.of(
-                        Block.nested("~top_level")
-                            .withBlocks(List.of(Block.predicate("name")))
-                    ))
-            ));
+                .withBlocks(List.of(QueryBlock.block("me", Func.has("top_level"))
+                        .withBlocks(List.of(Block.nested("~top_level").withBlocks(List.of(Block.predicate("name")))))));
 
         DqlResult result = query.dql();
-        
+
         assertEquals("{ me(func: has(top_level)) { ~top_level { name } } }", result.query());
     }
 
     @Test
     void testReverseEdgeExplicit() {
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.has("top_level"))
-                    .withBlocks(List.of(
-                        Block.reverse("top_level")
-                            .withBlocks(List.of(Block.predicate("name")))
-                    ))
-            ));
+                .withBlocks(List.of(QueryBlock.block("me", Func.has("top_level"))
+                        .withBlocks(List.of(Block.reverse("top_level").withBlocks(List.of(Block.predicate("name")))))));
 
         DqlResult result = query.dql();
-        
+
         assertEquals("{ me(func: has(top_level)) { ~top_level { name } } }", result.query());
     }
 
     @Test
     void testExactUserQuery() {
         Query query = Query.query()
-            .withVarBlock(
-                VarBlock.var(Func.has("top_level"))
-                    .withBlock(
-                        Block.reverse("top_level")
-                            .withDirective(Directive.filter(Filter.neq("state", "completed")))
-                            .withBlock(Block.var("blocked_top", "uid"))
-                    )
-            )
-            .withVarBlock(
-                VarBlock.var(Func.has("premium"))
-                    .withBlock(
-                        Block.reverse("premium")
-                            .withDirective(Directive.filter(Filter.neq("state", "completed")))
-                            .withBlock(Block.var("blocked_prem", "uid"))
-                    )
-            )
-            .withBlocks(List.of(
-                QueryBlock.block("candidates", Func.type("a_label"))
-                    .withDirective(Directive.filter(Filter.and(
-                        Filter.eq("is_draft", false),
-                        Filter.eq("compilation_id", "d8002dbc-fb9d-4acf-9b79-bb1d4237323f"),
-                        Filter.eq("target", "marker"),
-                        Filter.or(
-                            Filter.eq("node_state", "built"),
-                            Filter.eq("node_state", "started")
-                        ),
-                        Filter.not(Filter.func(Func.uid("blocked_top"))),
-                        Filter.not(Filter.func(Func.uid("blocked_prem")))
-                    )))
-                    .withBlocks(List.of(
-                        Block.predicate("uid"),
-                        Block.predicate(Func.expandAll())
-                    ))
-            ));
+                .withVarBlock(VarBlock.var(Func.has("top_level"))
+                        .withBlock(Block.reverse("top_level")
+                                .withDirective(Directive.filter(Filter.neq("state", "completed")))
+                                .withBlock(Block.var("blocked_top", "uid"))))
+                .withVarBlock(VarBlock.var(Func.has("premium"))
+                        .withBlock(Block.reverse("premium")
+                                .withDirective(Directive.filter(Filter.neq("state", "completed")))
+                                .withBlock(Block.var("blocked_prem", "uid"))))
+                .withBlocks(List.of(QueryBlock.block("candidates", Func.type("a_label"))
+                        .withDirective(Directive.filter(Filter.and(
+                                Filter.eq("is_draft", false),
+                                Filter.eq("compilation_id", "d8002dbc-fb9d-4acf-9b79-bb1d4237323f"),
+                                Filter.eq("target", "marker"),
+                                Filter.or(Filter.eq("node_state", "built"), Filter.eq("node_state", "started")),
+                                Filter.not(Filter.func(Func.uid("blocked_top"))),
+                                Filter.not(Filter.func(Func.uid("blocked_prem"))))))
+                        .withBlocks(List.of(Block.predicate("uid"), Block.predicate(Func.expandAll())))));
 
         DqlResult result = query.dql();
-        
+
         assertTrue(result.query().contains("~top_level"));
         assertTrue(result.query().contains("~premium"));
         assertTrue(result.query().contains("blocked_top as uid"));
@@ -564,45 +457,40 @@ class DslTest {
     @Test
     void testSetMutation() {
         Mutation mutation = Mutation.set(
-            SetTriple.subject("0x123").predicate("name").value("Alice"),
-            SetTriple.subject("0x123").predicate("age").value(30)
-        );
+                SetTriple.subject("0x123").predicate("name").value("Alice"),
+                SetTriple.subject("0x123").predicate("age").value(30));
 
         assertEquals("{ set { <0x123> name \"Alice\" . <0x123> age 30 . } }", mutation.dql());
     }
 
     @Test
     void testSetMutationWithBlankNode() {
-        Mutation mutation = Mutation.set(
-            SetTriple.subject("_:newNode").predicate("name").value("Bob")
-        );
+        Mutation mutation =
+                Mutation.set(SetTriple.subject("_:newNode").predicate("name").value("Bob"));
 
         assertEquals("{ set { _:newNode name \"Bob\" . } }", mutation.dql());
     }
 
     @Test
     void testSetMutationWithUidReference() {
-        Mutation mutation = Mutation.set(
-            SetTriple.subject("0x123").predicate("friend").value("0x456")
-        );
+        Mutation mutation =
+                Mutation.set(SetTriple.subject("0x123").predicate("friend").value("0x456"));
 
         assertEquals("{ set { <0x123> friend <0x456> . } }", mutation.dql());
     }
 
     @Test
     void testDeleteMutation() {
-        Mutation mutation = Mutation.delete(
-            SetTriple.subject("0x123").predicate("name").value(null)
-        );
+        Mutation mutation =
+                Mutation.delete(SetTriple.subject("0x123").predicate("name").value(null));
 
         assertEquals("{ delete { <0x123> name _: . } }", mutation.dql());
     }
 
     @Test
     void testDeleteAllPredicate() {
-        Mutation mutation = Mutation.delete(
-            SetTriple.subject("0x123").predicate("name").value("*")
-        );
+        Mutation mutation =
+                Mutation.delete(SetTriple.subject("0x123").predicate("name").value("*"));
 
         assertEquals("{ delete { <0x123> name * . } }", mutation.dql());
     }
@@ -610,9 +498,8 @@ class DslTest {
     @Test
     void testUpdateMutation() {
         Mutation mutation = Mutation.update(
-            Mutation.Set.of(SetTriple.subject("0x123").predicate("name").value("Alice")),
-            Mutation.Delete.of(SetTriple.subject("0x123").predicate("name").value(null))
-        );
+                Mutation.Set.of(SetTriple.subject("0x123").predicate("name").value("Alice")),
+                Mutation.Delete.of(SetTriple.subject("0x123").predicate("name").value(null)));
 
         assertTrue(mutation.dql().contains("set {"));
         assertTrue(mutation.dql().contains("delete {"));
@@ -621,10 +508,9 @@ class DslTest {
     @Test
     void testConditionalMutation() {
         Mutation mutation = Mutation.ifCondition(
-            "eq(name, \"Bob\")",
-            Mutation.Set.of(SetTriple.subject("0x123").predicate("name").value("Alice")),
-            null
-        );
+                "eq(name, \"Bob\")",
+                Mutation.Set.of(SetTriple.subject("0x123").predicate("name").value("Alice")),
+                null);
 
         String dql = mutation.dql();
         assertTrue(dql.contains("@if(eq(name, \"Bob\"))"));
@@ -634,57 +520,46 @@ class DslTest {
     @Test
     void testGroupByBasic() {
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.has("age"))
-                    .withBlocks(List.of(
-                        Block.predicate("age"),
-                        Block.nested("friend")
-                            .withDirective(Directive.groupby("age"))
-                            .withBlock(Block.predicate("count(uid)"))
-                    ))
-            ));
+                .withBlocks(List.of(QueryBlock.block("me", Func.has("age"))
+                        .withBlocks(List.of(
+                                Block.predicate("age"),
+                                Block.nested("friend")
+                                        .withDirective(Directive.groupby("age"))
+                                        .withBlock(Block.predicate("count(uid)"))))));
 
         DqlResult result = query.dql();
-        
+
         assertTrue(result.query().contains("@groupby(age)"));
     }
 
     @Test
     void testGroupByMultipleAggregations() {
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.has("age"))
-                    .withBlocks(List.of(
-                        Block.predicate("age"),
-                        Block.nested("friend")
-                            .withDirective(Directive.groupby("age"))
-                            .withBlocks(List.of(
-                                Block.predicate("count(uid)"),
-                                Block.predicate("min(age)"),
-                                Block.predicate("max(age)")
-                            ))
-                    ))
-            ));
+                .withBlocks(List.of(QueryBlock.block("me", Func.has("age"))
+                        .withBlocks(List.of(
+                                Block.predicate("age"),
+                                Block.nested("friend")
+                                        .withDirective(Directive.groupby("age"))
+                                        .withBlocks(List.of(
+                                                Block.predicate("count(uid)"),
+                                                Block.predicate("min(age)"),
+                                                Block.predicate("max(age)")))))));
 
         DqlResult result = query.dql();
-        
+
         assertTrue(result.query().contains("@groupby(age)"));
     }
 
     @Test
     void testIgnorereflexDirective() {
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.has("friend"))
-                    .withDirective(Directive.recurse(5))
-                    .withDirective(Directive.ignorereflex())
-                    .withBlocks(List.of(
-                        Block.predicate("friend")
-                    ))
-            ));
+                .withBlocks(List.of(QueryBlock.block("me", Func.has("friend"))
+                        .withDirective(Directive.recurse(5))
+                        .withDirective(Directive.ignorereflex())
+                        .withBlocks(List.of(Block.predicate("friend")))));
 
         DqlResult result = query.dql();
-        
+
         assertTrue(result.query().contains("@recurse(depth: 5)"));
         assertTrue(result.query().contains("@ignorereflex"));
     }
@@ -692,54 +567,51 @@ class DslTest {
     @Test
     void testAlterTypeDefinition() {
         Alter alter = Alter.type("Person", "name", "age");
-        
+
         assertEquals("type Person {\n  name\n  age\n}", alter.dql());
     }
 
     @Test
     void testAlterPredicateSchema() {
-        Alter alter = Alter.predicate("name", "string")
-            .withIndex("exact");
-        
+        Alter alter = Alter.predicate("name", "string").withIndex("exact");
+
         assertEquals("name: string @index(exact) .", alter.dql());
     }
 
     @Test
     void testAlterPredicateWithMultipleIndexes() {
-        Alter alter = Alter.predicate("email", "string")
-            .withIndexes(List.of("exact", "hash"));
-        
+        Alter alter = Alter.predicate("email", "string").withIndexes(List.of("exact", "hash"));
+
         assertEquals("email: string @index(exact, hash) .", alter.dql());
     }
 
     @Test
     void testAlterDropAll() {
         Alter alter = Alter.dropAll();
-        
+
         assertEquals("drop all", alter.dql());
     }
 
     @Test
     void testAlterDropType() {
         Alter alter = Alter.dropType("Person");
-        
+
         assertEquals("drop type Person", alter.dql());
     }
 
     @Test
     void testAlterDropPredicate() {
         Alter alter = Alter.dropPredicate("name");
-        
+
         assertEquals("drop name", alter.dql());
     }
 
     @Test
     void testAlterMultipleOperations() {
         Alter alter = Alter.all(List.of(
-            Alter.type("Person", "name", "age"),
-            Alter.predicate("name", "string").withIndex("exact")
-        ));
-        
+                Alter.type("Person", "name", "age"),
+                Alter.predicate("name", "string").withIndex("exact")));
+
         String dql = alter.dql();
         assertTrue(dql.contains("type Person"));
         assertTrue(dql.contains("name: string @index(exact)"));
@@ -748,23 +620,21 @@ class DslTest {
     @Test
     void testMultipleQueryBlocks() {
         Query query = Query.query()
-            .withBlock(QueryBlock.block("getUser1", Func.eq("email", "a@b.com"))
-                .withBlocks(List.of(Block.predicate("name"))))
-            .withBlock(QueryBlock.block("getUser2", Func.eq("email", "c@d.com"))
-                .withBlocks(List.of(Block.predicate("name"))));
+                .withBlock(QueryBlock.block("getUser1", Func.eq("email", "a@b.com"))
+                        .withBlocks(List.of(Block.predicate("name"))))
+                .withBlock(QueryBlock.block("getUser2", Func.eq("email", "c@d.com"))
+                        .withBlocks(List.of(Block.predicate("name"))));
 
         DqlResult result = query.dql();
-        
+
         assertTrue(result.query().contains("getUser1(func: eq(email, \"a@b.com\")) { name }"));
         assertTrue(result.query().contains("getUser2(func: eq(email, \"c@d.com\")) { name }"));
     }
 
     @Test
     void testJsonMutationSet() {
-        JsonMutation mutation = JsonMutation.set(
-            Map.of("uid", "_:user", "name", "Alice", "age", 30)
-        );
-        
+        JsonMutation mutation = JsonMutation.set(Map.of("uid", "_:user", "name", "Alice", "age", 30));
+
         String dql = mutation.dql();
         assertTrue(dql.contains("\"set\""));
         assertTrue(dql.contains("\"uid\": \"_:user\""));
@@ -774,10 +644,8 @@ class DslTest {
 
     @Test
     void testJsonMutationDelete() {
-        JsonMutation mutation = JsonMutation.delete(
-            Map.of("uid", "0x123")
-        );
-        
+        JsonMutation mutation = JsonMutation.delete(Map.of("uid", "0x123"));
+
         String dql = mutation.dql();
         assertTrue(dql.contains("\"delete\""));
         assertTrue(dql.contains("\"uid\": \"0x123\""));
@@ -785,10 +653,9 @@ class DslTest {
 
     @Test
     void testJsonMutationWithNested() {
-        JsonMutation mutation = JsonMutation.set(
-            Map.of("uid", "_:user", "name", "Alice", "friend", Map.of("uid", "0x456"))
-        );
-        
+        JsonMutation mutation =
+                JsonMutation.set(Map.of("uid", "_:user", "name", "Alice", "friend", Map.of("uid", "0x456")));
+
         String dql = mutation.dql();
         assertTrue(dql.contains("\"friend\": {"));
         assertTrue(dql.contains("\"uid\": \"0x456\""));
@@ -796,11 +663,9 @@ class DslTest {
 
     @Test
     void testJsonMutationMultipleObjects() {
-        JsonMutation mutation = JsonMutation.set(List.of(
-            Map.of("name", "Alice", "age", 30),
-            Map.of("name", "Bob", "age", 25)
-        ));
-        
+        JsonMutation mutation =
+                JsonMutation.set(List.of(Map.of("name", "Alice", "age", 30), Map.of("name", "Bob", "age", 25)));
+
         String dql = mutation.dql();
         assertTrue(dql.contains("\"name\": \"Alice\""));
         assertTrue(dql.contains("\"name\": \"Bob\""));
@@ -809,51 +674,37 @@ class DslTest {
     @Test
     void testFacetFilterWithCondition() {
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.eq("name", "Alice"))
-                    .withBlocks(List.of(
-                        Block.nested("friend")
-                            .withDirective(Directive.facets(Filter.eq("since", "2024")))
-                            .withBlocks(List.of(Block.predicate("name")))
-                    ))
-            ));
+                .withBlocks(List.of(QueryBlock.block("me", Func.eq("name", "Alice"))
+                        .withBlocks(List.of(Block.nested("friend")
+                                .withDirective(Directive.facets(Filter.eq("since", "2024")))
+                                .withBlocks(List.of(Block.predicate("name")))))));
 
         DqlResult result = query.dql();
-        
-        assertEquals("{ me(func: eq(name, \"Alice\")) { friend @facets(eq(since, \"2024\")) { name } } }", result.query());
+
+        assertEquals(
+                "{ me(func: eq(name, \"Alice\")) { friend @facets(eq(since, \"2024\")) { name } } }", result.query());
     }
 
     @Test
     void testFacetFilterWithMultipleConditions() {
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.eq("name", "Alice"))
-                    .withBlocks(List.of(
-                        Block.nested("friend")
-                            .withDirective(Directive.facets(Filter.and(
-                                Filter.eq("since", "2024"),
-                                Filter.gt("rating", 3)
-                            )))
-                            .withBlocks(List.of(Block.predicate("name")))
-                    ))
-            ));
+                .withBlocks(List.of(QueryBlock.block("me", Func.eq("name", "Alice"))
+                        .withBlocks(List.of(Block.nested("friend")
+                                .withDirective(Directive.facets(
+                                        Filter.and(Filter.eq("since", "2024"), Filter.gt("rating", 3))))
+                                .withBlocks(List.of(Block.predicate("name")))))));
 
         DqlResult result = query.dql();
-        
+
         assertTrue(result.query().contains("@facets((eq(since, \"2024\") AND gt(rating, 3)))"));
     }
 
     @Test
     void testRecurseDirective() {
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.has("friend"))
-                    .withDirective(Directive.recurse(3))
-                    .withBlocks(List.of(
-                        Block.predicate("name"),
-                        Block.predicate("friend")
-                    ))
-            ));
+                .withBlocks(List.of(QueryBlock.block("me", Func.has("friend"))
+                        .withDirective(Directive.recurse(3))
+                        .withBlocks(List.of(Block.predicate("name"), Block.predicate("friend")))));
 
         DqlResult result = query.dql();
         assertTrue(result.query().contains("@recurse(depth: 3)"));
@@ -862,15 +713,12 @@ class DslTest {
     @Test
     void testGroupByDirective() {
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.has("friend"))
-                    .withBlocks(List.of(
-                        Block.predicate("age"),
-                        Block.nested("friend")
-                            .withDirective(Directive.groupby("age"))
-                            .withBlocks(List.of(Block.predicate("count(uid)")))
-                    ))
-            ));
+                .withBlocks(List.of(QueryBlock.block("me", Func.has("friend"))
+                        .withBlocks(List.of(
+                                Block.predicate("age"),
+                                Block.nested("friend")
+                                        .withDirective(Directive.groupby("age"))
+                                        .withBlocks(List.of(Block.predicate("count(uid)")))))));
 
         DqlResult result = query.dql();
         assertTrue(result.query().contains("@groupby(age)"));
@@ -879,9 +727,8 @@ class DslTest {
     @Test
     void testMutationToJsonList() {
         Mutation mutation = Mutation.set(List.of(
-            SetTriple.subject("_:alice").predicate("name").value("Alice"),
-            SetTriple.subject("_:alice").predicate("age").value(30)
-        ));
+                SetTriple.subject("_:alice").predicate("name").value("Alice"),
+                SetTriple.subject("_:alice").predicate("age").value(30)));
 
         List<Map<String, Object>> jsonList = mutation.toJsonList();
         assertFalse(jsonList.isEmpty());
@@ -893,11 +740,9 @@ class DslTest {
     @Test
     void testQueryVariableWithDollarPrefix() {
         Query query = Query.query("getPerson")
-            .withParameters(List.of(Variable.queryVar("name", "string")))
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.eq("name", Variable.param("name")))
-                    .withBlocks(List.of(Block.predicate("name")))
-            ));
+                .withParameters(List.of(Variable.queryVar("name", "string")))
+                .withBlocks(List.of(QueryBlock.block("me", Func.eq("name", Variable.param("name")))
+                        .withBlocks(List.of(Block.predicate("name")))));
 
         DqlResult result = query.dql(Map.of("$name", "Alice"));
 
@@ -908,11 +753,9 @@ class DslTest {
     @Test
     void testQueryVariableWithoutDollarPrefix() {
         Query query = Query.query("getPerson")
-            .withParameters(List.of(Variable.queryVar("name", "string")))
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.eq("name", Variable.param("name")))
-                    .withBlocks(List.of(Block.predicate("name")))
-            ));
+                .withParameters(List.of(Variable.queryVar("name", "string")))
+                .withBlocks(List.of(QueryBlock.block("me", Func.eq("name", Variable.param("name")))
+                        .withBlocks(List.of(Block.predicate("name")))));
 
         DqlResult result = query.dql(Map.of("name", "Alice"));
 
@@ -941,13 +784,10 @@ class DslTest {
     @Test
     void testPredicateWithLanguageTag() {
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.eq("name", "Alice"))
-                    .withBlocks(List.of(
-                        Block.predicate("name", LanguageTag.en()),
-                        Block.predicate("name", LanguageTag.fr())
-                    ))
-            ));
+                .withBlocks(List.of(QueryBlock.block("me", Func.eq("name", "Alice"))
+                        .withBlocks(List.of(
+                                Block.predicate("name", LanguageTag.en()),
+                                Block.predicate("name", LanguageTag.fr())))));
 
         DqlResult result = query.dql();
 
@@ -957,13 +797,10 @@ class DslTest {
     @Test
     void testPredicateWithLanguageTagAndAlias() {
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.eq("name", "Alice"))
-                    .withBlocks(List.of(
-                        Block.predicate("name", "englishName", LanguageTag.en()),
-                        Block.predicate("name", "frenchName", LanguageTag.fr())
-                    ))
-            ));
+                .withBlocks(List.of(QueryBlock.block("me", Func.eq("name", "Alice"))
+                        .withBlocks(List.of(
+                                Block.predicate("name", "englishName", LanguageTag.en()),
+                                Block.predicate("name", "frenchName", LanguageTag.fr())))));
 
         DqlResult result = query.dql();
 
@@ -973,13 +810,9 @@ class DslTest {
     @Test
     void testNestedWithLanguageTag() {
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.eq("name", "Alice"))
-                    .withBlocks(List.of(
-                        Block.nested("friend", LanguageTag.en())
-                            .withBlocks(List.of(Block.predicate("name")))
-                    ))
-            ));
+                .withBlocks(List.of(QueryBlock.block("me", Func.eq("name", "Alice"))
+                        .withBlocks(List.of(Block.nested("friend", LanguageTag.en())
+                                .withBlocks(List.of(Block.predicate("name")))))));
 
         DqlResult result = query.dql();
 
@@ -989,13 +822,9 @@ class DslTest {
     @Test
     void testReverseWithLanguageTag() {
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.eq("name", "Alice"))
-                    .withBlocks(List.of(
-                        Block.reverse("friend", LanguageTag.fr())
-                            .withBlocks(List.of(Block.predicate("name")))
-                    ))
-            ));
+                .withBlocks(List.of(QueryBlock.block("me", Func.eq("name", "Alice"))
+                        .withBlocks(List.of(Block.reverse("friend", LanguageTag.fr())
+                                .withBlocks(List.of(Block.predicate("name")))))));
 
         DqlResult result = query.dql();
 
@@ -1005,9 +834,8 @@ class DslTest {
     @Test
     void testSetTripleWithLanguageTag() {
         Mutation mutation = Mutation.set(List.of(
-            SetTriple.subject("0x123").predicate("name").value("Alice").withLanguageTag(LanguageTag.en()),
-            SetTriple.subject("0x123").predicate("name").value("Alice").withLanguageTag(LanguageTag.fr())
-        ));
+                SetTriple.subject("0x123").predicate("name").value("Alice").withLanguageTag(LanguageTag.en()),
+                SetTriple.subject("0x123").predicate("name").value("Alice").withLanguageTag(LanguageTag.fr())));
 
         String dql = mutation.dql();
 
@@ -1023,35 +851,29 @@ class DslTest {
 
     @Test
     void testAlterPredicateWithCount() {
-        Alter alter = Alter.predicate("friend", "[uid]")
-            .withCount();
+        Alter alter = Alter.predicate("friend", "[uid]").withCount();
 
         assertEquals("friend: [uid] @count .", alter.dql());
     }
 
     @Test
     void testAlterPredicateWithUpsert() {
-        Alter alter = Alter.predicate("email", "string")
-            .withIndex("hash")
-            .withUpsert();
+        Alter alter = Alter.predicate("email", "string").withIndex("hash").withUpsert();
 
         assertEquals("email: string @index(hash) @upsert .", alter.dql());
     }
 
     @Test
     void testAlterPredicateWithMultipleDirectives() {
-        Alter alter = Alter.predicate("name", "string")
-            .withIndex("term")
-            .withCount();
+        Alter alter = Alter.predicate("name", "string").withIndex("term").withCount();
 
         assertEquals("name: string @index(term) @count .", alter.dql());
     }
 
     @Test
     void testDeleteAllPredicatesFromNode() {
-        Mutation mutation = Mutation.delete(
-            SetTriple.subject("0x123").predicate("*").value("*")
-        );
+        Mutation mutation =
+                Mutation.delete(SetTriple.subject("0x123").predicate("*").value("*"));
 
         assertEquals("{ delete { <0x123> * * . } }", mutation.dql());
     }
@@ -1059,17 +881,15 @@ class DslTest {
     @Test
     void testDeletePredicateWithLanguageTag() {
         Mutation mutation = Mutation.delete(
-            SetTriple.subject("0x123").predicate("name").value("*").withLanguageTag(LanguageTag.es())
-        );
+                SetTriple.subject("0x123").predicate("name").value("*").withLanguageTag(LanguageTag.es()));
 
         assertEquals("{ delete { <0x123> name@es * . } }", mutation.dql());
     }
 
     @Test
     void testDeleteWithVariable() {
-        Mutation mutation = Mutation.delete(
-            SetTriple.subject("uid(v)").predicate("status").value("*")
-        );
+        Mutation mutation =
+                Mutation.delete(SetTriple.subject("uid(v)").predicate("status").value("*"));
 
         assertEquals("{ delete { uid(v) status * . } }", mutation.dql());
     }
@@ -1077,9 +897,8 @@ class DslTest {
     @Test
     void testDeleteMultiplePatterns() {
         Mutation mutation = Mutation.delete(
-            SetTriple.subject("0x123").predicate("name").value("*"),
-            SetTriple.subject("0x123").predicate("email").value("*")
-        );
+                SetTriple.subject("0x123").predicate("name").value("*"),
+                SetTriple.subject("0x123").predicate("email").value("*"));
 
         String dql = mutation.dql();
         assertTrue(dql.contains("<0x123> name * ."));
@@ -1088,14 +907,10 @@ class DslTest {
 
     @Test
     void testUpsertRawWithSet() {
-        Mutation.Set set = Mutation.Set.of(
-            SetTriple.subject("uid(v)").predicate("status").value("active")
-        );
-        
-        Mutation mutation = Mutation.upsertRaw(
-            "query { v as var(func: eq(email, \"test@example.com\")) }",
-            set
-        );
+        Mutation.Set set =
+                Mutation.Set.of(SetTriple.subject("uid(v)").predicate("status").value("active"));
+
+        Mutation mutation = Mutation.upsertRaw("query { v as var(func: eq(email, \"test@example.com\")) }", set);
 
         String dql = mutation.dql();
         assertTrue(dql.contains("upsert {"));
@@ -1106,18 +921,13 @@ class DslTest {
 
     @Test
     void testUpsertRawWithSetAndDelete() {
-        Mutation.Set set = Mutation.Set.of(
-            SetTriple.subject("uid(v)").predicate("status").value("active")
-        );
+        Mutation.Set set =
+                Mutation.Set.of(SetTriple.subject("uid(v)").predicate("status").value("active"));
         Mutation.Delete delete = Mutation.Delete.of(
-            SetTriple.subject("uid(v)").predicate("oldStatus").value("*")
-        );
-        
-        Mutation mutation = Mutation.upsertRaw(
-            "query { v as var(func: eq(email, \"test@example.com\")) }",
-            set,
-            delete
-        );
+                SetTriple.subject("uid(v)").predicate("oldStatus").value("*"));
+
+        Mutation mutation =
+                Mutation.upsertRaw("query { v as var(func: eq(email, \"test@example.com\")) }", set, delete);
 
         String dql = mutation.dql();
         assertTrue(dql.contains("upsert {"));
@@ -1127,14 +937,10 @@ class DslTest {
 
     @Test
     void testUpsertRawJson() {
-        Mutation.Set set = Mutation.Set.of(
-            SetTriple.subject("uid(v)").predicate("status").value("active")
-        );
-        
-        Mutation mutation = Mutation.upsertRaw(
-            "query { v as var(func: eq(email, \"test@example.com\")) }",
-            set
-        );
+        Mutation.Set set =
+                Mutation.Set.of(SetTriple.subject("uid(v)").predicate("status").value("active"));
+
+        Mutation mutation = Mutation.upsertRaw("query { v as var(func: eq(email, \"test@example.com\")) }", set);
 
         var json = mutation.toJsonList();
         assertFalse(json.isEmpty());
@@ -1144,161 +950,126 @@ class DslTest {
     @Test
     void testAliasBasic() {
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.eq("name", "Alice"))
-                    .withBlocks(List.of(
-                        Block.predicate("name", "aliasName")
-                    ))
-            ));
+                .withBlocks(List.of(QueryBlock.block("me", Func.eq("name", "Alice"))
+                        .withBlocks(List.of(Block.predicate("name", "aliasName")))));
 
         DqlResult result = query.dql();
-        
+
         assertEquals("{ me(func: eq(name, \"Alice\")) { aliasName: name } }", result.query());
     }
 
     @Test
     void testAliasUid() {
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.eq("name", "Alice"))
-                    .withBlocks(List.of(
-                        Block.predicate("uid", "userId")
-                    ))
-            ));
+                .withBlocks(List.of(QueryBlock.block("me", Func.eq("name", "Alice"))
+                        .withBlocks(List.of(Block.predicate("uid", "userId")))));
 
         DqlResult result = query.dql();
-        
+
         assertEquals("{ me(func: eq(name, \"Alice\")) { userId: uid } }", result.query());
     }
 
     @Test
     void testAliasWithLanguageTag() {
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.eq("name", "Alice"))
-                    .withBlocks(List.of(
-                        Block.predicate("name", "englishName", LanguageTag.en())
-                    ))
-            ));
+                .withBlocks(List.of(QueryBlock.block("me", Func.eq("name", "Alice"))
+                        .withBlocks(List.of(Block.predicate("name", "englishName", LanguageTag.en())))));
 
         DqlResult result = query.dql();
-        
+
         assertEquals("{ me(func: eq(name, \"Alice\")) { englishName: name@en } }", result.query());
     }
 
     @Test
     void testShortestPathBasic() {
         Query query = Query.query()
-            .withShortestPath(
-                ShortestPath.shortest("path", "0x1", "0x5")
-                    .withPredicate(Block.predicate("friend"))
-            )
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.uid("path"))
-                    .withBlocks(List.of(Block.predicate("name")))
-            ));
+                .withShortestPath(ShortestPath.shortest("path", "0x1", "0x5").withPredicate(Block.predicate("friend")))
+                .withBlocks(
+                        List.of(QueryBlock.block("me", Func.uid("path")).withBlocks(List.of(Block.predicate("name")))));
 
         DqlResult result = query.dql();
-        
-        assertEquals("{ path as shortest(from: 0x1, to: 0x5) { friend } me(func: uid(path)) { name } }", result.query());
+
+        assertEquals(
+                "{ path as shortest(from: 0x1, to: 0x5) { friend } me(func: uid(path)) { name } }", result.query());
     }
 
     @Test
     void testShortestPathKPaths() {
         Query query = Query.query()
-            .withShortestPath(
-                ShortestPath.kShortest("path", "0x1", "0x5", 2)
-                    .withPredicate(Block.predicate("friend"))
-            )
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.uid("path"))
-                    .withBlocks(List.of(Block.predicate("name")))
-            ));
+                .withShortestPath(
+                        ShortestPath.kShortest("path", "0x1", "0x5", 2).withPredicate(Block.predicate("friend")))
+                .withBlocks(
+                        List.of(QueryBlock.block("me", Func.uid("path")).withBlocks(List.of(Block.predicate("name")))));
 
         DqlResult result = query.dql();
-        
-        assertEquals("{ path as shortest(from: 0x1, to: 0x5, numpaths: 2) { friend } me(func: uid(path)) { name } }", result.query());
+
+        assertEquals(
+                "{ path as shortest(from: 0x1, to: 0x5, numpaths: 2) { friend } me(func: uid(path)) { name } }",
+                result.query());
     }
 
     @Test
     void testShortestPathWithDepth() {
         Query query = Query.query()
-            .withShortestPath(
-                ShortestPath.kShortest("path", "0x1", "0x5", 1)
-                    .withDepth(3)
-                    .withPredicate(Block.predicate("friend"))
-            )
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.uid("path"))
-                    .withBlocks(List.of(Block.predicate("name")))
-            ));
+                .withShortestPath(ShortestPath.kShortest("path", "0x1", "0x5", 1)
+                        .withDepth(3)
+                        .withPredicate(Block.predicate("friend")))
+                .withBlocks(
+                        List.of(QueryBlock.block("me", Func.uid("path")).withBlocks(List.of(Block.predicate("name")))));
 
         DqlResult result = query.dql();
-        
-        assertEquals("{ path as shortest(from: 0x1, to: 0x5, numpaths: 1, depth: 3) { friend } me(func: uid(path)) { name } }", result.query());
+
+        assertEquals(
+                "{ path as shortest(from: 0x1, to: 0x5, numpaths: 1, depth: 3) { friend } me(func: uid(path)) { name } }",
+                result.query());
     }
 
     @Test
     void testShortestPathWithWeightRange() {
         Query query = Query.query()
-            .withShortestPath(
-                ShortestPath.kShortest("path", "0x1", "0x5", 2)
-                    .withWeightRange(2.0f, 4.0f)
-                    .withPredicate(Block.predicate("friend"))
-            )
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.uid("path"))
-                    .withBlocks(List.of(Block.predicate("name")))
-            ));
+                .withShortestPath(ShortestPath.kShortest("path", "0x1", "0x5", 2)
+                        .withWeightRange(2.0f, 4.0f)
+                        .withPredicate(Block.predicate("friend")))
+                .withBlocks(
+                        List.of(QueryBlock.block("me", Func.uid("path")).withBlocks(List.of(Block.predicate("name")))));
 
         DqlResult result = query.dql();
-        
-        assertEquals("{ path as shortest(from: 0x1, to: 0x5, numpaths: 2, minweight: 2.0, maxweight: 4.0) { friend } me(func: uid(path)) { name } }", result.query());
+
+        assertEquals(
+                "{ path as shortest(from: 0x1, to: 0x5, numpaths: 2, minweight: 2.0, maxweight: 4.0) { friend } me(func: uid(path)) { name } }",
+                result.query());
     }
 
     @Test
     void testExpandType() {
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.eq("name", "Alice"))
-                    .withBlocks(List.of(
-                        Block.expand("Person")
-                    ))
-            ));
+                .withBlocks(List.of(
+                        QueryBlock.block("me", Func.eq("name", "Alice")).withBlocks(List.of(Block.expand("Person")))));
 
         DqlResult result = query.dql();
-        
+
         assertEquals("{ me(func: eq(name, \"Alice\")) { expand(Person) } }", result.query());
     }
 
     @Test
     void testExpandAll() {
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.eq("name", "Alice"))
-                    .withBlocks(List.of(
-                        Block.expandAll()
-                    ))
-            ));
+                .withBlocks(List.of(
+                        QueryBlock.block("me", Func.eq("name", "Alice")).withBlocks(List.of(Block.expandAll()))));
 
         DqlResult result = query.dql();
-        
+
         assertEquals("{ me(func: eq(name, \"Alice\")) { expand(_all_) } }", result.query());
     }
 
     @Test
     void testExpandWithNested() {
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.eq("name", "Alice"))
-                    .withBlocks(List.of(
-                        Block.expand("Person")
-                            .withBlocks(List.of(Block.predicate("name")))
-                    ))
-            ));
+                .withBlocks(List.of(QueryBlock.block("me", Func.eq("name", "Alice"))
+                        .withBlocks(List.of(Block.expand("Person").withBlocks(List.of(Block.predicate("name")))))));
 
         DqlResult result = query.dql();
-        
+
         assertEquals("{ me(func: eq(name, \"Alice\")) { expand(Person) { name } } }", result.query());
     }
 }

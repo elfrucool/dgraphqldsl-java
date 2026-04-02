@@ -1,9 +1,5 @@
 package io.github.elfrucool.dgraphql.dsl;
 
-import io.github.elfrucool.dgraphql.dsl.GeoValue;
-import io.github.elfrucool.dgraphql.dsl.MathExpr;
-import io.github.elfrucool.dgraphql.dsl.Variable;
-
 /**
  * A DQL function call with a name and arguments.
  *

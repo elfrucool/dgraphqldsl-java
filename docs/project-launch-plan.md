@@ -162,19 +162,22 @@ To publish a new release to Maven Central:
 
 **Purpose**: Professional-grade codebase with automated checks
 
-| Task                  | Description                                | Status  |
-| --------------------- | ------------------------------------------ | ------- |
-| Add JaCoCo            | Code coverage reporting (build.gradle.kts) | ⏳ TODO |
-| Add Spotless          | Code formatting (Google Java Format)       | ⏳ TODO |
-| Add CI check          | Run Spotless check in CI workflow          | ⏳ TODO |
-| Verify JaCoCo works   | Run `./gradlew jacocoTestReport`           | ⏳ TODO |
-| Verify Spotless works | Run `./gradlew spotlessCheck`              | ⏳ TODO |
-| Update this document  | Place a white check mark on completion     | ⏳ TODO |
+| Task                  | Description                                                    | Status |
+| --------------------- | -------------------------------------------------------------- | ------- |
+| Add JaCoCo            | Code coverage reporting (build.gradle.kts, report only)       | ✅ Done |
+| Add Spotless          | Code formatting with palantir-java-format (main + examples)   | ✅ Done |
+| Add CI check          | Run Spotless check in CI workflow                             | ✅ Done |
+| Verify JaCoCo works   | Run `./gradlew jacocoTestReport`                              | ✅ Done |
+| Verify Spotless works | Run `./gradlew spotlessCheck`                                 | ✅ Done |
+| Apply formatting      | Run `./gradlew spotlessApply` to format existing code         | ✅ Done |
+| Update this document  | Place a white check mark on completion                       | ✅ Done |
 
 ### Notes
 
-- Spotless will auto-format code on `./gradlew spotlessApply`
-- CI should fail if code is not formatted ( SpotlessCheck in Gradle, not spotlessApply)
+- **JaCoCo**: Report only (no threshold enforcement) to explore current coverage
+- **Spotless**: Uses palantir-java-format (120 char line length, lambda-friendly)
+- **Scope**: Applies to both main library (`src/main`) AND examples subproject (`examples/src/main`)
+- CI runs `spotlessCheck` (not `spotlessApply`) to fail fast on formatting issues
 
 ---
 
@@ -252,6 +255,6 @@ The publish workflow (`.github/workflows/publish.yml`) already:
 | **Phase 3** | Add Javadocs                        | ✅ Done |
 | **Phase 4** | GitHub setup (workflows, templates) | ✅ Done |
 | **Phase 5** | Maven Central prep (POM metadata)   | ✅ Done |
-| **Phase 6** | Code quality (JaCoCo, Spotless)     | ⏳ TODO |
+| **Phase 6** | Code quality (JaCoCo, Spotless)     | ✅ Done |
 | **Phase 7** | Maven Central publication           | ⏳ TODO |
 | **Phase 8** | Tutorial + README improvements      | ⏳ TODO |

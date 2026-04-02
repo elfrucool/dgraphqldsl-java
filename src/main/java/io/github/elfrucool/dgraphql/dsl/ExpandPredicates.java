@@ -18,7 +18,7 @@ package io.github.elfrucool.dgraphql.dsl;
  * </pre>
  */
 public sealed interface ExpandPredicates extends DqlElement
-    permits ExpandPredicates.ByType, ExpandPredicates.All, ExpandPredicates.WithFilter {
+        permits ExpandPredicates.ByType, ExpandPredicates.All, ExpandPredicates.WithFilter {
 
     /**
      * Expand predicates for a specific type.
