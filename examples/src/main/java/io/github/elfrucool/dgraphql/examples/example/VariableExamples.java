@@ -5,13 +5,12 @@ import io.dgraph.DgraphProto;
 import io.dgraph.Transaction;
 import io.github.elfrucool.dgraphql.dsl.*;
 import io.github.elfrucool.dgraphql.examples.result.ResultsCollector;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-
 import jakarta.annotation.PostConstruct;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * Variable examples demonstrating query variables and parameterization.
@@ -66,8 +65,8 @@ public class VariableExamples {
             """;
         try (Transaction txn = dgraphClient.newTransaction()) {
             DgraphProto.Mutation mu = DgraphProto.Mutation.newBuilder()
-                .setSetNquads(com.google.protobuf.ByteString.copyFromUtf8(nquads))
-                .build();
+                    .setSetNquads(com.google.protobuf.ByteString.copyFromUtf8(nquads))
+                    .build();
             txn.mutate(mu);
             txn.commit();
             log.info("VariableExamples: Test data inserted");
@@ -83,8 +82,8 @@ public class VariableExamples {
             """;
         try (Transaction txn = dgraphClient.newTransaction()) {
             DgraphProto.Mutation mu = DgraphProto.Mutation.newBuilder()
-                .setDelNquads(com.google.protobuf.ByteString.copyFromUtf8(nquads))
-                .build();
+                    .setDelNquads(com.google.protobuf.ByteString.copyFromUtf8(nquads))
+                    .build();
             txn.mutate(mu);
             txn.commit();
             log.info("VariableExamples: Test data cleaned up");
@@ -95,38 +94,28 @@ public class VariableExamples {
 
     private void queryVariable() {
         log.info("--- Query Variable ---");
-        
+
         setupData();
-        
+
         Query query = Query.query("getPerson")
-            .withParameters(List.of(Variable.queryVar("name", "string")))
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.eq("name", Variable.param("name")))
-                    .withBlocks(List.of(Block.predicate("name"), Block.predicate("age")))
-            ));
+                .withParameters(List.of(Variable.queryVar("name", "string")))
+                .withBlocks(List.of(QueryBlock.block("me", Func.eq("name", Variable.param("name")))
+                        .withBlocks(List.of(Block.predicate("name"), Block.predicate("age")))));
 
         DqlResult result = query.dql(Map.of("name", "Alice"));
         log.info("Query: {}", result.query());
         log.info("Variables: {}", result.variables());
-        
+
         executeQuery(result.query(), result.variables(), "Query Variable");
     }
 
     private void valueVariable() {
         log.info("--- Value Variable ---");
-        
+
         Query query = Query.query()
-            .withVarBlock(
-                VarBlock.var(Func.has("friend"))
-                    .withBlock(Block.var("friendCount", "count(friend)"))
-            )
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.has("name"))
-                    .withBlocks(List.of(
-                        Block.predicate("name"),
-                        Block.predicate(Func.val("friendCount"))
-                    ))
-            ));
+                .withVarBlock(VarBlock.var(Func.has("friend")).withBlock(Block.var("friendCount", "count(friend)")))
+                .withBlocks(List.of(QueryBlock.block("me", Func.has("name"))
+                        .withBlocks(List.of(Block.predicate("name"), Block.predicate(Func.val("friendCount"))))));
 
         DqlResult result = query.dql();
         log.info("Query: {}", result.query());

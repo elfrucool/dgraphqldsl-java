@@ -1,19 +1,17 @@
 package io.github.elfrucool.dgraphql.examples.example;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.protobuf.ByteString;
 import io.dgraph.DgraphClient;
 import io.dgraph.DgraphProto;
 import io.dgraph.Transaction;
 import io.github.elfrucool.dgraphql.dsl.*;
 import io.github.elfrucool.dgraphql.examples.result.ResultsCollector;
+import jakarta.annotation.PostConstruct;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
-import jakarta.annotation.PostConstruct;
-import java.util.List;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Alias examples demonstrating predicate and function aliases.
@@ -64,11 +62,10 @@ public class AliasExamples {
             age: int .
             friend: [uid] .
             """;
-        
+
         try {
-            DgraphProto.Operation operation = DgraphProto.Operation.newBuilder()
-                .setSchema(schema)
-                .build();
+            DgraphProto.Operation operation =
+                    DgraphProto.Operation.newBuilder().setSchema(schema).build();
             dgraphClient.alter(operation);
         } catch (Exception e) {
             log.warn("AliasExamples: Schema setup error: {}", e.getMessage());
@@ -90,8 +87,8 @@ public class AliasExamples {
 
         try (Transaction txn = dgraphClient.newTransaction()) {
             DgraphProto.Mutation mu = DgraphProto.Mutation.newBuilder()
-                .setSetNquads(ByteString.copyFromUtf8(nquads))
-                .build();
+                    .setSetNquads(ByteString.copyFromUtf8(nquads))
+                    .build();
             txn.mutate(mu);
             txn.commit();
         } catch (Exception e) {
@@ -103,15 +100,10 @@ public class AliasExamples {
     private void aliasBasic() {
         String testName = "Basic Alias";
         log.info("--- Query with basic alias ---");
-        
+
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.uid("0x1"))
-                    .withBlocks(List.of(
-                        Block.predicate("name", "userName"),
-                        Block.predicate("age", "userAge")
-                    ))
-            ));
+                .withBlocks(List.of(QueryBlock.block("me", Func.uid("0x1"))
+                        .withBlocks(List.of(Block.predicate("name", "userName"), Block.predicate("age", "userAge")))));
 
         DqlResult result = query.dql();
         log.info("DSL: {}", result.query());
@@ -130,15 +122,10 @@ public class AliasExamples {
     private void aliasUid() {
         String testName = "Alias UID";
         log.info("--- Query with UID alias ---");
-        
+
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.uid("0x1"))
-                    .withBlocks(List.of(
-                        Block.predicate("uid", "userId"),
-                        Block.predicate("name")
-                    ))
-            ));
+                .withBlocks(List.of(QueryBlock.block("me", Func.uid("0x1"))
+                        .withBlocks(List.of(Block.predicate("uid", "userId"), Block.predicate("name")))));
 
         DqlResult result = query.dql();
         log.info("DSL: {}", result.query());
@@ -157,18 +144,12 @@ public class AliasExamples {
     private void aliasCount() {
         String testName = "Alias with Count";
         log.info("--- Query with count alias ---");
-        
+
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.uid("0x1"))
-                    .withBlocks(List.of(
-                        Block.predicate("name"),
-                        Block.nested("friend")
-                            .withBlocks(List.of(
-                                Block.predicate("name", "friendName")
-                            ))
-                    ))
-            ));
+                .withBlocks(List.of(QueryBlock.block("me", Func.uid("0x1"))
+                        .withBlocks(List.of(
+                                Block.predicate("name"),
+                                Block.nested("friend").withBlocks(List.of(Block.predicate("name", "friendName")))))));
 
         DqlResult result = query.dql();
         log.info("DSL: {}", result.query());
@@ -187,19 +168,15 @@ public class AliasExamples {
     private void aliasNested() {
         String testName = "Alias Nested Block";
         log.info("--- Query with alias on nested block ---");
-        
+
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.uid("0x1"))
-                    .withBlocks(List.of(
-                        Block.predicate("name"),
-                        Block.nested("friend")
-                            .withBlocks(List.of(
-                                Block.predicate("name", "friendName"),
-                                Block.predicate("age", "friendAge")
-                            ))
-                    ))
-            ));
+                .withBlocks(List.of(QueryBlock.block("me", Func.uid("0x1"))
+                        .withBlocks(List.of(
+                                Block.predicate("name"),
+                                Block.nested("friend")
+                                        .withBlocks(List.of(
+                                                Block.predicate("name", "friendName"),
+                                                Block.predicate("age", "friendAge")))))));
 
         DqlResult result = query.dql();
         log.info("DSL: {}", result.query());
@@ -224,8 +201,8 @@ public class AliasExamples {
 
         try (Transaction txn = dgraphClient.newTransaction()) {
             DgraphProto.Mutation mu = DgraphProto.Mutation.newBuilder()
-                .setDelNquads(ByteString.copyFromUtf8(nquads))
-                .build();
+                    .setDelNquads(ByteString.copyFromUtf8(nquads))
+                    .build();
             txn.mutate(mu);
             txn.commit();
         } catch (Exception e) {

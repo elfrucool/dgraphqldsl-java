@@ -18,8 +18,7 @@ import java.util.Map;
  * JsonMutation.Set.of(Map.of("uid", "_:new", "name", "Alice", "age", 30))
  * </pre>
  */
-public sealed interface JsonMutation extends DqlElement 
-    permits JsonMutation.Set, JsonMutation.Delete {
+public sealed interface JsonMutation extends DqlElement permits JsonMutation.Set, JsonMutation.Delete {
 
     List<Map<String, Object>> getJson();
 

@@ -26,8 +26,13 @@ import java.util.Map;
  *
  * @see SetTriple
  */
-public sealed interface Mutation extends DqlElement 
-    permits Mutation.Set, Mutation.Delete, Mutation.Update, Mutation.Conditional, Mutation.Upsert, Mutation.UpsertRaw {
+public sealed interface Mutation extends DqlElement
+        permits Mutation.Set,
+                Mutation.Delete,
+                Mutation.Update,
+                Mutation.Conditional,
+                Mutation.Upsert,
+                Mutation.UpsertRaw {
 
     List<Directive> directives();
 
@@ -71,10 +76,7 @@ public sealed interface Mutation extends DqlElement
      *
      * @see SetTriple
      */
-    record Set(
-        List<SetTriple> triples,
-        List<Directive> directives
-    ) implements Mutation {
+    record Set(List<SetTriple> triples, List<Directive> directives) implements Mutation {
 
         public static Set of(List<SetTriple> triples) {
             return new Set(triples, List.of());
@@ -114,7 +116,7 @@ public sealed interface Mutation extends DqlElement
             List<Map<String, Object>> result = new ArrayList<>();
             Map<String, Object> currentObj = null;
             String currentSubject = null;
-            
+
             for (SetTriple triple : triples) {
                 if (!triple.subject().equals(currentSubject)) {
                     if (currentObj != null) {
@@ -122,7 +124,7 @@ public sealed interface Mutation extends DqlElement
                     }
                     currentObj = new LinkedHashMap<>();
                     currentSubject = triple.subject();
-                    
+
                     String subjectKey = triple.subject();
                     if (subjectKey.startsWith("_:")) {
                         currentObj.put("uid", subjectKey);
@@ -130,16 +132,16 @@ public sealed interface Mutation extends DqlElement
                         currentObj.put("uid", subjectKey);
                     }
                 }
-                
+
                 if (currentObj != null && triple.predicate() != null) {
                     currentObj.put(triple.predicate(), triple.value());
                 }
             }
-            
+
             if (currentObj != null) {
                 result.add(currentObj);
             }
-            
+
             return result;
         }
 
@@ -152,13 +154,13 @@ public sealed interface Mutation extends DqlElement
                 sb.append(triples.get(i).dql());
             }
             sb.append(" }");
-            
+
             if (!directives.isEmpty()) {
                 for (Directive d : directives) {
                     sb.append(" ").append(d.dql());
                 }
             }
-            
+
             sb.append(" }");
             return sb.toString();
         }
@@ -171,9 +173,7 @@ public sealed interface Mutation extends DqlElement
      *
      * @see SetTriple
      */
-    record Delete(
-        List<SetTriple> triples
-    ) implements Mutation {
+    record Delete(List<SetTriple> triples) implements Mutation {
 
         public static Delete of(List<SetTriple> triples) {
             return new Delete(triples);
@@ -231,10 +231,7 @@ public sealed interface Mutation extends DqlElement
      * @see Set
      * @see Delete
      */
-    record Update(
-        Set set,
-        Delete delete
-    ) implements Mutation {
+    record Update(Set set, Delete delete) implements Mutation {
 
         public static Update of(Set set, Delete delete) {
             return new Update(set, delete);
@@ -287,12 +284,7 @@ public sealed interface Mutation extends DqlElement
      * @see Set
      * @see Delete
      */
-    record Conditional(
-        String condition,
-        Set set,
-        Delete delete,
-        List<Directive> directives
-    ) implements Mutation {
+    record Conditional(String condition, Set set, Delete delete, List<Directive> directives) implements Mutation {
 
         public static Conditional ifCondition(String condition, Set set, Delete delete) {
             return new Conditional(condition, set, delete, List.of());
@@ -318,7 +310,7 @@ public sealed interface Mutation extends DqlElement
             List<Map<String, Object>> result = new ArrayList<>();
             Map<String, Object> upsertObj = new LinkedHashMap<>();
             upsertObj.put("@if", condition);
-            
+
             if (set != null) {
                 List<Map<String, Object>> setJson = set.toJsonList();
                 if (!setJson.isEmpty()) {
@@ -331,7 +323,7 @@ public sealed interface Mutation extends DqlElement
                     upsertObj.put("delete", deleteJson);
                 }
             }
-            
+
             result.add(upsertObj);
             return result;
         }
@@ -371,11 +363,7 @@ public sealed interface Mutation extends DqlElement
      * @see Set
      * @see Delete
      */
-    record Upsert(
-        Query query,
-        Set set,
-        Delete delete
-    ) implements Mutation {
+    record Upsert(Query query, Set set, Delete delete) implements Mutation {
 
         @Override
         public List<Directive> directives() {
@@ -424,15 +412,15 @@ public sealed interface Mutation extends DqlElement
         public List<Map<String, Object>> toJsonList() {
             List<Map<String, Object>> result = new ArrayList<>();
             Map<String, Object> upsertObj = new LinkedHashMap<>();
-            
+
             String q = query.dql().query();
             int start = q.indexOf(" as ") + 4;
             int end = q.indexOf(" ", start);
             if (end == -1) end = q.indexOf(")", start);
             String varName = q.substring(start, end);
-            
+
             upsertObj.put("@if", "uid(" + varName + ")");
-            
+
             if (set != null) {
                 List<Map<String, Object>> setJson = new ArrayList<>();
                 for (SetTriple t : set.triples()) {
@@ -453,7 +441,7 @@ public sealed interface Mutation extends DqlElement
                 }
                 upsertObj.put("delete", delJson);
             }
-            
+
             result.add(upsertObj);
             return result;
         }
@@ -466,11 +454,7 @@ public sealed interface Mutation extends DqlElement
      *
      * @see Upsert
      */
-    record UpsertRaw(
-        String query,
-        Set set,
-        Delete delete
-    ) implements Mutation {
+    record UpsertRaw(String query, Set set, Delete delete) implements Mutation {
 
         @Override
         public List<Directive> directives() {
@@ -526,10 +510,10 @@ public sealed interface Mutation extends DqlElement
         public List<Map<String, Object>> toJsonList() {
             List<Map<String, Object>> result = new ArrayList<>();
             Map<String, Object> upsertObj = new LinkedHashMap<>();
-            
+
             String varName = extractVarName();
             upsertObj.put("@if", "uid(" + varName + ")");
-            
+
             if (set != null) {
                 List<Map<String, Object>> setJson = new ArrayList<>();
                 for (SetTriple t : set.triples()) {
@@ -550,7 +534,7 @@ public sealed interface Mutation extends DqlElement
                 }
                 upsertObj.put("delete", delJson);
             }
-            
+
             result.add(upsertObj);
             return result;
         }

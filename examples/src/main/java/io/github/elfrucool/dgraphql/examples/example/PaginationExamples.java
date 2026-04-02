@@ -5,12 +5,11 @@ import io.dgraph.DgraphProto;
 import io.dgraph.Transaction;
 import io.github.elfrucool.dgraphql.dsl.*;
 import io.github.elfrucool.dgraphql.examples.result.ResultsCollector;
+import jakarta.annotation.PostConstruct;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
-import jakarta.annotation.PostConstruct;
-import java.util.List;
 
 /**
  * Pagination examples demonstrating query pagination and ordering.
@@ -55,16 +54,17 @@ public class PaginationExamples {
 
     private void setupData() {
         StringBuilder nquads = new StringBuilder();
-        String[] names = {"Alice", "Bob", "Charlie", "Diana", "Eve", "Frank", "Grace", "Henry", "Ivy", "Jack",
-                         "Kate", "Leo", "Mike", "Noah", "Olivia", "Paul", "Quinn", "Rose", "Sam", "Tom",
-                         "Uma", "Victor", "Wendy", "Xavier", "Yara", "Zack"};
+        String[] names = {
+            "Alice", "Bob", "Charlie", "Diana", "Eve", "Frank", "Grace", "Henry", "Ivy", "Jack", "Kate", "Leo", "Mike",
+            "Noah", "Olivia", "Paul", "Quinn", "Rose", "Sam", "Tom", "Uma", "Victor", "Wendy", "Xavier", "Yara", "Zack"
+        };
         for (int i = 0; i < names.length; i++) {
             nquads.append(String.format("_:person%d <name> \"%s\" .\n", i, names[i]));
         }
         try (Transaction txn = dgraphClient.newTransaction()) {
             DgraphProto.Mutation mu = DgraphProto.Mutation.newBuilder()
-                .setSetNquads(com.google.protobuf.ByteString.copyFromUtf8(nquads.toString()))
-                .build();
+                    .setSetNquads(com.google.protobuf.ByteString.copyFromUtf8(nquads.toString()))
+                    .build();
             txn.mutate(mu);
             txn.commit();
             log.info("PaginationExamples: Inserted {} persons for pagination testing", names.length);
@@ -104,8 +104,8 @@ public class PaginationExamples {
             """;
         try (Transaction txn = dgraphClient.newTransaction()) {
             DgraphProto.Mutation mu = DgraphProto.Mutation.newBuilder()
-                .setDelNquads(com.google.protobuf.ByteString.copyFromUtf8(nquads))
-                .build();
+                    .setDelNquads(com.google.protobuf.ByteString.copyFromUtf8(nquads))
+                    .build();
             txn.mutate(mu);
             txn.commit();
             log.info("PaginationExamples: Test data cleaned up");
@@ -116,14 +116,12 @@ public class PaginationExamples {
 
     private void orderAndFirst() {
         log.info("--- Order and First ---");
-        
+
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.has("name"))
-                    .withOrderasc("name")
-                    .withFirst(10)
-                    .withBlocks(List.of(Block.predicate("name"), Block.predicate("age")))
-            ));
+                .withBlocks(List.of(QueryBlock.block("me", Func.has("name"))
+                        .withOrderasc("name")
+                        .withFirst(10)
+                        .withBlocks(List.of(Block.predicate("name"), Block.predicate("age")))));
 
         DqlResult result = query.dql();
         log.info("Query: {}", result.query());
@@ -132,15 +130,13 @@ public class PaginationExamples {
 
     private void offsetPagination() {
         log.info("--- Offset Pagination ---");
-        
+
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.has("name"))
-                    .withOrderasc("name")
-                    .withFirst(10)
-                    .withOffset(20)
-                    .withBlocks(List.of(Block.predicate("name")))
-            ));
+                .withBlocks(List.of(QueryBlock.block("me", Func.has("name"))
+                        .withOrderasc("name")
+                        .withFirst(10)
+                        .withOffset(20)
+                        .withBlocks(List.of(Block.predicate("name")))));
 
         DqlResult result = query.dql();
         log.info("Query: {}", result.query());
@@ -149,7 +145,8 @@ public class PaginationExamples {
 
     private void executeQuery(String query, String testName) {
         try {
-            DgraphProto.Response response = dgraphClient.newReadOnlyTransaction().query(query);
+            DgraphProto.Response response =
+                    dgraphClient.newReadOnlyTransaction().query(query);
             String json = response.getJson().toStringUtf8();
             boolean success = !json.isEmpty() && !json.equals("{}") && !json.equals("{\"me\":[]}");
             if (json.isEmpty() || json.equals("{}") || json.equals("{\"me\":[]}")) {

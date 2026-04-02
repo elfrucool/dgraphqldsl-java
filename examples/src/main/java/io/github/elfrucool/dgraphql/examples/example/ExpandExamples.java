@@ -6,12 +6,11 @@ import io.dgraph.DgraphProto;
 import io.dgraph.Transaction;
 import io.github.elfrucool.dgraphql.dsl.*;
 import io.github.elfrucool.dgraphql.examples.result.ResultsCollector;
+import jakarta.annotation.PostConstruct;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
-import jakarta.annotation.PostConstruct;
-import java.util.List;
 
 /**
  * Demonstrates expand() block queries using the DSL.
@@ -61,11 +60,10 @@ public class ExpandExamples {
               email
             }
             """;
-        
+
         try {
-            DgraphProto.Operation operation = DgraphProto.Operation.newBuilder()
-                .setSchema(schema)
-                .build();
+            DgraphProto.Operation operation =
+                    DgraphProto.Operation.newBuilder().setSchema(schema).build();
             dgraphClient.alter(operation);
         } catch (Exception e) {
             log.warn("ExpandExamples: Schema setup error: {}", e.getMessage());
@@ -83,8 +81,8 @@ public class ExpandExamples {
 
         try (Transaction txn = dgraphClient.newTransaction()) {
             DgraphProto.Mutation mu = DgraphProto.Mutation.newBuilder()
-                .setSetNquads(ByteString.copyFromUtf8(nquads))
-                .build();
+                    .setSetNquads(ByteString.copyFromUtf8(nquads))
+                    .build();
             txn.mutate(mu);
             txn.commit();
         } catch (Exception e) {
@@ -96,14 +94,10 @@ public class ExpandExamples {
     private void expandByType() {
         String testName = "Expand by Type";
         log.info("--- Expand by Type (Person) ---");
-        
+
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.uid("0x1"))
-                    .withBlocks(List.of(
-                        Block.expand("Person")
-                    ))
-            ));
+                .withBlocks(
+                        List.of(QueryBlock.block("me", Func.uid("0x1")).withBlocks(List.of(Block.expand("Person")))));
 
         DqlResult result = query.dql();
         log.info("DSL: {}", result.query());
@@ -114,7 +108,8 @@ public class ExpandExamples {
             results.record("17 Expand Examples (Phase 11.7)", testName, result.query(), json, true);
             log.info("Response: {}", json);
         } catch (Exception e) {
-            results.record("17 Expand Examples (Phase 11.7)", testName, result.query(), "Error: " + e.getMessage(), false);
+            results.record(
+                    "17 Expand Examples (Phase 11.7)", testName, result.query(), "Error: " + e.getMessage(), false);
             log.warn("Error: {}", e.getMessage());
         }
     }
@@ -122,14 +117,9 @@ public class ExpandExamples {
     private void expandAll() {
         String testName = "Expand All Types";
         log.info("--- Expand All Types ---");
-        
+
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.uid("0x1"))
-                    .withBlocks(List.of(
-                        Block.expandAll()
-                    ))
-            ));
+                .withBlocks(List.of(QueryBlock.block("me", Func.uid("0x1")).withBlocks(List.of(Block.expandAll()))));
 
         DqlResult result = query.dql();
         log.info("DSL: {}", result.query());
@@ -140,7 +130,8 @@ public class ExpandExamples {
             results.record("17 Expand Examples (Phase 11.7)", testName, result.query(), json, true);
             log.info("Response: {}", json);
         } catch (Exception e) {
-            results.record("17 Expand Examples (Phase 11.7)", testName, result.query(), "Error: " + e.getMessage(), false);
+            results.record(
+                    "17 Expand Examples (Phase 11.7)", testName, result.query(), "Error: " + e.getMessage(), false);
             log.warn("Error: {}", e.getMessage());
         }
     }
@@ -152,8 +143,8 @@ public class ExpandExamples {
 
         try (Transaction txn = dgraphClient.newTransaction()) {
             DgraphProto.Mutation mu = DgraphProto.Mutation.newBuilder()
-                .setDelNquads(ByteString.copyFromUtf8(nquads))
-                .build();
+                    .setDelNquads(ByteString.copyFromUtf8(nquads))
+                    .build();
             txn.mutate(mu);
             txn.commit();
         } catch (Exception e) {

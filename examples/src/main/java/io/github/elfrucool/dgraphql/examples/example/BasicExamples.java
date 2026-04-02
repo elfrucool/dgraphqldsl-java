@@ -5,12 +5,11 @@ import io.dgraph.DgraphProto;
 import io.dgraph.Transaction;
 import io.github.elfrucool.dgraphql.dsl.*;
 import io.github.elfrucool.dgraphql.examples.result.ResultsCollector;
+import jakarta.annotation.PostConstruct;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
-import jakarta.annotation.PostConstruct;
-import java.util.List;
 
 /**
  * Basic query examples demonstrating fundamental DSL usage.
@@ -71,8 +70,8 @@ public class BasicExamples {
             """;
         try (Transaction txn = dgraphClient.newTransaction()) {
             DgraphProto.Mutation mu = DgraphProto.Mutation.newBuilder()
-                .setSetNquads(com.google.protobuf.ByteString.copyFromUtf8(nquads))
-                .build();
+                    .setSetNquads(com.google.protobuf.ByteString.copyFromUtf8(nquads))
+                    .build();
             txn.mutate(mu);
             txn.commit();
             log.info("BasicExamples: Test data inserted (Alice, Bob, Charlie, Diana with friendships)");
@@ -90,8 +89,8 @@ public class BasicExamples {
             """;
         try (Transaction txn = dgraphClient.newTransaction()) {
             DgraphProto.Mutation mu = DgraphProto.Mutation.newBuilder()
-                .setDelNquads(com.google.protobuf.ByteString.copyFromUtf8(nquads))
-                .build();
+                    .setDelNquads(com.google.protobuf.ByteString.copyFromUtf8(nquads))
+                    .build();
             txn.mutate(mu);
             txn.commit();
             log.info("BasicExamples: Test data cleaned up");
@@ -102,15 +101,10 @@ public class BasicExamples {
 
     private void basicQuery() {
         log.info("--- Basic Query ---");
-        
+
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.eq("name", "Alice"))
-                    .withBlocks(List.of(
-                        Block.predicate("name"),
-                        Block.predicate("age")
-                    ))
-            ));
+                .withBlocks(List.of(QueryBlock.block("me", Func.eq("name", "Alice"))
+                        .withBlocks(List.of(Block.predicate("name"), Block.predicate("age")))));
 
         DqlResult result = query.dql();
         log.info("Query: {}", result.query());
@@ -119,16 +113,12 @@ public class BasicExamples {
 
     private void nestedBlocks() {
         log.info("--- Nested Blocks ---");
-        
+
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.eq("name", "Alice"))
-                    .withBlocks(List.of(
-                        Block.predicate("name"),
-                        Block.nested("friend")
-                            .withBlocks(List.of(Block.predicate("name")))
-                    ))
-            ));
+                .withBlocks(List.of(QueryBlock.block("me", Func.eq("name", "Alice"))
+                        .withBlocks(List.of(
+                                Block.predicate("name"),
+                                Block.nested("friend").withBlocks(List.of(Block.predicate("name")))))));
 
         DqlResult result = query.dql();
         log.info("Query: {}", result.query());
@@ -137,15 +127,10 @@ public class BasicExamples {
 
     private void aliasExample() {
         log.info("--- Alias Example ---");
-        
+
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.eq("name", "Alice"))
-                    .withBlocks(List.of(
-                        Block.predicate("name", "userName"),
-                        Block.predicate("age", "userAge")
-                    ))
-            ));
+                .withBlocks(List.of(QueryBlock.block("me", Func.eq("name", "Alice"))
+                        .withBlocks(List.of(Block.predicate("name", "userName"), Block.predicate("age", "userAge")))));
 
         DqlResult result = query.dql();
         log.info("Query: {}", result.query());
@@ -154,7 +139,8 @@ public class BasicExamples {
 
     private void executeQuery(String query, String testName) {
         try {
-            DgraphProto.Response response = dgraphClient.newReadOnlyTransaction().query(query);
+            DgraphProto.Response response =
+                    dgraphClient.newReadOnlyTransaction().query(query);
             String json = response.getJson().toStringUtf8();
             boolean success = !json.isEmpty() && !json.equals("{}") && !json.equals("{\"me\":[]}");
             if (json.isEmpty() || json.equals("{}") || json.equals("{\"me\":[]}")) {

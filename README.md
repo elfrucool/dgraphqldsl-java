@@ -564,6 +564,37 @@ src/main/java/io.github.elfrucool/dgraphql/dsl/
 └── JsonMutation.java   # JSON mutations
 ```
 
+## Contributor Setup
+
+### Prerequisites
+
+- Java 21
+- dprint (for markdown, JSON, YAML, TOML files)
+
+Install dprint:
+
+```bash
+# macOS/Linux/WSL
+curl -fsSL https://dprint.dev/install.sh | sh
+
+# Windows
+irm https://dprint.dev/install.ps1 | iex
+```
+
+### Code Formatting
+
+```bash
+# Format Java code
+./gradlew spotlessApply
+
+# Format non-Java files (markdown, JSON, YAML, etc.)
+dprint fmt
+
+# Check formatting (used in CI)
+./gradlew spotlessCheck
+dprint check
+```
+
 ## License
 
 See [LICENSE.md](LICENSE.md) for details.

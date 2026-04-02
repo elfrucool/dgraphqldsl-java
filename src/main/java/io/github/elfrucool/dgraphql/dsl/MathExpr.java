@@ -78,7 +78,8 @@ public record MathExpr(String expression) implements DqlElement {
      * Conditional: cond(condition, trueValue, falseValue).
      */
     public static MathExpr cond(Object condition, Object trueVal, Object falseVal) {
-        return new MathExpr("cond(" + formatOperand(condition) + ", " + formatOperand(trueVal) + ", " + formatOperand(falseVal) + ")");
+        return new MathExpr("cond(" + formatOperand(condition) + ", " + formatOperand(trueVal) + ", "
+                + formatOperand(falseVal) + ")");
     }
 
     /**
@@ -189,7 +190,11 @@ public record MathExpr(String expression) implements DqlElement {
             return "(" + m.expression + ")";
         }
         if (o instanceof String s) {
-            if (s.startsWith("var(") || s.startsWith("val(") || s.startsWith("count(") || s.startsWith("math(") || s.contains("(")) {
+            if (s.startsWith("var(")
+                    || s.startsWith("val(")
+                    || s.startsWith("count(")
+                    || s.startsWith("math(")
+                    || s.contains("(")) {
                 return s;
             }
             return s;

@@ -19,12 +19,8 @@ import java.util.List;
  * </pre>
  */
 public record RecurseBlock(
-    String name,
-    String queryVariable,
-    Integer depth,
-    List<Directive> directives,
-    List<Block> blocks
-) implements DqlElement {
+        String name, String queryVariable, Integer depth, List<Directive> directives, List<Block> blocks)
+        implements DqlElement {
 
     /**
      * Creates a recurse block on a query variable.

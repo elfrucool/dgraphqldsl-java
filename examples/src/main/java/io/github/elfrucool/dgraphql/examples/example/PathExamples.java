@@ -6,12 +6,11 @@ import io.dgraph.DgraphProto;
 import io.dgraph.Transaction;
 import io.github.elfrucool.dgraphql.dsl.*;
 import io.github.elfrucool.dgraphql.examples.result.ResultsCollector;
+import jakarta.annotation.PostConstruct;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
-import jakarta.annotation.PostConstruct;
-import java.util.List;
 
 /**
  * Demonstrates shortest path queries using the DSL.
@@ -54,11 +53,10 @@ public class PathExamples {
             name: string @index(exact) .
             friend: [uid] .
             """;
-        
+
         try {
-            DgraphProto.Operation operation = DgraphProto.Operation.newBuilder()
-                .setSchema(schema)
-                .build();
+            DgraphProto.Operation operation =
+                    DgraphProto.Operation.newBuilder().setSchema(schema).build();
             dgraphClient.alter(operation);
         } catch (Exception e) {
             log.warn("PathExamples: Schema setup error: {}", e.getMessage());
@@ -80,8 +78,8 @@ public class PathExamples {
 
         try (Transaction txn = dgraphClient.newTransaction()) {
             DgraphProto.Mutation mu = DgraphProto.Mutation.newBuilder()
-                .setSetNquads(ByteString.copyFromUtf8(nquads))
-                .build();
+                    .setSetNquads(ByteString.copyFromUtf8(nquads))
+                    .build();
             txn.mutate(mu);
             txn.commit();
         } catch (Exception e) {
@@ -93,16 +91,11 @@ public class PathExamples {
     private void shortestPath() {
         String testName = "Shortest Path";
         log.info("--- Shortest Path (Alice to Charlie) ---");
-        
+
         Query query = Query.query()
-            .withShortestPath(
-                ShortestPath.shortest("path", "0x1", "0x3")
-                    .withPredicate(Block.predicate("friend"))
-            )
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.uid("path"))
-                    .withBlocks(List.of(Block.predicate("name")))
-            ));
+                .withShortestPath(ShortestPath.shortest("path", "0x1", "0x3").withPredicate(Block.predicate("friend")))
+                .withBlocks(
+                        List.of(QueryBlock.block("me", Func.uid("path")).withBlocks(List.of(Block.predicate("name")))));
 
         DqlResult result = query.dql();
         log.info("DSL: {}", result.query());
@@ -113,7 +106,8 @@ public class PathExamples {
             results.record("15 Path Examples (Phase 11.5)", testName, result.query(), json, true);
             log.info("Response: {}", json);
         } catch (Exception e) {
-            results.record("15 Path Examples (Phase 11.5)", testName, result.query(), "Error: " + e.getMessage(), false);
+            results.record(
+                    "15 Path Examples (Phase 11.5)", testName, result.query(), "Error: " + e.getMessage(), false);
             log.warn("Error: {}", e.getMessage());
         }
     }
@@ -121,16 +115,12 @@ public class PathExamples {
     private void kShortestPath() {
         String testName = "K-Shortest Path";
         log.info("--- K-Shortest Path (Alice to Charlie, k=2) ---");
-        
+
         Query query = Query.query()
-            .withShortestPath(
-                ShortestPath.kShortest("path", "0x1", "0x3", 2)
-                    .withPredicate(Block.predicate("friend"))
-            )
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.uid("path"))
-                    .withBlocks(List.of(Block.predicate("name")))
-            ));
+                .withShortestPath(
+                        ShortestPath.kShortest("path", "0x1", "0x3", 2).withPredicate(Block.predicate("friend")))
+                .withBlocks(
+                        List.of(QueryBlock.block("me", Func.uid("path")).withBlocks(List.of(Block.predicate("name")))));
 
         DqlResult result = query.dql();
         log.info("DSL: {}", result.query());
@@ -141,7 +131,8 @@ public class PathExamples {
             results.record("15 Path Examples (Phase 11.5)", testName, result.query(), json, true);
             log.info("Response: {}", json);
         } catch (Exception e) {
-            results.record("15 Path Examples (Phase 11.5)", testName, result.query(), "Error: " + e.getMessage(), false);
+            results.record(
+                    "15 Path Examples (Phase 11.5)", testName, result.query(), "Error: " + e.getMessage(), false);
             log.warn("Error: {}", e.getMessage());
         }
     }
@@ -156,8 +147,8 @@ public class PathExamples {
 
         try (Transaction txn = dgraphClient.newTransaction()) {
             DgraphProto.Mutation mu = DgraphProto.Mutation.newBuilder()
-                .setDelNquads(ByteString.copyFromUtf8(nquads))
-                .build();
+                    .setDelNquads(ByteString.copyFromUtf8(nquads))
+                    .build();
             txn.mutate(mu);
             txn.commit();
         } catch (Exception e) {

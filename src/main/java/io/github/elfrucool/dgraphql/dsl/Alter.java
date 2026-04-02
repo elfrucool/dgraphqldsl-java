@@ -20,8 +20,8 @@ import java.util.List;
  * Alter.PredicateSchema.predicate("owner", "uid").withIndex("exact")
  * </pre>
  */
-public sealed interface Alter extends DqlElement 
-    permits Alter.TypeDefinition, Alter.PredicateSchema, Alter.Drop, Alter.All {
+public sealed interface Alter extends DqlElement
+        permits Alter.TypeDefinition, Alter.PredicateSchema, Alter.Drop, Alter.All {
 
     String dql();
 
@@ -30,10 +30,7 @@ public sealed interface Alter extends DqlElement
      *
      * <p>Example: {@code Alter.TypeDefinition.of("Person", "name", "email", "age")}</p>
      */
-    record TypeDefinition(
-        String typeName,
-        List<String> fields
-    ) implements Alter {
+    record TypeDefinition(String typeName, List<String> fields) implements Alter {
 
         public static TypeDefinition of(String typeName, String... fields) {
             return new TypeDefinition(typeName, List.of(fields));
@@ -61,12 +58,8 @@ public sealed interface Alter extends DqlElement
      *
      * <p>Example: {@code Alter.PredicateSchema.predicate("name", "string").withIndex("exact")}</p>
      */
-    record PredicateSchema(
-        String predicate,
-        String type,
-        List<String> indexes,
-        List<String> directives
-    ) implements Alter {
+    record PredicateSchema(String predicate, String type, List<String> indexes, List<String> directives)
+            implements Alter {
 
         public static PredicateSchema predicate(String predicate, String type) {
             return new PredicateSchema(predicate, type, List.of(), List.of());
@@ -100,7 +93,7 @@ public sealed interface Alter extends DqlElement
         public String dql() {
             StringBuilder sb = new StringBuilder();
             sb.append(predicate).append(": ").append(type);
-            
+
             if (!indexes.isEmpty()) {
                 sb.append(" @index(");
                 for (int i = 0; i < indexes.size(); i++) {
@@ -109,11 +102,11 @@ public sealed interface Alter extends DqlElement
                 }
                 sb.append(")");
             }
-            
+
             for (String d : directives) {
                 sb.append(" @").append(d);
             }
-            
+
             sb.append(" .");
             return sb.toString();
         }
@@ -124,10 +117,7 @@ public sealed interface Alter extends DqlElement
      *
      * <p>Example: {@code Alter.Drop.dropType("Person")} or {@code Alter.Drop.dropPredicate("owner")}</p>
      */
-    record Drop(
-        String target,
-        boolean isAll
-    ) implements Alter {
+    record Drop(String target, boolean isAll) implements Alter {
 
         public static Drop dropAll() {
             return new Drop(null, true);
@@ -155,9 +145,7 @@ public sealed interface Alter extends DqlElement
      *
      * <p>Example: {@code Alter.All.of(List.of(typeDef, predSchema))}</p>
      */
-    record All(
-        List<Alter> operations
-    ) implements Alter {
+    record All(List<Alter> operations) implements Alter {
 
         public static All of(List<Alter> operations) {
             return new All(operations);

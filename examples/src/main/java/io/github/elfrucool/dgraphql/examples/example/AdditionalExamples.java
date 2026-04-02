@@ -1,19 +1,17 @@
 package io.github.elfrucool.dgraphql.examples.example;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dgraph.DgraphClient;
 import io.dgraph.DgraphProto;
 import io.dgraph.Transaction;
 import io.github.elfrucool.dgraphql.dsl.*;
 import io.github.elfrucool.dgraphql.examples.result.ResultsCollector;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-
 import jakarta.annotation.PostConstruct;
 import java.util.List;
 import java.util.Map;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * Demonstrates additional DSL features.
@@ -75,8 +73,8 @@ public class AdditionalExamples {
             """;
         try (Transaction txn = dgraphClient.newTransaction()) {
             DgraphProto.Mutation mu = DgraphProto.Mutation.newBuilder()
-                .setSetNquads(com.google.protobuf.ByteString.copyFromUtf8(nquads))
-                .build();
+                    .setSetNquads(com.google.protobuf.ByteString.copyFromUtf8(nquads))
+                    .build();
             txn.mutate(mu);
             txn.commit();
             log.info("AdditionalExamples: Test data inserted (Alice, Bob, Charlie, Diana with friend, age, email)");
@@ -94,8 +92,8 @@ public class AdditionalExamples {
             """;
         try (Transaction txn = dgraphClient.newTransaction()) {
             DgraphProto.Mutation mu = DgraphProto.Mutation.newBuilder()
-                .setDelNquads(com.google.protobuf.ByteString.copyFromUtf8(nquads))
-                .build();
+                    .setDelNquads(com.google.protobuf.ByteString.copyFromUtf8(nquads))
+                    .build();
             txn.mutate(mu);
             txn.commit();
             log.info("AdditionalExamples: Test data cleaned up");
@@ -106,17 +104,14 @@ public class AdditionalExamples {
 
     private void groupByAggregation() {
         log.info("--- GroupBy Aggregation ---");
-        
+
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("me", Func.has("friend"))
-                    .withBlocks(List.of(
-                        Block.predicate("age"),
-                        Block.nested("friend")
-                            .withDirective(Directive.groupby("age"))
-                            .withBlocks(List.of(Block.predicate("count(uid)")))
-                    ))
-            ));
+                .withBlocks(List.of(QueryBlock.block("me", Func.has("friend"))
+                        .withBlocks(List.of(
+                                Block.predicate("age"),
+                                Block.nested("friend")
+                                        .withDirective(Directive.groupby("age"))
+                                        .withBlocks(List.of(Block.predicate("count(uid)")))))));
 
         DqlResult result = query.dql();
         log.info("Query: {}", result.query());
@@ -125,9 +120,8 @@ public class AdditionalExamples {
 
     private void alterSchema() {
         log.info("--- ALTER Schema ---");
-        
-        Alter alter = Alter.predicate("email", "string")
-            .withIndex("hash");
+
+        Alter alter = Alter.predicate("email", "string").withIndex("hash");
 
         String dql = alter.dql();
         log.info("Schema: {}", dql);
@@ -136,10 +130,8 @@ public class AdditionalExamples {
 
     private void jsonMutation() {
         log.info("--- JSON Mutation ---");
-        
-        JsonMutation mutation = JsonMutation.Set.of(
-            Map.of("name", "TestJsonPerson", "age", 99)
-        );
+
+        JsonMutation mutation = JsonMutation.Set.of(Map.of("name", "TestJsonPerson", "age", 99));
 
         log.info("Mutation (JSON): {}", mutation.getJson());
         executeJsonMutation(mutation, "JSON Mutation");
@@ -147,14 +139,13 @@ public class AdditionalExamples {
 
     private void multipleQueryBlocks() {
         log.info("--- Multiple Query Blocks ---");
-        
+
         Query query = Query.query()
-            .withBlocks(List.of(
-                QueryBlock.block("user1", Func.eq("email", "alice@example.com"))
-                    .withBlocks(List.of(Block.predicate("name"))),
-                QueryBlock.block("user2", Func.eq("email", "bob@example.com"))
-                    .withBlocks(List.of(Block.predicate("name")))
-            ));
+                .withBlocks(List.of(
+                        QueryBlock.block("user1", Func.eq("email", "alice@example.com"))
+                                .withBlocks(List.of(Block.predicate("name"))),
+                        QueryBlock.block("user2", Func.eq("email", "bob@example.com"))
+                                .withBlocks(List.of(Block.predicate("name")))));
 
         DqlResult result = query.dql();
         log.info("Query: {}", result.query());
@@ -163,7 +154,8 @@ public class AdditionalExamples {
 
     private void executeQuery(String query, String testName) {
         try {
-            DgraphProto.Response response = dgraphClient.newReadOnlyTransaction().query(query);
+            DgraphProto.Response response =
+                    dgraphClient.newReadOnlyTransaction().query(query);
             String json = response.getJson().toStringUtf8();
             boolean success = !json.isEmpty() && !json.equals("{}") && !json.equals("{\"me\":[]}");
             if (json.isEmpty() || json.equals("{}") || json.equals("{\"me\":[]}")) {
@@ -177,15 +169,16 @@ public class AdditionalExamples {
 
     private void executeAlter(String schema, String testName) {
         try {
-            DgraphProto.Operation operation = DgraphProto.Operation.newBuilder()
-                .setSchema(schema)
-                .build();
+            DgraphProto.Operation operation =
+                    DgraphProto.Operation.newBuilder().setSchema(schema).build();
             dgraphClient.alter(operation);
             results.record("09 Additional Examples (Phase 10)", testName, schema, "Schema update successful", true);
             log.info("Schema update successful");
         } catch (Exception e) {
             results.record("09 Additional Examples (Phase 10)", testName, schema, "Error: " + e.getMessage(), false);
-            log.warn("Schema update error: {}", e.getCause() != null ? e.getCause().getMessage() : e.getMessage());
+            log.warn(
+                    "Schema update error: {}",
+                    e.getCause() != null ? e.getCause().getMessage() : e.getMessage());
         }
     }
 
@@ -193,15 +186,16 @@ public class AdditionalExamples {
         try (Transaction txn = dgraphClient.newTransaction()) {
             Map<String, Object> jsonBody = Map.of("set", mutation.getJson());
             String jsonStr = objectMapper.writeValueAsString(jsonBody);
-            
+
             DgraphProto.Mutation mu = DgraphProto.Mutation.newBuilder()
-                .setSetJson(com.google.protobuf.ByteString.copyFromUtf8(jsonStr))
-                .build();
+                    .setSetJson(com.google.protobuf.ByteString.copyFromUtf8(jsonStr))
+                    .build();
             txn.mutate(mu);
             txn.commit();
-results.record("09 Additional Examples (Phase 10)", testName, mutation.dql(), "Mutation successful", true);
+            results.record("09 Additional Examples (Phase 10)", testName, mutation.dql(), "Mutation successful", true);
         } catch (Exception e) {
-            results.record("09 Additional Examples (Phase 10)", testName, mutation.dql(), "Error: " + e.getMessage(), false);
+            results.record(
+                    "09 Additional Examples (Phase 10)", testName, mutation.dql(), "Error: " + e.getMessage(), false);
             log.warn("Mutation error: {}", e.getCause() != null ? e.getCause().getMessage() : e.getMessage());
         }
     }

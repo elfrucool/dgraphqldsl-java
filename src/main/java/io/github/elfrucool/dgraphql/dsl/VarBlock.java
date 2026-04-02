@@ -23,12 +23,8 @@ import java.util.List;
  * @see VarAssignment
  * @see Query#withVarBlocks(List)
  */
-public record VarBlock(
-    Func func,
-    List<VarAssignment> assignments,
-    List<Directive> directives,
-    List<Block> blocks
-) implements DqlElement {
+public record VarBlock(Func func, List<VarAssignment> assignments, List<Directive> directives, List<Block> blocks)
+        implements DqlElement {
 
     /**
      * Creates a variable block from a function.

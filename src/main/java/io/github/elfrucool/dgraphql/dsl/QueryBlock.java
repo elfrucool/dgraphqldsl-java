@@ -26,17 +26,24 @@ import java.util.List;
  * @see Func
  * @see Directive
  */
-public sealed interface QueryBlock extends DqlElement 
-    permits QueryBlock.Named, QueryBlock.Anonymous {
+public sealed interface QueryBlock extends DqlElement permits QueryBlock.Named, QueryBlock.Anonymous {
 
     String name();
+
     Func func();
+
     List<Block> blocks();
+
     List<Directive> directives();
+
     String orderasc();
+
     String orderdesc();
+
     Integer first();
+
     Integer offset();
+
     String after();
 
     default QueryBlock withBlocks(List<Block> blocks) {
@@ -106,16 +113,16 @@ public sealed interface QueryBlock extends DqlElement
      * <p>Example: {@code me(func: eq(name, "Alice")) { name age }}</p>
      */
     record Named(
-        String name,
-        Func func,
-        List<Block> blocks,
-        List<Directive> directives,
-        String orderasc,
-        String orderdesc,
-        Integer first,
-        Integer offset,
-        String after
-    ) implements QueryBlock {
+            String name,
+            Func func,
+            List<Block> blocks,
+            List<Directive> directives,
+            String orderasc,
+            String orderdesc,
+            Integer first,
+            Integer offset,
+            String after)
+            implements QueryBlock {
 
         /**
          * Creates a named query block with the given name and root function.
@@ -129,38 +136,94 @@ public sealed interface QueryBlock extends DqlElement
         }
 
         public Named withBlocks(List<Block> blocks) {
-            return new Named(this.name, this.func, blocks, this.directives,
-                            this.orderasc, this.orderdesc, this.first, this.offset, this.after);
+            return new Named(
+                    this.name,
+                    this.func,
+                    blocks,
+                    this.directives,
+                    this.orderasc,
+                    this.orderdesc,
+                    this.first,
+                    this.offset,
+                    this.after);
         }
 
         public Named withDirectives(List<Directive> directives) {
-            return new Named(this.name, this.func, this.blocks, directives,
-                            this.orderasc, this.orderdesc, this.first, this.offset, this.after);
+            return new Named(
+                    this.name,
+                    this.func,
+                    this.blocks,
+                    directives,
+                    this.orderasc,
+                    this.orderdesc,
+                    this.first,
+                    this.offset,
+                    this.after);
         }
 
         public Named withOrderasc(String predicate) {
-            return new Named(this.name, this.func, this.blocks, this.directives,
-                            predicate, this.orderdesc, this.first, this.offset, this.after);
+            return new Named(
+                    this.name,
+                    this.func,
+                    this.blocks,
+                    this.directives,
+                    predicate,
+                    this.orderdesc,
+                    this.first,
+                    this.offset,
+                    this.after);
         }
 
         public Named withOrderdesc(String predicate) {
-            return new Named(this.name, this.func, this.blocks, this.directives,
-                            this.orderasc, predicate, this.first, this.offset, this.after);
+            return new Named(
+                    this.name,
+                    this.func,
+                    this.blocks,
+                    this.directives,
+                    this.orderasc,
+                    predicate,
+                    this.first,
+                    this.offset,
+                    this.after);
         }
 
         public Named withFirst(int count) {
-            return new Named(this.name, this.func, this.blocks, this.directives,
-                            this.orderasc, this.orderdesc, count, this.offset, this.after);
+            return new Named(
+                    this.name,
+                    this.func,
+                    this.blocks,
+                    this.directives,
+                    this.orderasc,
+                    this.orderdesc,
+                    count,
+                    this.offset,
+                    this.after);
         }
 
         public Named withOffset(int count) {
-            return new Named(this.name, this.func, this.blocks, this.directives,
-                            this.orderasc, this.orderdesc, this.first, count, this.after);
+            return new Named(
+                    this.name,
+                    this.func,
+                    this.blocks,
+                    this.directives,
+                    this.orderasc,
+                    this.orderdesc,
+                    this.first,
+                    count,
+                    this.after);
         }
 
         public Named withAfter(String uid) {
-            return new Named(this.name, this.func, this.blocks, this.directives,
-                            this.orderasc, this.orderdesc, this.first, this.offset, uid);
+            return new Named(
+                    this.name,
+                    this.func,
+                    this.blocks,
+                    this.directives,
+                    this.orderasc,
+                    this.orderdesc,
+                    this.first,
+                    this.offset,
+                    uid);
         }
 
         @Override
@@ -212,15 +275,15 @@ public sealed interface QueryBlock extends DqlElement
      * <p>Example: {@code func: eq(name, "Alice") { name age }}</p>
      */
     record Anonymous(
-        Func func,
-        List<Block> blocks,
-        List<Directive> directives,
-        String orderasc,
-        String orderdesc,
-        Integer first,
-        Integer offset,
-        String after
-    ) implements QueryBlock {
+            Func func,
+            List<Block> blocks,
+            List<Directive> directives,
+            String orderasc,
+            String orderdesc,
+            Integer first,
+            Integer offset,
+            String after)
+            implements QueryBlock {
 
         @Override
         public String name() {
@@ -238,38 +301,87 @@ public sealed interface QueryBlock extends DqlElement
         }
 
         public Anonymous withBlocks(List<Block> blocks) {
-            return new Anonymous(this.func, blocks, this.directives,
-                                this.orderasc, this.orderdesc, this.first, this.offset, this.after);
+            return new Anonymous(
+                    this.func,
+                    blocks,
+                    this.directives,
+                    this.orderasc,
+                    this.orderdesc,
+                    this.first,
+                    this.offset,
+                    this.after);
         }
 
         public Anonymous withDirectives(List<Directive> directives) {
-            return new Anonymous(this.func, this.blocks, directives,
-                                this.orderasc, this.orderdesc, this.first, this.offset, this.after);
+            return new Anonymous(
+                    this.func,
+                    this.blocks,
+                    directives,
+                    this.orderasc,
+                    this.orderdesc,
+                    this.first,
+                    this.offset,
+                    this.after);
         }
 
         public Anonymous withOrderasc(String predicate) {
-            return new Anonymous(this.func, this.blocks, this.directives,
-                                predicate, this.orderdesc, this.first, this.offset, this.after);
+            return new Anonymous(
+                    this.func,
+                    this.blocks,
+                    this.directives,
+                    predicate,
+                    this.orderdesc,
+                    this.first,
+                    this.offset,
+                    this.after);
         }
 
         public Anonymous withOrderdesc(String predicate) {
-            return new Anonymous(this.func, this.blocks, this.directives,
-                                this.orderasc, predicate, this.first, this.offset, this.after);
+            return new Anonymous(
+                    this.func,
+                    this.blocks,
+                    this.directives,
+                    this.orderasc,
+                    predicate,
+                    this.first,
+                    this.offset,
+                    this.after);
         }
 
         public Anonymous withFirst(int count) {
-            return new Anonymous(this.func, this.blocks, this.directives,
-                                this.orderasc, this.orderdesc, count, this.offset, this.after);
+            return new Anonymous(
+                    this.func,
+                    this.blocks,
+                    this.directives,
+                    this.orderasc,
+                    this.orderdesc,
+                    count,
+                    this.offset,
+                    this.after);
         }
 
         public Anonymous withOffset(int count) {
-            return new Anonymous(this.func, this.blocks, this.directives,
-                                this.orderasc, this.orderdesc, this.first, count, this.after);
+            return new Anonymous(
+                    this.func,
+                    this.blocks,
+                    this.directives,
+                    this.orderasc,
+                    this.orderdesc,
+                    this.first,
+                    count,
+                    this.after);
         }
 
         public Anonymous withAfter(String uid) {
-            return new Anonymous(this.func, this.blocks, this.directives,
-                                this.orderasc, this.orderdesc, this.first, this.offset, uid);
+            return new Anonymous(
+                    this.func,
+                    this.blocks,
+                    this.directives,
+                    this.orderasc,
+                    this.orderdesc,
+                    this.first,
+                    this.offset,
+                    uid);
         }
 
         @Override

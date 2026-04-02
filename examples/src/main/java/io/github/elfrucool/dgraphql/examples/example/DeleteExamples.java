@@ -6,11 +6,10 @@ import io.dgraph.DgraphProto;
 import io.dgraph.Transaction;
 import io.github.elfrucool.dgraphql.dsl.*;
 import io.github.elfrucool.dgraphql.examples.result.ResultsCollector;
+import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
-import jakarta.annotation.PostConstruct;
 
 /**
  * Demonstrates delete mutations using the DSL.
@@ -54,11 +53,10 @@ public class DeleteExamples {
             deleteAge: int .
             deleteEmail: string .
             """;
-        
+
         try {
-            DgraphProto.Operation operation = DgraphProto.Operation.newBuilder()
-                .setSchema(schema)
-                .build();
+            DgraphProto.Operation operation =
+                    DgraphProto.Operation.newBuilder().setSchema(schema).build();
             dgraphClient.alter(operation);
         } catch (Exception e) {
             log.warn("DeleteExamples: Schema setup error: {}", e.getMessage());
@@ -75,8 +73,8 @@ public class DeleteExamples {
 
         try (Transaction txn = dgraphClient.newTransaction()) {
             DgraphProto.Mutation mu = DgraphProto.Mutation.newBuilder()
-                .setSetNquads(ByteString.copyFromUtf8(nquads))
-                .build();
+                    .setSetNquads(ByteString.copyFromUtf8(nquads))
+                    .build();
             txn.mutate(mu);
             txn.commit();
         } catch (Exception e) {
@@ -88,23 +86,33 @@ public class DeleteExamples {
     private void deletePredicateValue() {
         String testName = "Delete Predicate Value";
         log.info("--- Delete Predicate Value (using JSON) ---");
-        
+
         try {
             String jsonDelete = """
                 [{"uid": "0x99", "deleteName": null}]
                 """;
-            
+
             try (Transaction txn = dgraphClient.newTransaction()) {
                 DgraphProto.Mutation mu = DgraphProto.Mutation.newBuilder()
-                    .setDeleteJson(ByteString.copyFromUtf8(jsonDelete))
-                    .build();
+                        .setDeleteJson(ByteString.copyFromUtf8(jsonDelete))
+                        .build();
                 txn.mutate(mu);
                 txn.commit();
             }
-            results.record("13 Delete Examples (Phase 11.3)", testName, "JSON: deleteName = null", "Mutation successful", true);
+            results.record(
+                    "13 Delete Examples (Phase 11.3)",
+                    testName,
+                    "JSON: deleteName = null",
+                    "Mutation successful",
+                    true);
             log.info("Mutation successful (JSON format)");
         } catch (Exception e) {
-            results.record("13 Delete Examples (Phase 11.3)", testName, "JSON: deleteName = null", "Error: " + e.getMessage(), false);
+            results.record(
+                    "13 Delete Examples (Phase 11.3)",
+                    testName,
+                    "JSON: deleteName = null",
+                    "Error: " + e.getMessage(),
+                    false);
             log.warn("Mutation error: {}", e.getMessage());
         }
     }
@@ -112,14 +120,13 @@ public class DeleteExamples {
     private void deleteAllPredicates() {
         String testName = "Delete All Predicates";
         log.info("--- Delete All Predicates ---");
-        
-        Mutation mutation = Mutation.delete(
-            SetTriple.subject("0x99").predicate("*").value("*")
-        );
+
+        Mutation mutation =
+                Mutation.delete(SetTriple.subject("0x99").predicate("*").value("*"));
 
         String dql = mutation.dql();
         log.info("DSL: {}", dql);
-        
+
         executeMutation(dql, testName);
     }
 
@@ -128,8 +135,8 @@ public class DeleteExamples {
             String nquads = mutationDql.replace("{ delete { ", "").replace(" } }", "");
             try (Transaction txn = dgraphClient.newTransaction()) {
                 DgraphProto.Mutation mu = DgraphProto.Mutation.newBuilder()
-                    .setDelNquads(ByteString.copyFromUtf8(nquads))
-                    .build();
+                        .setDelNquads(ByteString.copyFromUtf8(nquads))
+                        .build();
                 txn.mutate(mu);
                 txn.commit();
             }
@@ -148,8 +155,8 @@ public class DeleteExamples {
 
         try (Transaction txn = dgraphClient.newTransaction()) {
             DgraphProto.Mutation mu = DgraphProto.Mutation.newBuilder()
-                .setDelNquads(ByteString.copyFromUtf8(nquads))
-                .build();
+                    .setDelNquads(ByteString.copyFromUtf8(nquads))
+                    .build();
             txn.mutate(mu);
             txn.commit();
         } catch (Exception e) {
