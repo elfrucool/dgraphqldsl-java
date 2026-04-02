@@ -158,7 +158,62 @@ To publish a new release to Maven Central:
 
 ---
 
-## 6. Tutorial and README Improvements
+## 6. Code Quality Tools
+
+**Purpose**: Professional-grade codebase with automated checks
+
+| Task                  | Description                                | Status  |
+| --------------------- | ------------------------------------------ | ------- |
+| Add JaCoCo            | Code coverage reporting (build.gradle.kts) | ⏳ TODO |
+| Add Spotless          | Code formatting (Google Java Format)       | ⏳ TODO |
+| Add CI check          | Run Spotless check in CI workflow          | ⏳ TODO |
+| Verify JaCoCo works   | Run `./gradlew jacocoTestReport`           | ⏳ TODO |
+| Verify Spotless works | Run `./gradlew spotlessCheck`              | ⏳ TODO |
+| Update this document  | Place a white check mark on completion     | ⏳ TODO |
+
+### Notes
+
+- Spotless will auto-format code on `./gradlew spotlessApply`
+- CI should fail if code is not formatted ( SpotlessCheck in Gradle, not spotlessApply)
+
+---
+
+## 7. Maven Central Publication
+
+**Purpose**: Publish library to Maven Central for consumption
+
+### Snapshot Publication (Testing)
+
+| Task                    | Description                                     | Status  |
+| ----------------------- | ----------------------------------------------- | ------- |
+| Keep -SNAPSHOT version  | Keep version as `0.0.1-SNAPSHOT` for testing    | ⏳ TODO |
+| Run publish             | Run `./gradlew publish` locally or via workflow | ⏳ TODO |
+| Verify on Maven Central | Check at https://s01.oss.sonatype.org           | ⏳ TODO |
+| Update this document    | Place a white check mark on completion          | ⏳ TODO |
+
+### Release Publication
+
+| Task                    | Description                                    | Status  |
+| ----------------------- | ---------------------------------------------- | ------- |
+| Add code coverage badge | Add JaCoCo badge to README                     | ⏳ TODO |
+| Add CI badge            | Add GitHub Actions badge to README             | ⏳ TODO |
+| Add Maven Central badge | Add Maven Central version badge to README      | ⏳ TODO |
+| Remove -SNAPSHOT        | Change version to `0.0.1` in build.gradle.kts  | ⏳ TODO |
+| Create GitHub release   | Create release + tag v0.0.1                    | ⏳ TODO |
+| Verify on Maven Central | Check at https://search.maven.org (after sync) | ⏳ TODO |
+| Update this document    | Place a white check mark on completion         | ⏳ TODO |
+
+### Auto-Publish on Release
+
+The publish workflow (`.github/workflows/publish.yml`) already:
+
+- Triggers on version tags (`v*`)
+- Builds, signs, and publishes to Maven Central automatically
+- No manual publish needed - just create a GitHub release
+
+---
+
+## 8. Tutorial and README Improvements
 
 **Purpose**: Make the library accessible to beginners
 
@@ -184,21 +239,7 @@ To publish a new release to Maven Central:
 | Beginner-friendly intro | Simplify introduction, add "Why use this?" section |
 | Expand quick start      | More copy-paste examples                           |
 | FAQ section             | Common questions and answers                       |
-| Add badges              | CI status, Maven Central version badges            |
 | Update this document    | Place a white check mark on completion             |
-
----
-
-## 7. Code Quality Tools
-
-**Purpose**: Professional-grade codebase
-
-| Task                    | Description                            |
-| ----------------------- | -------------------------------------- |
-| Add JaCoCo              | Code coverage reporting                |
-| Add Spotless/Checkstyle | Code formatting enforcement            |
-| Add dependency checker  | Renovate or similar for updates        |
-| Update this document    | Place a white check mark on completion |
 
 ---
 
@@ -211,5 +252,6 @@ To publish a new release to Maven Central:
 | **Phase 3** | Add Javadocs                        | ✅ Done |
 | **Phase 4** | GitHub setup (workflows, templates) | ✅ Done |
 | **Phase 5** | Maven Central prep (POM metadata)   | ✅ Done |
-| **Phase 6** | Tutorial + README improvements      | Pending |
-| **Phase 7** | Quality tools (JaCoCo, formatting)  | Pending |
+| **Phase 6** | Code quality (JaCoCo, Spotless)     | ⏳ TODO |
+| **Phase 7** | Maven Central publication           | ⏳ TODO |
+| **Phase 8** | Tutorial + README improvements      | ⏳ TODO |
