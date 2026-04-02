@@ -4,8 +4,8 @@ plugins {
     id("io.spring.dependency-management") version "1.1.7"
 }
 
-group = "org.frunix"
-version = "0.0.1-SNAPSHOT"
+group = "io.github.elfrucool"
+version = "1.0.0-SNAPSHOT"
 
 java {
     toolchain {

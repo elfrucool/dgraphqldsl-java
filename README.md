@@ -1,5 +1,9 @@
 # Dgraph DQL Java DSL
 
+[![CI](https://github.com/elfrucool/dgraphql/actions/workflows/ci.yml/badge.svg)](https://github.com/elfrucool/dgraphql/actions/workflows/ci.yml)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.elfrucool/dgraphqldsl-java.svg)](https://search.maven.org/artifact/io.github.elfrucool/dgraphqldsl-java)
+[![JaCoCo](https://img.shields.io/badge/coverage-51%25-green?logo=jacoco)](https://github.com/elfrucool/dgraphql/actions/workflows/ci.yml)
+
 A type-safe Java DSL for building Dgraph DQL queries. Build queries programmatically with immutability and compile-time safety.
 
 ## Features

@@ -8,7 +8,7 @@ plugins {
 
 group = "io.github.elfrucool"
 base.archivesName.set("dgraphqldsl-java")
-version = "0.0.1-SNAPSHOT"
+version = "1.0.0-SNAPSHOT"
 
 java {
 	toolchain {
@@ -58,10 +58,8 @@ publishing {
 				developers {
 					developer {
 						id.set("elfrucool")
-						name.set("Fruition Labs")
-						email.set("info@fruition-labs.com")
-						organization.set("Fruition Labs")
-						organizationUrl.set("https://fruition-labs.com")
+						name.set("Gustavo Serrano")
+						email.set("elfrucool@gmail.com")
 					}
 				}
 				
