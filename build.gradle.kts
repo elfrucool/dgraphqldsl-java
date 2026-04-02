@@ -92,6 +92,9 @@ publishing {
 }
 
 signing {
+	val signingKey = project.findProperty("signingKey") as String?
+	val signingPassword = project.findProperty("signingPassword") as String?
+	useInMemoryPgpKeys(signingKey, signingPassword)
 	sign(publishing.publications.getByName("java"))
 }
 
