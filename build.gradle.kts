@@ -58,10 +58,8 @@ publishing {
 				developers {
 					developer {
 						id.set("elfrucool")
-						name.set("Fruition Labs")
-						email.set("info@fruition-labs.com")
-						organization.set("Fruition Labs")
-						organizationUrl.set("https://fruition-labs.com")
+						name.set("Gustavo Serrano")
+						email.set("elfrucool@gmail.com")
 					}
 				}
 				
