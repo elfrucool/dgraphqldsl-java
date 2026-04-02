@@ -31,7 +31,7 @@ jobs:
         run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
 
       - name: Publish to Maven Central
-        run: ./gradlew publish -Pversion=$VERSION
+        run: ./gradlew publish -Pversion=$VERSION --rerun-tasks
         env:
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
