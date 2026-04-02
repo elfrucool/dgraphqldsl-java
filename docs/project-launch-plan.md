@@ -162,22 +162,27 @@ To publish a new release to Maven Central:
 
 **Purpose**: Professional-grade codebase with automated checks
 
-| Task                  | Description                                                    | Status |
-| --------------------- | -------------------------------------------------------------- | ------- |
-| Add JaCoCo            | Code coverage reporting (build.gradle.kts, report only)       | ✅ Done |
-| Add Spotless          | Code formatting with palantir-java-format (main + examples)   | ✅ Done |
-| Add CI check          | Run Spotless check in CI workflow                             | ✅ Done |
-| Verify JaCoCo works   | Run `./gradlew jacocoTestReport`                              | ✅ Done |
-| Verify Spotless works | Run `./gradlew spotlessCheck`                                 | ✅ Done |
-| Apply formatting      | Run `./gradlew spotlessApply` to format existing code         | ✅ Done |
-| Update this document  | Place a white check mark on completion                       | ✅ Done |
+| Task                  | Description                                                 | Status  |
+| --------------------- | ----------------------------------------------------------- | ------- |
+| Add JaCoCo            | Code coverage reporting (build.gradle.kts, report only)     | ✅ Done |
+| Add Spotless          | Code formatting with palantir-java-format (main + examples) | ✅ Done |
+| Add CI check          | Run Spotless check in CI workflow                           | ✅ Done |
+| Verify JaCoCo works   | Run `./gradlew jacocoTestReport`                            | ✅ Done |
+| Verify Spotless works | Run `./gradlew spotlessCheck`                               | ✅ Done |
+| Apply formatting      | Run `./gradlew spotlessApply` to format existing code       | ✅ Done |
+| Add dprint to CI      | Add dprint/check step for non-Java files (md, json, yaml)   | ✅ Done |
+| Update AGENTS.md      | Document dprint requirement for agents                      | ✅ Done |
+| Update README.md      | Add dprint to contributor setup instructions                | ✅ Done |
+| Update this document  | Place a white check mark on completion                      | ✅ Done |
 
 ### Notes
 
 - **JaCoCo**: Report only (no threshold enforcement) to explore current coverage
 - **Spotless**: Uses palantir-java-format (120 char line length, lambda-friendly)
 - **Scope**: Applies to both main library (`src/main`) AND examples subproject (`examples/src/main`)
+- **dprint**: Formats markdown, JSON, TOML, YAML, and markup files
 - CI runs `spotlessCheck` (not `spotlessApply`) to fail fast on formatting issues
+- dprint CI uses `dprint/check@v2.3` action for automatic installation
 
 ---
 

@@ -25,6 +25,9 @@ jobs:
       - name: Check code formatting
         run: ./gradlew spotlessCheck
 
+      - name: Check non-Java file formatting
+        uses: dprint/check@v2.3
+
       - name: Build with Gradle
         run: ./gradlew build
 

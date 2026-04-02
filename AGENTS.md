@@ -225,6 +225,45 @@ public Optional<User> findById(Long id) {
 - Java: 21
 - Build Tool: Gradle (via gradlew wrapper)
 - Test Framework: JUnit 5 (Jupiter)
+- Code Formatter: Spotless (palantir-java-format for Java)
+- Non-Java Formatter: dprint (markdown, JSON, TOML, YAML)
+
+### Code Formatting
+
+When generating markdown, JSON, YAML, or other non-Java files, run dprint to format them:
+
+```bash
+dprint fmt        # Format files
+dprint check      # Check formatting (CI uses this)
+```
+
+This ensures proper rendering in markdown viewers and consistency across config files.
+
+### Version Management for External Dependencies
+
+When adding external dependencies (Gradle plugins, Docker images, GitHub Actions, etc.):
+
+1. **Research current stable version**: Use web search to find the latest stable release
+2. **Verify version exists**: Check Maven Central, GitHub Releases, or Docker Hub
+3. **Present options to user**: If multiple versions available, ask which to use
+4. **Prefer explicit versions**: Use specific versions (not `latest` or ranges) for reproducibility
+
+**Search sources**:
+
+- Gradle plugins: [plugins.gradle.org](https://plugins.gradle.org) or Maven Central
+- GitHub Actions: [github.com/marketplace/actions](https://github.com/marketplace/actions)
+- Docker images: [Docker Hub](https://hub.docker.com) or [ghcr.io](https://ghcr.io)
+- Java libraries: [Maven Central](https://search.maven.org) or [mvnrepository.com](https://mvnrepository.com)
+
+**Example workflow**:
+
+```
+User: Add JaCoCo plugin
+Agent: Searches for latest JaCoCo Gradle plugin version
+Agent: Finds v0.8.x is latest stable, presents options
+User: ok
+Agent: Adds id("jacoco") version "0.8.12" (or similar)
+```
 
 ## DSL Library State (Completed)
 
