@@ -186,38 +186,52 @@ To publish a new release to Maven Central:
 
 ---
 
-## 7. Maven Central Publication
+## 7. Maven Central Publication ✅
 
 **Purpose**: Publish library to Maven Central for consumption
 
-### Snapshot Publication (Testing)
+### Implementation Details
 
-| Task                    | Description                                     | Status  |
-| ----------------------- | ----------------------------------------------- | ------- |
-| Keep -SNAPSHOT version  | Keep version as `0.0.1-SNAPSHOT` for testing    | ⏳ TODO |
-| Run publish             | Run `./gradlew publish` locally or via workflow | ⏳ TODO |
-| Verify on Maven Central | Check at https://s01.oss.sonatype.org           | ⏳ TODO |
-| Update this document    | Place a white check mark on completion          | ⏳ TODO |
+**Version management**:
 
-### Release Publication
+- `build.gradle.kts` keeps `-SNAPSHOT` for local development: `1.0.0-SNAPSHOT`
+- Git tags drive releases: `v1.0.0` → extracts `1.0.0` for publishing
 
-| Task                    | Description                                    | Status  |
-| ----------------------- | ---------------------------------------------- | ------- |
-| Add code coverage badge | Add JaCoCo badge to README                     | ⏳ TODO |
-| Add CI badge            | Add GitHub Actions badge to README             | ⏳ TODO |
-| Add Maven Central badge | Add Maven Central version badge to README      | ⏳ TODO |
-| Remove -SNAPSHOT        | Change version to `0.0.1` in build.gradle.kts  | ⏳ TODO |
-| Create GitHub release   | Create release + tag v0.0.1                    | ⏳ TODO |
-| Verify on Maven Central | Check at https://search.maven.org (after sync) | ⏳ TODO |
-| Update this document    | Place a white check mark on completion         | ⏳ TODO |
+**Badges added to README.md** (in order: CI → Maven Central → JaCoCo):
+
+- GitHub Actions: `https://github.com/elfrucool/dgraphql/actions/workflows/ci.yml/badge.svg`
+- Maven Central: `https://img.shields.io/maven-central/v/io.github.elfrucool/dgraphqldsl-java.svg`
+- JaCoCo: `https://img.shields.io/badge/coverage-51%25-green?logo=jacoco`
+
+**Code coverage**: 51% for main library (examples have no tests by design)
 
 ### Auto-Publish on Release
 
-The publish workflow (`.github/workflows/publish.yml`) already:
+The publish workflow (`.github/workflows/publish.yml`) triggers on version tags (`v*`):
 
-- Triggers on version tags (`v*`)
-- Builds, signs, and publishes to Maven Central automatically
-- No manual publish needed - just create a GitHub release
+- Creates GitHub release
+- Builds, signs JARs with GPG
+- Publishes to Maven Central automatically
+- No manual publish needed - just create a GitHub release with tag `v1.0.0`
+
+### Release Process
+
+1. Create GitHub release with tag `v1.0.0` (or push tag: `git tag v1.0.0 && git push`)
+2. Workflow triggers, extracts version (`1.0.0`), publishes to Maven Central
+3. `build.gradle.kts` remains `1.0.0-SNAPSHOT` for continued development
+4. Verify at https://search.maven.org (may take a few hours)
+
+| Task                    | Description                                    | Status  |
+| ----------------------- | ---------------------------------------------- | ------- |
+| Verify code coverage    | Ran JaCoCo, found 51% for main library         | ✅ Done |
+| Add code coverage badge | Add JaCoCo badge to README                     | ✅ Done |
+| Add CI badge            | Add GitHub Actions badge to README             | ✅ Done |
+| Add Maven Central badge | Add Maven Central version badge to README      | ✅ Done |
+| Update version workflow | Extract version from git tag in publish.yml    | ✅ Done |
+| Set development version | Keep SNAPSHOT in build.gradle.kts              | ✅ Done |
+| Create GitHub release   | Create release + tag v1.0.0                    | ⏳ TODO |
+| Verify on Maven Central | Check at https://search.maven.org (after sync) | ⏳ TODO |
+| Update this document    | Place a white check mark on completion         | ⏳ TODO |
 
 ---
 
