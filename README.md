@@ -48,7 +48,7 @@ _Note: `@debug` is a client query parameter, not a DSL feature._
 ## Quick Start
 
 ```java
-import com.github.elfrucool.dgraphql.dsl.*;
+import io.github.elfrucool.dgraphql.dsl.*;
 
 Query query = Query.query()
     .withBlocks(List.of(
@@ -540,7 +540,7 @@ See [examples/README.md](examples/README.md) for more details and troubleshootin
 ## Project Structure
 
 ```
-src/main/java/com/github/elfrucool/dgraphql/dsl/
+src/main/java/io.github.elfrucool/dgraphql/dsl/
 ├── DqlElement.java       # Base interface
 ├── DqlResult.java        # Query + variables result
 ├── Query.java            # Root query container

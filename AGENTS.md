@@ -49,6 +49,7 @@ Follow Linus Torvalds' commit message style (from subsurface project):
 - **Body**: Explain _why_, not just _what_ - describe the solution and reasoning
 - **Width**: Keep lines under 74 characters
 - **Signed-off-by**: Add at end of each commit: `Signed-off-by: Name <email>`
+- The signed-off user + email should come from git settings (git config --get user.name/email)
 
 Example:
 
@@ -76,13 +77,13 @@ Signed-off-by: John Doe <john@example.com>
 - **Classes**: PascalCase (e.g., `GraphQLService`, `UserResolver`)
 - **Methods**: camelCase (e.g., `fetchUserById`, `executeQuery`)
 - **Constants**: UPPER_SNAKE_CASE (e.g., `MAX_RETRY_COUNT`)
-- **Packages**: lowercase, single words or dot-separated (e.g., `com.github.elfrucool.dgraphql.resolvers`)
+- **Packages**: lowercase, single words or dot-separated (e.g., `io.github.elfrucool.dgraphql.resolvers`)
 - **Test Classes**: `*Test.java` or `*Tests.java` (e.g., `UserServiceTest.java`)
 
 ### File Organization
 
 ```
-src/main/java/com/github/elfrucool/dgraphql/
+src/main/java/io.github.elfrucool/dgraphql/
 ├── dsl/                # DSL classes
 ├── config/             # Configuration classes (if needed)
 ├── service/            # Business logic (if needed)
@@ -227,7 +228,7 @@ public Optional<User> findById(Long id) {
 
 ## DSL Library State (Completed)
 
-The DSL library in `com.github.elfrucool.dgraphql.dsl` is fully implemented with:
+The DSL library in `io.github.elfrucool.dgraphql.dsl` is fully implemented with:
 
 ### Implemented Features
 
@@ -276,7 +277,7 @@ See [README.md](../README.md#dql-coverage) for detailed coverage table with docu
 
 ### Key Files
 
-- Tests: `src/test/java/com/github/elfrucool/dgraphql/dsl/DslTest.java` (99 tests)
+- Tests: `src/test/java/io.github.elfrucool/dgraphql/dsl/DslTest.java` (99 tests)
 - Documentation: `README.md`, `docs/dql-dsl-plan.md`, `docs/examples-issues.md`, `examples/README.md`
 
 ## Examples Subproject

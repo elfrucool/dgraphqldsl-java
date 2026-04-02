@@ -34,15 +34,15 @@ The DSL library is technically complete but needs additional work to be useful a
 
 ## 1. Package Rename ✅
 
-**Purpose**: Align package with project group ID (`com.github.elfrucool`)
+**Purpose**: Align package with project group ID (`io.github.elfrucool`)
 
-| Task                    | Description                                             | Status  |
-| ----------------------- | ------------------------------------------------------- | ------- |
-| Rename package          | `org.frunix.dgraphql` → `com.github.elfrucool.dgraphql` | ✅ Done |
-| Update imports          | Main source, tests, examples                            | ✅ Done |
-| Update build.gradle.kts | Ensure package matches                                  | ✅ Done |
-| Update AGENTS.md        | Reflect new package in docs                             | ✅ Done |
-| Update this document    | Place a white check mark on completion                  | ✅ Done |
+| Task                    | Description                                            | Status  |
+| ----------------------- | ------------------------------------------------------ | ------- |
+| Rename package          | `org.frunix.dgraphql` → `io.github.elfrucool.dgraphql` | ✅ Done |
+| Update imports          | Main source, tests, examples                           | ✅ Done |
+| Update build.gradle.kts | Ensure package matches                                 | ✅ Done |
+| Update AGENTS.md        | Reflect new package in docs                            | ✅ Done |
+| Update this document    | Place a white check mark on completion                 | ✅ Done |
 
 **Note**: This is a breaking change for any existing users.
 
@@ -79,11 +79,14 @@ The DSL library is technically complete but needs additional work to be useful a
 
 ### CI Workflow
 
-| Task                 | Description                                 | Status    |
-| -------------------- | ------------------------------------------- | --------- |
-| Add CI workflow      | GitHub Actions to run tests on PRs/pushes   | ✅ Done   |
-| Branch protection    | Require reviews, passing tests before merge | ⏳ Manual |
-| Update this document | Place a white check mark on completion      | ✅ Done   |
+| Task                 | Description                                 | Status                                                             |
+| -------------------- | ------------------------------------------- | ------------------------------------------------------------------ |
+| Add CI workflow      | GitHub Actions to run tests on PRs/pushes   | ✅ Done                                                            |
+| Branch protection    | Require reviews, passing tests before merge | ✅ Done                                                            |
+| CI status check      | Require CI to pass before merge             | ⏳ Pending - workflow needs to run in PR context first (see below) |
+| Update this document | Place a white check mark on completion      | ✅ Done                                                            |
+
+> **Note on CI status check**: GitHub requires the workflow to have run at least once in a PR context before it appears in the "require status checks" dropdown. This will be automatically available after the first PR is opened and CI runs on it.
 
 ### Templates and Policies
 
@@ -108,24 +111,50 @@ The DSL library is technically complete but needs additional work to be useful a
 
 ---
 
-## 5. Maven Central Preparation
+## 5. Maven Central Preparation ✅
 
 **Purpose**: Make the library easily consumable via Maven/Gradle
 
-| Task                 | Description                                                                                                 |
-| -------------------- | ----------------------------------------------------------------------------------------------------------- |
-| Explain              | Explain user the activities on this phase, which of these can be performed by an agent and which are manual |
-| POM metadata         | Add developers, SCM, license info for Maven Central acceptance                                              |
-| Signing              | Configure JAR signing for release builds                                                                    |
-| Javadoc JAR          | Generate and publish Javadoc                                                                                |
-| Test publication     | Publish snapshot to GitHub Packages for verification                                                        |
-| Release process      | Document how to make releases (version bump, tag, publish)                                                  |
-| Update this document | Place a white check mark on completion                                                                      |
+| Task                  | Description                                                                                                 | Status  |
+| --------------------- | ----------------------------------------------------------------------------------------------------------- | ------- |
+| Explain               | Explain user the activities on this phase, which of these can be performed by an agent and which are manual | ✅ Done |
+| POM metadata          | Add developers, SCM, license info for Maven Central acceptance                                              | ✅ Done |
+| Signing               | Configure JAR signing for release builds                                                                    | ✅ Done |
+| Javadoc JAR           | Generate and publish Javadoc                                                                                | ✅ Done |
+| Publish workflow      | Add GitHub Actions workflow for publishing                                                                  | ✅ Done |
+| Sonatype registration | Register with Sonatype and request group ID `io.github.elfrucool`                                           | ✅ Done |
+| Maven secrets         | Add MAVEN_USERNAME and MAVEN_PASSWORD secrets                                                               | ✅ Done |
+| Update this document  | Place a white check mark on completion                                                                      | ✅ Done |
+
+### Release Process
+
+To publish a new release to Maven Central:
+
+1. **Update version** in `build.gradle.kts`:
+   ```kotlin
+   version = "1.0.0"  // Remove -SNAPSHOT for release
+   ```
+
+2. **Create and push a version tag**:
+   ```bash
+   git tag v1.0.0
+   git push origin v1.0.0
+   ```
+
+3. **GitHub Actions** will automatically:
+   - Build the project
+   - Sign JARs with GPG
+   - Generate checksums
+   - Publish to Maven Central
+   - Create a GitHub release
+
+4. **Verify** at https://search.maven.org (may take a few hours to appear)
 
 **Notes**:
 
-- Group ID `com.github.elfrucool` is already set - works for both GitHub Packages and Maven Central
-- Need to register with Maven Central (Sonatype) for the group ID
+- Group ID `io.github.elfrucool` - works for Maven Central via Sonatype
+- GPG keys configured for signing
+- Maven credentials stored in GitHub secrets
 
 ---
 
@@ -181,6 +210,6 @@ The DSL library is technically complete but needs additional work to be useful a
 | **Phase 2** | Java version (document as Java 21)  | ✅ Done |
 | **Phase 3** | Add Javadocs                        | ✅ Done |
 | **Phase 4** | GitHub setup (workflows, templates) | ✅ Done |
-| **Phase 5** | Maven Central prep (POM metadata)   | Pending |
+| **Phase 5** | Maven Central prep (POM metadata)   | ✅ Done |
 | **Phase 6** | Tutorial + README improvements      | Pending |
 | **Phase 7** | Quality tools (JaCoCo, formatting)  | Pending |
