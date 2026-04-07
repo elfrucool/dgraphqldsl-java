@@ -1,7 +1,6 @@
 plugins {
 	java
-	id("maven-publish")
-	id("signing")
+	id("com.vanniktech.maven.publish") version "0.29.0"
 	id("jacoco")
 	id("com.diffplug.spotless") version "8.4.0"
 }
@@ -14,6 +13,9 @@ java {
 	toolchain {
 		languageVersion = JavaLanguageVersion.of(21)
 	}
+	
+	withSourcesJar()
+	withJavadocJar()
 }
 
 repositories {
@@ -33,69 +35,35 @@ tasks.test {
 	}
 }
 
-val sourcesJar by tasks.registering(Jar::class) {
-	from(sourceSets.main.get().allJava)
-	archiveClassifier.set("sources")
-}
-
-val javadocJar by tasks.registering(Jar::class) {
-	from(sourceSets.main.get().allJava)
-	archiveClassifier.set("javadoc")
-}
-
-publishing {
-	publications {
-		register("java", MavenPublication::class) {
-			artifactId = "dgraphqldsl-java"
-			artifact(tasks.named("jar"))
-			artifact(sourcesJar)
-			artifact(javadocJar)
-			pom {
-				name.set("dgraphqldsl-java")
-				description.set("A type-safe Java DSL for building Dgraph DQL queries")
-				url.set("https://github.com/elfrucool/dgraphqldsl-java")
-				
-				developers {
-					developer {
-						id.set("elfrucool")
-						name.set("Gustavo Serrano")
-						email.set("elfrucool@gmail.com")
-					}
-				}
-				
-				licenses {
-					license {
-						name.set("MIT License")
-						url.set("https://opensource.org/licenses/MIT")
-					}
-				}
-				
-				scm {
-					connection.set("scm:git:git@github.com:elfrucool/dgraphqldsl-java.git")
-					developerConnection.set("scm:git:git@github.com:elfrucool/dgraphqldsl-java.git")
-					url.set("https://github.com/elfrucool/dgraphqldsl-java")
-				}
-			}
-		}
-	}
+mavenPublishing {
+	publishToMavenCentral(automaticRelease = true)
 	
-	repositories {
-		maven {
-			name = "ossrh"
-			url = uri("https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/")
-			credentials {
-				username = project.findProperty("mavenUsername") as String? ?: System.getenv("MAVEN_USERNAME")
-				password = project.findProperty("mavenPassword") as String? ?: System.getenv("MAVEN_PASSWORD")
+	pom {
+		name.set("dgraphqldsl-java")
+		description.set("A type-safe Java DSL for building Dgraph DQL queries")
+		url.set("https://github.com/elfrucool/dgraphqldsl-java")
+		
+		licenses {
+			license {
+				name.set("MIT License")
+				url.set("https://opensource.org/licenses/MIT")
 			}
 		}
+		
+		developers {
+			developer {
+				id.set("elfrucool")
+				name.set("Gustavo Serrano")
+				email.set("elfrucool@gmail.com")
+			}
+		}
+		
+		scm {
+			url.set("https://github.com/elfrucool/dgraphqldsl-java")
+			connection.set("scm:git:git://github.com/elfrucool/dgraphqldsl-java.git")
+			developerConnection.set("scm:git:ssh://git@github.com:elfrucool/dgraphqldsl-java.git")
+		}
 	}
-}
-
-signing {
-	val signingKey = project.findProperty("signingKey") as String?
-	val signingPassword = project.findProperty("signingPassword") as String?
-	useInMemoryPgpKeys(signingKey, signingPassword)
-	sign(publishing.publications.getByName("java"))
 }
 
 spotless {
