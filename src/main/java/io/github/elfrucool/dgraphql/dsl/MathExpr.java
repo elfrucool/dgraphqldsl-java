@@ -132,7 +132,7 @@ public record MathExpr(String expression) implements DqlElement {
     }
 
     /**
-     * Less than: left < right.
+     * Less than: left &lt; right.
      */
     public static MathExpr lt(Object left, Object right) {
         return new MathExpr(formatOperand(left) + " < " + formatOperand(right));
@@ -146,7 +146,7 @@ public record MathExpr(String expression) implements DqlElement {
     }
 
     /**
-     * Less than or equal: left <= right.
+     * Less than or equal: left &lt;= right.
      */
     public static MathExpr le(Object left, Object right) {
         return new MathExpr(formatOperand(left) + " <= " + formatOperand(right));
@@ -167,7 +167,7 @@ public record MathExpr(String expression) implements DqlElement {
     }
 
     /**
-     * Logical AND: left && right.
+     * Logical AND: left &amp;&amp; right.
      */
     public static MathExpr and(Object left, Object right) {
         return new MathExpr(formatOperand(left) + " && " + formatOperand(right));
