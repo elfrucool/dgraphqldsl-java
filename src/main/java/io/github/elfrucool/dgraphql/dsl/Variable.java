@@ -17,7 +17,7 @@ package io.github.elfrucool.dgraphql.dsl;
  * Variable.queryVar("name", "string", "Alice")                 // $name: string = "Alice"
  * </pre>
  *
- * @see Query#withVariables(List)
+ * @see Query#withParameters(List)
  */
 public record Variable(String name, String type, Object defaultValue) implements DqlElement {
 

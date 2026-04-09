@@ -25,7 +25,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
 
       - name: Build
-        run: ./gradlew clean build
+        run: ./gradlew clean build :javadoc
 
       - name: Publish snapshot to Maven Central
         run: ./gradlew publishToMavenCentral

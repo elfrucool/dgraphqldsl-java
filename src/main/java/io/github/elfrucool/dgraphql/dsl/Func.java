@@ -92,7 +92,7 @@ public record Func(String name, Object... args) implements DqlElement {
     }
 
     /**
-     * Less than or equal: matches nodes where predicate <= value.
+     * Less than or equal: matches nodes where predicate &lt;= value.
      *
      * <p>Example: {@code le(age, 65)}</p>
      */
@@ -101,7 +101,7 @@ public record Func(String name, Object... args) implements DqlElement {
     }
 
     /**
-     * Less than: matches nodes where predicate < value.
+     * Less than: matches nodes where predicate &lt; value.
      *
      * <p>Example: {@code lt(age, 18)}</p>
      */

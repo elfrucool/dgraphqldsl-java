@@ -25,7 +25,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
 
       - name: Validate publishing configuration
-        run: ./gradlew validatePublishing
+        run: ./gradlew clean build :javadoc validatePublishing
         env:
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.SONATYPE_USERNAME }}
           ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SONATYPE_PASSWORD }}
