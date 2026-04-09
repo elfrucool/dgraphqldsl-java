@@ -1,6 +1,6 @@
 plugins {
 	java
-	id("com.vanniktech.maven.publish") version "0.29.0"
+	id("com.vanniktech.maven.publish") version "0.36.0"
 	id("jacoco")
 	id("com.diffplug.spotless") version "8.4.0"
 }
