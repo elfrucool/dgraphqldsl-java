@@ -1,6 +1,7 @@
 plugins {
 	java
 	id("com.vanniktech.maven.publish") version "0.29.0"
+	id("signing")
 	id("jacoco")
 	id("com.diffplug.spotless") version "8.4.0"
 }
@@ -63,6 +64,16 @@ mavenPublishing {
 			connection.set("scm:git:git://github.com/elfrucool/dgraphqldsl-java.git")
 			developerConnection.set("scm:git:ssh://git@github.com:elfrucool/dgraphqldsl-java.git")
 		}
+	}
+}
+
+signing {
+	val signingKey: String? = project.findProperty("signingKey") as String?
+	val signingPassword: String? = project.findProperty("signingPassword") as String?
+	
+	if (signingKey != null && signingPassword != null) {
+		useInMemoryPgpKeys(signingKey, signingPassword)
+		sign(publishing.publications)
 	}
 }
 
