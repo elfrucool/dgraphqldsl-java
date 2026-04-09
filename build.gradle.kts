@@ -35,6 +35,7 @@ tasks.test {
 
 mavenPublishing {
 	publishToMavenCentral(automaticRelease = true)
+	signAllPublications()
 	
 	pom {
 		name.set("dgraphqldsl-java")
