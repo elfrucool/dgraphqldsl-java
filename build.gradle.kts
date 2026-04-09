@@ -7,7 +7,8 @@ plugins {
 
 group = "io.github.elfrucool"
 base.archivesName.set("dgraphqldsl-java")
-version = "1.0.0-SNAPSHOT"
+val defaultVersion = "1.0.0-SNAPSHOT"
+version = project.findProperty("version")?.toString()?.takeIf { it.isNotBlank() } ?: defaultVersion
 
 java {
 	toolchain {
