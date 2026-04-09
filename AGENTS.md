@@ -39,6 +39,27 @@ When the agent believes it's ok to commit but the human has not explicitly reque
 - Undo or modify something before committing
 - Wait for additional work to complete
 
+### Avoiding History Rewriting
+
+**Never rewrite history (--amend, rebase, force-push) once pushed:**
+
+- If a commit was pushed to a remote branch (including main), **do not amend or rebase it**
+- If more changes are needed, create a **new commit** on top
+- Only use --amend/rebase for **unpushed** commits
+
+**Why:** Rewriting pushed history can break CI runs, confuse collaborators, and cause conflicts with existing pull requests.
+
+### Branch Workflow
+
+**All changes go through branches:**
+
+1. Create a feature branch for each change/fix
+2. Make commits on the branch
+3. Push branch and create a PR
+4. Human merges the PR (squash or merge)
+
+**Exception:** Minor documentation fixes or quick hotfixes may be handled differently - ask the human when in doubt.
+
 ### Git Commit Messages
 
 Follow Linus Torvalds' commit message style (from subsurface project):
