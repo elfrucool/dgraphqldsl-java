@@ -1,3 +1,3 @@
-rootProject.name = "dgraphql"
+rootProject.name = "dgraphqldsl-java"
 
 include("examples")
