@@ -51,6 +51,26 @@ _Note: `@debug` is a client query parameter, not a DSL feature._
 
 ## Quick Start
 
+### Add the dependency
+
+**Maven:**
+
+```xml
+<dependency>
+  <groupId>io.github.elfrucool</groupId>
+  <artifactId>dgraphqldsl-java</artifactId>
+  <version>1.0.0</version>
+</dependency>
+```
+
+**Gradle:**
+
+```kotlin
+implementation("io.github.elfrucool:dgraphqldsl-java:1.0.0")
+```
+
+### Use the DSL
+
 ```java
 import io.github.elfrucool.dgraphql.dsl.*;
 
@@ -68,7 +88,11 @@ Query query = Query.query()
 DqlResult result = query.dql();
 System.out.println(result.query());
 // { me(func: eq(name, "Alice")) { name age friend { name } } }
+
+// use it when calling the API
 ```
+
+For a complete example with a live Dgraph server, see the [examples](examples/) sub-project.
 
 ## Core Components
 
